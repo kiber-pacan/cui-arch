@@ -1,0 +1,18 @@
+{
+  "required": true,
+  "package": "com.cui.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "minVersion": "0.8",
+  "client": [
+    "client.BookMixin",
+    "client.ScreenMixin",
+    "client.CreativeInvScreenMixin",
+    "client.GuiMixin",
+    "client.InvScreenMixin"
+  ],
+  "mixins": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -1,0 +1,135 @@
+plugins {
+    id 'dev.architectury.loom' version '1.7-SNAPSHOT' apply false
+    id 'architectury-plugin' version '3.4-SNAPSHOT'
+
+    id 'com.github.johnrengelman.shadow' version '8.1.1' apply false
+    id 'systems.manifold.manifold-gradle-plugin' version '0.0.2-alpha'
+
+    id 'com.matthewprenger.cursegradle' version '1.4.0' apply false
+    id 'com.modrinth.minotaur' version '2.+' apply false
+}
+
+project.gradle.ext.getProperties().each { prop ->
+    //if (prop.key != null && prop.value != null)
+        rootProject.ext.set(prop.key, prop.value)
+}
+
+architectury {
+    minecraft = project.minecraft_version
+}
+
+allprojects {
+    group = rootProject.maven_group
+    version = rootProject.mod_version
+}
+
+subprojects {
+    apply plugin: 'dev.architectury.loom'
+    apply plugin: 'architectury-plugin'
+    apply plugin: 'maven-publish'
+    apply plugin: "systems.manifold.manifold-gradle-plugin"
+    apply plugin: "com.modrinth.minotaur"
+    apply plugin: "com.matthewprenger.cursegradle"
+
+    base {
+        archivesName = "$rootProject.archives_name-mc$project.minecraft_version-$project.name"
+    }
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+    }
+
+    configurations {
+        testImplementation.extendsFrom annotationProcessor
+    }
+
+    processResources {
+        def replaceProperties = [
+                version : project.mod_version,
+                minecraft_version : project.minecraft_version,
+                fabric_loader_version : project.fabric_loader_version,
+                architectury_api_version : project.architectury_api_version,
+                java : project.java_version,
+                name : "CUI",
+                modid : archives_name,
+                description : "Description",
+                authors : "Author 1, author 2",
+                license : "License",
+                sources : "https://github.com/"
+        ]
+
+        if (rootProject.hasProperty("forge_version")) {
+            replaceProperties.put("forge_loader_version", project.forge_version)
+        }
+        if (rootProject.hasProperty("neoforge_version")) {
+            replaceProperties.put("neoforge_loader_version", project.neoforge_version)
+        }
+
+        def files = ["fabric.mod.json", "META-INF/mods.toml", "META-INF/neoforge.mods.toml", "quilt.mod.json"]
+        inputs.properties replaceProperties
+
+        filesMatching(files) {
+            replaceProperties.eachWithIndex {
+                expand(replaceProperties) {
+                    replaceProperties
+                }
+            }
+        }
+    }
+
+    dependencies {
+        annotationProcessor("systems.manifold:manifold-preprocessor:${manifold_version}")
+        minecraft "net.minecraft:minecraft:$rootProject.minecraft_version"
+        if (rootProject.hasProperty("yarn_mappings_patch_neoforge_version")) {
+            mappings loom.layered {
+                it.mappings("net.fabricmc:yarn:$rootProject.yarn_mappings:v2")
+                it.mappings("dev.architectury:yarn-mappings-patch-neoforge:$rootProject.yarn_mappings_patch_neoforge_version")
+            }
+        } else {
+            mappings "net.fabricmc:yarn:$rootProject.yarn_mappings:v2"
+        }
+    }
+
+    java {
+        withSourcesJar()
+        targetCompatibility = sourceCompatibility = rootProject.java_version as Integer
+    }
+
+    tasks.withType(JavaCompile).configureEach {
+        it.options.release = rootProject.java_version as Integer
+    }
+
+    def loader = project.name
+    print(loader)
+    apply plugin: "com.modrinth.minotaur"
+
+
+    modrinth {
+        token = "token"
+        projectId = "shelf-mod"
+        versionName = archives_name + " " + mod_version
+        versionNumber = mod_version
+        versionType = "release"
+        uploadFile = remapJar
+        gameVersions = [rootProject.minecraft_version]
+        loaders = [loader]
+        dependencies {
+            if (loader.equals("fabric")) {
+                required.project "cloth-config"
+                required.project "fabric-api"
+                required.project "modmenu"
+                required.project "architectury-api"
+            } else if (loader.equals("forge") || loader.equals("neoforge")) {
+                required.project "cloth-config"
+                required.project "architectury-api"
+            }
+        }
+        failSilently = true
+    }
+
+    publishing {
+
+    }
+}

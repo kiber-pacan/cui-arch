@@ -1,0 +1,33 @@
+modLoader = "javafml"
+loaderVersion = "[45,)"
+#issueTrackerURL = ""
+license = "${license}"
+
+[[mods]]
+modId = "${modid}"
+version = "${version}"
+displayName = "${name}"
+authors = "${author}"
+description = "${description}"
+logoFile = "assets/${modid}/logo.png"
+
+[[dependencies.example]]
+modId = "forge"
+mandatory = true
+versionRange = "[${forge_loader_version},)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.shelfmod]]
+modId = "minecraft"
+mandatory = true
+versionRange = "[${minecraft_version},)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.shelfmod]]
+modId = "architectury"
+mandatory = true
+versionRange = "[${architectury_api_version},)"
+ordering = "AFTER"
+side = "BOTH"
