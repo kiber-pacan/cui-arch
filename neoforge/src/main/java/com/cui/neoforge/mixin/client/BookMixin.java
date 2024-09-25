@@ -1,4 +1,4 @@
-package com.cui.mixin.client;
+package com.cui.neoforge.mixin.client;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;
@@ -14,7 +14,7 @@ public class BookMixin {
 
     // Background
 
-    @Inject(at = @At(value = "HEAD"), method = "render")
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/util/math/MatrixStack;translate(FFF)V", shift = At.Shift.AFTER), method = "render")
     private void renderHead(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         context.setShaderColor(colors.r, colors.g, colors.b, 1);
     }
