@@ -6,5 +6,6 @@ import me.shedaniel.autoconfig.annotation.Config;
 import static com.cui.CUI_Common.MODID;
 
 @Config(name = MODID)
-public class ExampleConfigNeoForge implements ConfigData {
+public class CUI_ConfigNeoForge implements ConfigData {
+    public String color;
 }
