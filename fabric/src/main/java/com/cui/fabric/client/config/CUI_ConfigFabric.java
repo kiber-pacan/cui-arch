@@ -6,6 +6,7 @@ import me.shedaniel.autoconfig.annotation.Config;
 import static com.cui.CUI_Common.MODID;
 
 @Config(name = MODID)
-public class ExampleConfigFabric implements ConfigData {
+public class CUI_ConfigFabric implements ConfigData {
+    public String color = "#389c56";
 
 }
