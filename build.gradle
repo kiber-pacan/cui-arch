@@ -39,10 +39,28 @@ subprojects {
         mavenLocal()
         mavenCentral()
         maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
+        maven {
+            name = 'ParchmentMC'
+            url = 'https://maven.parchmentmc.org'
+        }
     }
 
     configurations {
         testImplementation.extendsFrom annotationProcessor
+    }
+
+    java {
+        withSourcesJar()
+
+        toolchain {
+            if (project.java_version == "17") {
+                languageVersion = JavaLanguageVersion.of(17)
+                vendor = JvmVendorSpec.ADOPTIUM
+            } else {
+                languageVersion = JavaLanguageVersion.of(21)
+                vendor = JvmVendorSpec.ADOPTIUM
+            }
+        }
     }
 
     processResources {
@@ -52,12 +70,11 @@ subprojects {
                 fabric_loader_version : project.fabric_loader_version,
                 architectury_api_version : project.architectury_api_version,
                 java : project.java_version,
-                name : "CUI",
+                name : "cui",
                 modid : archives_name,
-                description : "Description",
-                authors : "Author 1, author 2",
-                license : "License",
-                sources : "https://github.com/"
+                description : "Dye your UI in any color",
+                authors : "akicater",
+                license : "MIT",
         ]
 
         if (rootProject.hasProperty("forge_version")) {
@@ -65,6 +82,12 @@ subprojects {
         }
         if (rootProject.hasProperty("neoforge_version")) {
             replaceProperties.put("neoforge_loader_version", project.neoforge_version)
+        }
+        if (rootProject.hasProperty("yacl_version")) {
+            replaceProperties.put("yacl_version", project.yacl_version)
+        }
+        if (rootProject.hasProperty("midnightlib_version")) {
+            replaceProperties.put("midnightlib_version", project.midnightlib_version)
         }
 
         def files = ["fabric.mod.json", "META-INF/mods.toml", "META-INF/neoforge.mods.toml", "quilt.mod.json"]
@@ -82,24 +105,13 @@ subprojects {
     dependencies {
         annotationProcessor("systems.manifold:manifold-preprocessor:${manifold_version}")
         minecraft "net.minecraft:minecraft:$rootProject.minecraft_version"
-        if (rootProject.hasProperty("yarn_mappings_patch_neoforge_version")) {
-            mappings loom.layered {
-                it.mappings("net.fabricmc:yarn:$rootProject.yarn_mappings:v2")
-                it.mappings("dev.architectury:yarn-mappings-patch-neoforge:$rootProject.yarn_mappings_patch_neoforge_version")
-            }
-        } else {
-            mappings "net.fabricmc:yarn:$rootProject.yarn_mappings:v2"
+
+        mappings loom.layered() {
+            officialMojangMappings()
+            parchment("org.parchmentmc.data:parchment-1.21:2024.07.28@zip")
         }
     }
 
-    java {
-        withSourcesJar()
-        targetCompatibility = sourceCompatibility = rootProject.java_version as Integer
-    }
-
-    tasks.withType(JavaCompile).configureEach {
-        it.options.release = rootProject.java_version as Integer
-    }
 
     def loader = project.name
     print(loader)
