@@ -1,23 +1,28 @@
 {
   "required": true,
-  "package": "com.cui.mixin",
+  "package": "com.cui.forge.mixin",
   "compatibilityLevel": "JAVA_17",
   "minVersion": "0.8",
   "client": [
     "client.BookMixin",
+    "client.ButtonMixin",
+    "client.CreateWorldScreenMixin",
     "client.CreativeInvScreenMixin",
     "client.FurnaceScreenMixin",
+    "client.HandledScreenMixin",
     "client.HUDMixin",
     "client.InvScreenMixin",
     "client.RecipeBookTabsMixin",
+    "client.RenderMixin",
     "client.ScreenMixin",
-    "client.TextMixin",
-    "client.YaclMixin"
+    "client.TextMixin"
   ],
   "mixins": [
-    "client.ButtonMixin"
+    "client.TexturedBookMixin"
   ],
   "injectors": {
     "defaultRequire": 1
   }
 }
+
+

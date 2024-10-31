@@ -1,4 +1,4 @@
-package com.cui.neoforge.mixin.client;
+package com.cui.forge.mixin.client;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.recipebook.RecipeBookWidget;

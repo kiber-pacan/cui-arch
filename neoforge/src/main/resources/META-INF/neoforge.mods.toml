@@ -7,30 +7,38 @@ license = "${license}"
 modId = "${modid}"
 version = "${version}"
 displayName = "${name}"
-authors = "${author}"
+authors = "${authors}"
 description = "${description}"
-logoFile = "assets/${modid}/logo.png"
+#logoFile = "assets/${modid}/logo.png"
 
-[[dependencies.example]]
+[[dependencies.${modid}]]
 modId = "neoforge"
 type = "required"
 versionRange = "[${neoforge_loader_version},)"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.example]]
+[[dependencies.${modid}]]
 modId = "minecraft"
 type = "required"
 versionRange = "[${minecraft_version},)"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.example]]
+[[dependencies.${modid}]]
 modId = "architectury"
 type = "required"
 versionRange = "[${architectury_api_version},)"
 ordering = "AFTER"
 side = "BOTH"
 
+[[dependencies.${modid}]]
+modId = "yet_another_config_lib_v3"
+mandatory = true
+versionRange = "[${yacl_version},)"
+ordering = "NONE"
+side = "CLIENT"
+
 [[mixins]]
-config = "${modid}.mixins.json"
+config = "${modid}.mixins.neoforge.json"
+

@@ -10,12 +10,10 @@ import me.shedaniel.autoconfig.serializer.Toml4jConfigSerializer;
 
 import net.minecraft.screen.ScreenHandlerFactory;
 import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.config.ConfigTracker;
-
 
 public class ClothConfigImpl {
     public static void registerModsPage() {
-        AutoConfig.register(ExampleConfigForge.class, Toml4jConfigSerializer::new);
+        AutoConfig.register(CUI_ConfigForge.class, Toml4jConfigSerializer::new);
         #if MC_VER != V1_20_4
         ModLoadingContext.get().registerExtensionPoint(
                 #if MC_VER >= V1_19_4
@@ -24,7 +22,7 @@ public class ClothConfigImpl {
                 ScreenHandlerFactory.class,
                 #endif
                 () -> new ScreenHandlerFactory(
-                        (client, parent) -> AutoConfig.getConfigScreen(ExampleConfigForge.class, parent).get()
+                        (client, parent) -> AutoConfig.getConfigScreen(CUI_ConfigForge.class, parent).get()
                 )
         );
         #endif

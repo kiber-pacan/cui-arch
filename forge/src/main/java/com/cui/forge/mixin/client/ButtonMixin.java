@@ -1,4 +1,4 @@
-package com.cui.neoforge.mixin.client;
+package com.cui.forge.mixin.client;
 
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.widget.PressableWidget;
@@ -12,7 +12,7 @@ import static com.cui.CUI_Common.colors;
 @Mixin(PressableWidget.class)
 public class ButtonMixin {
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;setShaderColor(FFFF)V", shift = At.Shift.AFTER, ordinal = 0), method = "renderWidget")
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/DrawContext;setShaderColor(FFFF)V", shift = At.Shift.AFTER, ordinal = 0), method = "renderButton")
     private void renderHead(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         context.setShaderColor(colors.r + 0.3f, colors.g + 0.3f, colors.b + 0.3f, 1);
     }

@@ -7,25 +7,25 @@ license = "${license}"
 modId = "${modid}"
 version = "${version}"
 displayName = "${name}"
-authors = "${author}"
+authors = "${authors}"
 description = "${description}"
 logoFile = "assets/${modid}/logo.png"
 
-[[dependencies.example]]
+[[dependencies.${modid}]]
 modId = "forge"
 mandatory = true
 versionRange = "[${forge_loader_version},)"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.shelfmod]]
+[[dependencies.${modid}]]
 modId = "minecraft"
 mandatory = true
 versionRange = "[${minecraft_version},)"
 ordering = "NONE"
 side = "BOTH"
 
-[[dependencies.shelfmod]]
+[[dependencies.${modid}]]
 modId = "architectury"
 mandatory = true
 versionRange = "[${architectury_api_version},)"
