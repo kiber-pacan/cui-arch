@@ -1,16 +1,16 @@
 plugins {
-    id 'dev.architectury.loom' version '1.7-SNAPSHOT' apply false
+    id 'dev.architectury.loom' version '1.11-SNAPSHOT' apply false
     id 'architectury-plugin' version '3.4-SNAPSHOT'
+    id 'com.gradleup.shadow' version '8.3.6' apply false
 
-    id 'com.github.johnrengelman.shadow' version '8.1.1' apply false
     id 'systems.manifold.manifold-gradle-plugin' version '0.0.2-alpha'
 
-    id 'com.matthewprenger.cursegradle' version '1.4.0' apply false
+    id "me.hypherionmc.cursegradle" version "2.0.1" apply false
     id 'com.modrinth.minotaur' version '2.+' apply false
 }
 
 project.gradle.ext.getProperties().each { prop ->
-    //if (prop.key != null && prop.value != null)
+    if (prop.key != null && prop.value != null)
         rootProject.ext.set(prop.key, prop.value)
 }
 
@@ -26,30 +26,37 @@ allprojects {
 subprojects {
     apply plugin: 'dev.architectury.loom'
     apply plugin: 'architectury-plugin'
+
     apply plugin: 'maven-publish'
     apply plugin: "systems.manifold.manifold-gradle-plugin"
+
+    apply plugin: "me.hypherionmc.cursegradle"
     apply plugin: "com.modrinth.minotaur"
-    apply plugin: "com.matthewprenger.cursegradle"
+
 
     base {
         archivesName = "$rootProject.archives_name-mc$project.minecraft_version-$project.name"
     }
 
     repositories {
-        mavenLocal()
-        mavenCentral()
-        maven { url 'https://oss.sonatype.org/content/repositories/snapshots/' }
         maven {
             name = 'ParchmentMC'
             url = 'https://maven.parchmentmc.org'
         }
+
+        maven { url "https://maven.shedaniel.me/" }
+        maven { url = 'https://maven.architectury.dev/' }
     }
 
     configurations {
         testImplementation.extendsFrom annotationProcessor
     }
 
-    java {
+    loom {
+        silentMojangMappingsLicense()
+    }
+
+    /java {
         withSourcesJar()
 
         toolchain {
@@ -61,7 +68,7 @@ subprojects {
                 vendor = JvmVendorSpec.ADOPTIUM
             }
         }
-    }
+    }/
 
     processResources {
         def replaceProperties = [
@@ -108,7 +115,11 @@ subprojects {
 
         mappings loom.layered() {
             officialMojangMappings()
-            parchment("org.parchmentmc.data:parchment-1.21:2024.07.28@zip")
+            if (rootProject.minecraft_version == "1.21.1") {
+                parchment("org.parchmentmc.data:parchment-1.21:${rootProject.parchment}@zip")
+            } else {
+                parchment("org.parchmentmc.data:parchment-${rootProject.minecraft_version}:${rootProject.parchment}@zip")
+            }
         }
     }
 
