@@ -1,7 +1,7 @@
 package com.cui.mixin.client;
 
 
-import com.cui.CUI_Config;
+import com.cui.CUI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -25,8 +25,7 @@ public class InvScreenMixin {
 
 	@Inject(at = @At(value = "HEAD"), method = "renderBg")
 	private void renderHead(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY, CallbackInfo ci) {
-		Color colors = CUI_Config.HANDLER.instance().color;
-		guiGraphics.setColor((float) colors.getRed() / 255, (float) colors.getGreen() / 255, (float) colors.getBlue() / 255, 1);
+        guiGraphics.setColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1);
 	}
 
 	@Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V", shift = At.Shift.AFTER), method = "renderBg")
@@ -40,7 +39,6 @@ public class InvScreenMixin {
 
 	@Inject(at = @At(value = "TAIL"), method = "renderBg")
 	private void renderTail1(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY, CallbackInfo ci) {
-		Color colors = CUI_Config.HANDLER.instance().color;
 
 		int a = Minecraft.getInstance().getWindow().getGuiScaledWidth(), b = Minecraft.getInstance().getWindow().getGuiScaledHeight();
 		if (this.recipeBookComponent.isVisible()) {
@@ -49,6 +47,6 @@ public class InvScreenMixin {
 			guiGraphics.renderItem(Items.KNOWLEDGE_BOOK.getDefaultInstance(), (int) (((float) a / 2) + 18), (int) (((float) b / 2) - 21));
 		}
 
-		guiGraphics.setColor((float) colors.getRed() / 255, (float) colors.getGreen() / 255, (float) colors.getBlue() / 255, 1);
+        guiGraphics.setColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1);
 	}
 }
