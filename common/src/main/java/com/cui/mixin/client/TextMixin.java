@@ -1,7 +1,7 @@
 package com.cui.mixin.client;
 
 
-import com.cui.CUI_Config;
+import com.cui.CUI;
 import net.minecraft.client.gui.components.AbstractStringWidget;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -19,7 +19,7 @@ public class TextMixin {
 
     @Inject(at = @At(value = "HEAD"), method = "getColor", cancellable = true)
     private void render(CallbackInfoReturnable<Integer> cir) {
-        Color colors = CUI_Config.HANDLER.instance().color;
-        cir.setReturnValue(colors.getRGB());
+        Color color = new Color(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b);
+        cir.setReturnValue(color.getRGB());
     }
 }

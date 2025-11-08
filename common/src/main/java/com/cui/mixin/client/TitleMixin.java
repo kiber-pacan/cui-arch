@@ -1,6 +1,6 @@
 package com.cui.mixin.client;
 
-import com.cui.CUI_Config;
+import com.cui.CUI;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.TitleScreen;
 import org.spongepowered.asm.mixin.Mixin;
@@ -14,9 +14,9 @@ import java.awt.*;
 public class TitleMixin {
     @Inject(at = @At(value = "HEAD"), method = "render")
     private void renderHead(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
-        Color color = CUI_Config.HANDLER.instance().color;
+        Color color = new Color(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b);
         color.brighter().brighter().brighter();
-        guiGraphics.setColor((float) color.getRed() / 255, (float) color.getGreen() / 255, (float) color.getBlue() / 255, 1);
+        guiGraphics.setColor(color.getRed(), color.getGreen(), color.getBlue(), 1);
     }
 
     @Inject(at = @At(value = "TAIL"), method = "render")

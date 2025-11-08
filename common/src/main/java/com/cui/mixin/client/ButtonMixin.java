@@ -1,6 +1,6 @@
 package com.cui.mixin.client;
 
-import com.cui.CUI_Config;
+import com.cui.CUI;
 
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractButton;
@@ -18,16 +18,14 @@ public class ButtonMixin {
 
     @Inject(at = @At(value = "INVOKE", target = "Lcom/mojang/blaze3d/systems/RenderSystem;enableBlend()V", shift = At.Shift.AFTER), method = "renderWidget")
     private void renderHead(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
-        Color colors = CUI_Config.HANDLER.instance().color;
-        guiGraphics.setColor((float) colors.getRed() / 255, (float) colors.getGreen() / 255, (float) colors.getBlue() / 255, 1);
+        guiGraphics.setColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1);
     }
 
     @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;setColor(FFFF)V", shift = At.Shift.AFTER), method = "renderWidget")
     private void renderHead1(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
-        Color colors = CUI_Config.HANDLER.instance().color;
-        float r = (float) colors.getRed() / 255;
-        float g = (float) colors.getGreen() / 255;
-        float b = (float) colors.getBlue() / 255;
+        float r = CUI.cuiConfig.r;
+        float g = CUI.cuiConfig.g;
+        float b = CUI.cuiConfig.b;
 
         float mid = (r + g + b) / 3;
 

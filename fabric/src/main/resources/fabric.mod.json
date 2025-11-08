@@ -29,7 +29,6 @@
     "minecraft": "${minecraft_version}",
     "java": ">=${java}",
     "architectury": "${architectury_api_version}",
-    "fabric-api": "*",
-    "yet_another_config_lib_v3": ">=${yacl_version}"
+    "fabric-api": "*"
   }
 }

@@ -6,13 +6,15 @@
   "client": [
     "client.BookMixin",
     "client.CreativeInvScreenMixin",
+    "client.DeathScreenMixin",
     "client.FurnaceScreenMixin",
     "client.HUDMixin",
     "client.InvScreenMixin",
+    "client.PauseMixin",
     "client.RecipeBookTabsMixin",
     "client.ScreenMixin",
     "client.TextMixin",
-    "client.YaclMixin"
+    "client.WorkbenchScreenMixin"
   ],
   "mixins": [
     "client.ButtonMixin"

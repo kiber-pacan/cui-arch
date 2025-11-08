@@ -1,6 +1,6 @@
 package com.cui.mixin.client;
 
-import com.cui.CUI_Config;
+import com.cui.CUI;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.world.item.CreativeModeTab;
@@ -26,8 +26,7 @@ public class CreativeInvScreenMixin {
 
     @Inject(at = @At(value = "TAIL"), method = "renderTabButton")
     private void renderTail(GuiGraphics guiGraphics, CreativeModeTab creativeModeTab, CallbackInfo ci) {
-        Color colors = CUI_Config.HANDLER.instance().color;
-        guiGraphics.setColor((float) colors.getRed() / 255, (float) colors.getGreen() / 255, (float) colors.getBlue() / 255, 1);
+        guiGraphics.setColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1);
     }
 
 
