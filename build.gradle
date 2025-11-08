@@ -19,8 +19,20 @@ architectury {
 }
 
 allprojects {
-    group = rootProject.maven_group
+    apply plugin: "java"
+    apply plugin: "architectury-plugin"
+    apply plugin: "maven-publish"
+
+    archivesBaseName = rootProject.archives_name
     version = rootProject.mod_version
+    group = rootProject.maven_group
+
+    repositories {
+        maven {
+            name = 'ParchmentMC'
+            url = 'https://maven.parchmentmc.org'
+        }
+    }
 }
 
 subprojects {
@@ -115,12 +127,15 @@ subprojects {
 
         mappings loom.layered() {
             officialMojangMappings()
+
             if (rootProject.minecraft_version == "1.21.1") {
                 parchment("org.parchmentmc.data:parchment-1.21:${rootProject.parchment}@zip")
             } else {
                 parchment("org.parchmentmc.data:parchment-${rootProject.minecraft_version}:${rootProject.parchment}@zip")
             }
         }
+
+        implementation 'org.tomlj:tomlj:1.1.1'
     }
 
 
