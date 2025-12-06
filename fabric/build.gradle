@@ -39,24 +39,6 @@ configurations {
     }
 }
 
-repositories {
-    maven {
-        name 'Xander Maven'
-        url 'https://maven.isxander.dev/releases'
-    }
-    maven {
-        name = "Terraformers"
-        url = "https://maven.terraformersmc.com/"
-    }
-    maven {
-        url "https://maven.nucleoid.xyz/"
-        name "Nucleoid"
-    }
-    maven {
-        url = "https://api.modrinth.com/maven"
-    }
-}
-
 dependencies {
     modImplementation "net.fabricmc:fabric-loader:$rootProject.fabric_loader_version"
 
@@ -66,11 +48,15 @@ dependencies {
 
     modImplementation("com.terraformersmc:modmenu:${rootProject.modmenu_version}")
 
+    implementation "com.electronwill.night-config:core:3.6.6"
+    shadowBundle "com.electronwill.night-config:core:3.6.6"
+
+    implementation "com.electronwill.night-config:toml:3.6.6"
+    shadowBundle "com.electronwill.night-config:toml:3.6.6"
+
     common(project(path: ':common', configuration: 'namedElements')) { transitive false }
     shadowBundle project(path: ':common', configuration: 'transformProductionFabric')
 }
-
-
 
 shadowJar {
     configurations = [project.configurations.shadowBundle]
