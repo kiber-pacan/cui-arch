@@ -33,11 +33,12 @@
     "client.post6.LogoMixin",
     "client.post6.LoomMixin",
     "client.post6.SmithingTableMixin",
-    "client.post6.StonecutterMixin",
-    "client.post6.SplashMixin"
+    "client.post6.SplashMixin",
+    "client.post6.StonecutterMixin"
   ],
   "mixins": [
-    "client.ButtonMixin"
+    "client.ButtonMixin",
+    "client.post6.RecipeBookComponentMixin"
   ],
   "injectors": {
     "defaultRequire": 1

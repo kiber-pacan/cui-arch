@@ -128,14 +128,8 @@ subprojects {
         mappings loom.layered() {
             officialMojangMappings()
 
-            if (rootProject.minecraft_version == "1.21.1") {
-                parchment("org.parchmentmc.data:parchment-1.21:${rootProject.parchment}@zip")
-            } else {
-                parchment("org.parchmentmc.data:parchment-${rootProject.minecraft_version}:${rootProject.parchment}@zip")
-            }
+            parchment("org.parchmentmc.data:parchment-${rootProject.minecraft_version}:${rootProject.parchment}@zip")
         }
-
-        implementation 'org.tomlj:tomlj:1.1.1'
     }
 
 
@@ -145,8 +139,8 @@ subprojects {
 
 
     modrinth {
-        token = "token"
-        projectId = "shelf-mod"
+        token = "mrp_4fxY2jDYn0yMHVAHloLBhW5WWXhHE4hyEcSTdiVanHjKGeqdWTCK7PeP5xP9"
+        projectId = "cui"
         versionName = archives_name + " " + mod_version
         versionNumber = mod_version
         versionType = "release"
@@ -155,12 +149,10 @@ subprojects {
         loaders = [loader]
         dependencies {
             if (loader.equals("fabric")) {
-                required.project "cloth-config"
                 required.project "fabric-api"
                 required.project "modmenu"
                 required.project "architectury-api"
             } else if (loader.equals("forge") || loader.equals("neoforge")) {
-                required.project "cloth-config"
                 required.project "architectury-api"
             }
         }
