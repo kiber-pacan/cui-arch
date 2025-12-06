@@ -9,7 +9,7 @@ version = "${version}"
 displayName = "${name}"
 authors = "${authors}"
 description = "${description}"
-#logoFile = "assets/${modid}/logo.png"
+logoFile = "assets/${modid}/icon.png"
 
 [[dependencies.${modid}]]
 modId = "neoforge"
@@ -32,13 +32,6 @@ versionRange = "[${architectury_api_version},)"
 ordering = "AFTER"
 side = "BOTH"
 
-[[dependencies.${modid}]]
-modId = "yet_another_config_lib_v3"
-mandatory = true
-versionRange = "[${yacl_version},)"
-ordering = "NONE"
-side = "CLIENT"
-
 [[mixins]]
-config = "${modid}.mixins.neoforge.json"
+config = "${modid}.mixins.json"
 
