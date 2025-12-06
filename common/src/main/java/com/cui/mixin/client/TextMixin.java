@@ -19,7 +19,6 @@ public class TextMixin {
 
     @Inject(at = @At(value = "HEAD"), method = "getColor", cancellable = true)
     private void render(CallbackInfoReturnable<Integer> cir) {
-        Color color = new Color(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b);
-        cir.setReturnValue(color.getRGB());
+        cir.setReturnValue(CUI.cuiConfig.getRGB());
     }
 }
