@@ -112,5 +112,7 @@ public class ColorScreen extends Screen {
         CUI.cuiConfig.g = ((rgb >> 8) & 0xFF) / 255f;
         CUI.cuiConfig.b = (rgb & 0xFF) / 255f;
         CUI.cuiConfig.a = a;
+
+        CUI.cuiConfig.color = new Color(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, CUI.cuiConfig.a);
     }
 }
