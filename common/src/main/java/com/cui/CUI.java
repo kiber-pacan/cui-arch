@@ -3,7 +3,7 @@ package com.cui;
 
 import com.cui.config.CUI_Config;
 import com.mojang.blaze3d.platform.InputConstants;
-import com.mojang.blaze3d.shaders.ShaderType;
+#if MC_VER >= V1_21_6 import com.mojang.blaze3d.shaders.ShaderType; #endif
 import dev.architectury.event.events.client.ClientLifecycleEvent;
 import dev.architectury.registry.client.keymappings.KeyMappingRegistry;
 import net.minecraft.client.KeyMapping;
@@ -42,6 +42,7 @@ public final class CUI {
     public static void initializeServer() {}
 
     public static void initializeClient() {
+        /*
         OPEN_CUI_CONFIG = new KeyMapping(
                 "key.cui.open_config",
                 InputConstants.Type.KEYSYM,
@@ -50,6 +51,7 @@ public final class CUI {
         );
 
         KeyMappingRegistry.register(OPEN_CUI_CONFIG);
+        */
 
         #if MC_VER >= V1_20_4
         ClientLifecycleEvent.CLIENT_STARTED.register((minecraft) -> {
