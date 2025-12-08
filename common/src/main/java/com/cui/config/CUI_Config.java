@@ -23,6 +23,7 @@ public class CUI_Config {
     public float r;
     public float g;
     public float b;
+    public boolean enableButton;
 
     public Color color;
 
@@ -43,44 +44,21 @@ public class CUI_Config {
 
             this.fileConfig.load();
 
-            System.out.println("EXISTS");
+            System.out.println("CUI CONFIG EXISTS");
 
             Optional<String> rgb = this.fileConfig.getOptional("color");
-            Optional<Double> alpha = this.fileConfig.getOptional("alpha");
+            Optional<String> alpha = this.fileConfig.getOptional("alpha");
+            Optional<String> button = this.fileConfig.getOptional("button");
 
-            boolean isrgb = rgb.isPresent();
-            boolean isalpha = alpha.isPresent();
+            r = rgb.map((hex) -> Integer.parseInt(hex.substring(0, 2), 16) / 255.0f).orElse(1.0f);
+            g = rgb.map((hex) -> Integer.parseInt(hex.substring(2, 4), 16) / 255.0f).orElse(1.0f);
+            b = rgb.map((hex) -> Integer.parseInt(hex.substring(4, 6), 16) / 255.0f).orElse(1.0f);
+            a = alpha.map(Float::parseFloat).orElse(1.0f);
+            enableButton = button.map(Boolean::parseBoolean).orElse(true);
+            color = new Color(r, g, b, a);
 
-            if (isrgb) {
-                try {
-                    String hex = rgb.get();
-                    this.r = (float) Integer.valueOf(hex.substring(0, 2), 16) / 255;
-                    this.g = (float) Integer.valueOf(hex.substring(2, 4), 16) / 255;
-                    this.b = (float) Integer.valueOf(hex.substring(4, 6), 16) / 255;
-                } catch (Exception e) {
-                    System.err.println("CUI Config: Invalid color format, using defaults.");
-                    Color defaultColor = randomPastel();
-                    this.r = (float) defaultColor.getRed() / 255;
-                    this.g = (float) defaultColor.getGreen() / 255;
-                    this.b = (float) defaultColor.getBlue() / 255;
-                }
-            }
-
-            if (isalpha) {
-                this.a = alpha.get().floatValue();
-            } else {
-                this.a = 0.75f;
-            }
-
-            if (isrgb && isalpha) {
-                color = new Color(this.r, this.g, this.b, this.a);
-            } else if (isrgb && !isalpha) {
-                color = new Color(this.r, this.g, this.b);
-            } else if (!isrgb && isalpha) {
-                color = new Color(this.a, this.a, this.a, this.a);
-            }
         } else {
-            System.out.println("NOT EXISTS");
+            System.out.println("CUI CONFIG NOT EXISTS");
 
             color = randomPastel();
 
@@ -88,6 +66,7 @@ public class CUI_Config {
             this.g = (float) color.getGreen() / 255;
             this.b = (float) color.getBlue() / 255;
             this.a = (float) color.getAlpha() / 255;
+            enableButton = true;
         }
     }
 
@@ -100,7 +79,8 @@ public class CUI_Config {
             try (BufferedWriter writer = Files.newBufferedWriter(c)) {
                 writer.write("# CUI config\n");
                 writer.write("color = \"" + hexColor + "\"\n");
-                writer.write("alpha = " + a);
+                writer.write("alpha = \"" + a + "\"\n");
+                writer.write("button = \"" + enableButton + "\"\n");
             }
 
             System.out.println("Config saved to " + c.toAbsolutePath());
