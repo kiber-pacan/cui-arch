@@ -1,22 +1,31 @@
 package com.cui;
 
-import net.minecraft.client.gui.components.AbstractSliderButton;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.components.Button;
+import net.minecraft.client.gui.components.Checkbox;
+import net.minecraft.client.gui.layouts.*;
+import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
 
-import java.awt.Color;
+import java.awt.*;
 
 public class ColorScreen extends Screen {
     private final Screen parent;
+
+    private static final Component TITLE = Component.literal("CUI config");
 
     private float h; // 0..1
     private float s; // 0..1
     private float v; // 0..1
     private float a; // 0..1
 
+    private final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this, 61, 33);
+
     public ColorScreen(Screen parent) {
-        super(Component.literal("Color Config (HSV + Alpha)"));
+        super(TITLE);
         this.parent = parent;
 
         float[] hsv = Color.RGBtoHSB(
@@ -39,14 +48,18 @@ public class ColorScreen extends Screen {
 
     @Override
     protected void init() {
-        int x = 40;
-        int y = 40;
-        int width = 200;
+        LinearLayout linearLayout = this.layout.addToHeader(LinearLayout.vertical().spacing(8));
+        linearLayout.addChild(new StringWidget(TITLE, this.font), LayoutSettings::alignHorizontallyCenter);
+
+        net.minecraft.client.gui.layouts.GridLayout gridLayout = new GridLayout();
+        gridLayout.defaultCellSetting().paddingHorizontal(4).paddingBottom(4).alignHorizontallyCenter();
+        GridLayout.RowHelper rowHelper = gridLayout.createRowHelper(1);
+
+        int width = 150;
         int height = 20;
-        int spacing = 25;
 
         // Hue (0..360)
-        this.addRenderableWidget(new AbstractSliderButton(x, y, width, height, Component.literal("Hue"), h) {
+        rowHelper.addChild(new AbstractSliderButton(0, 0, width, height, Component.literal("Hue"), h) {
             @Override
             protected void updateMessage() {
                 this.setMessage(Component.literal("Hue: " + (int)(value * 360)));
@@ -60,7 +73,7 @@ public class ColorScreen extends Screen {
         });
 
         // Saturation (0..1)
-        this.addRenderableWidget(new AbstractSliderButton(x, y + spacing, width, height, Component.literal("Saturation"), s) {
+        rowHelper.addChild(new AbstractSliderButton(0, 0, width, height, Component.literal("Saturation"), s) {
             @Override
             protected void updateMessage() {
                 this.setMessage(Component.literal(String.format("Saturation: %.2f", value)));
@@ -74,7 +87,7 @@ public class ColorScreen extends Screen {
         });
 
         // Value (Brightness) (0..1)
-        this.addRenderableWidget(new AbstractSliderButton(x, y + spacing * 2, width, height, Component.literal("Value"), v) {
+        rowHelper.addChild(new AbstractSliderButton(0, 0, width, height, Component.literal("Value"), v) {
             @Override
             protected void updateMessage() {
                 this.setMessage(Component.literal(String.format("Value: %.2f", value)));
@@ -88,7 +101,7 @@ public class ColorScreen extends Screen {
         });
 
         // Alpha (0..1)
-        this.addRenderableWidget(new AbstractSliderButton(x, y + spacing * 3, width, height, Component.literal("Alpha"), a) {
+        rowHelper.addChild(new AbstractSliderButton(0, 0, width, height, Component.literal("Alpha"), a) {
             @Override
             protected void updateMessage() {
                 this.setMessage(Component.literal(String.format("Alpha: %.2f", value)));
@@ -101,10 +114,32 @@ public class ColorScreen extends Screen {
             }
         });
 
-        // Back
-        this.addRenderableWidget(Button.builder(Component.literal("Back"), btn -> onClose())
-                .bounds(x, y + spacing * 4, width, height).build());
+
+        // Enable button
+        rowHelper.addChild(
+                Checkbox.builder(Component.literal("Enable CUI button"), this.font)
+                        .maxWidth(width)
+                        .selected(CUI.cuiConfig.enableButton)
+                        .onValueChange((cb, state) -> {
+                            CUI.cuiConfig.enableButton = state;
+                            CUI.cuiConfig.saveConfig();
+                        })
+                        .build());
+
+        this.layout.addToContents(gridLayout);
+        this.layout.addToFooter(
+                Button.builder(Component.literal("Done"), b -> this.onClose()).width(200).build()
+        );
+        this.layout.visitWidgets(this::addRenderableWidget);
+
+        this.repositionElements();
     }
+
+    @Override
+    protected void repositionElements() {
+        this.layout.arrangeElements();
+    }
+
 
     private void updateRGB() {
         int rgb = Color.HSBtoRGB(h, s, v);
