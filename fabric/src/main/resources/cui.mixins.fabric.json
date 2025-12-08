@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "package": "com.cui.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "minVersion": "0.8",
+  "refmap": "cui.mixins.refmap.json",
+  "client": [
+    "client.HUDMixin"
+  ],
+  "mixins": [
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
