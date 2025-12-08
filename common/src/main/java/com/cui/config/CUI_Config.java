@@ -120,4 +120,8 @@ public class CUI_Config {
     public int getRGB() {
         return (0xFF << 24) | (this.color.getRed() << 16) | (this.color.getGreen() << 8) | this.color.getBlue();
     }
+
+    public int getRGBA() {
+        return (this.color.getAlpha() << 24) | (this.color.getRed() << 16) | (this.color.getGreen() << 8) | this.color.getBlue();
+    }
 }
