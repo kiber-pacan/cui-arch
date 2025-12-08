@@ -1,3 +1,6 @@
 {
-  "accessWidener": "cui.accesswidener"
+  "accessWidener": "cui.accesswidener",
+  "mixins": [
+    "cui.mixins.json"
+  ]
 }
