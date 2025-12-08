@@ -30,7 +30,7 @@
     "client.post1_21_6.screen.DispenserMixin",
     "client.post1_21_6.screen.EnchantingMixin",
     "client.post1_21_6.screen.GrindstoneMixin",
-    "client.post1_21_6.misc.GuiGraphicsMixin",
+    "client.post1_21_6.misc.DrawStringMixin",
     "client.post1_21_6.screen.HopperMixin",
     "client.post1_21_6.label.LabelAdvancementsMixin",
     "client.post1_21_6.label.LabelContainerMixin",
