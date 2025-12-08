@@ -29,7 +29,7 @@ public final class CUI_NeoForge {
                 () -> (client, parent) -> new ColorScreen(parent)
         );
 
-        if (FMLEnvironment.dist.isClient()) {
+        if (#if MC_VER >= V1_21_9 FMLEnvironment.getDist().isClient() #else FMLEnvironment.dist.isClient() #endif) {
             CUI.initializeClient();
         }
     }
