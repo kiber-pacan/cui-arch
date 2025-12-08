@@ -7,11 +7,15 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractFurnaceScreen;
+import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
+import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.stats.RecipeBook;
 import net.minecraft.stats.RecipeBookSettings;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.CraftingMenu;
 import net.minecraft.world.item.Items;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,13 +29,26 @@ import static com.cui.CUI.LOGGER;
 import java.awt.*;
 
 @Mixin(InventoryScreen.class)
-public class InvScreenMixin {
-	// Background
-
+public abstract class InvScreenMixin extends AbstractRecipeBookScreen<CraftingMenu> {
+    // Background
     #if MC_VER >= V1_21_6
+    public InvScreenMixin(CraftingMenu menu, RecipeBookComponent<?> recipeBookComponent, Inventory playerInventory, Component title) {
+        super(menu, recipeBookComponent, playerInventory, title);
+    }
+
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blit(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIFFIIII)V"), method = "renderBg")
     private static void injected(GuiGraphics instance, RenderPipeline pipeline, ResourceLocation atlas, int x, int y, float u, float v, int width, int height, int textureWidth, int textureHeight) {
         instance.blit(pipeline, atlas, x, y, u, v, width, height, textureWidth, textureHeight, CUI.cuiConfig.getRGB());
+    }
+
+    @Inject(at = @At(value = "TAIL"), method = "render")
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
+        int a = Minecraft.getInstance().getWindow().getGuiScaledWidth(), b = Minecraft.getInstance().getWindow().getGuiScaledHeight();
+        if (((RecipeBookMixin)(Object)this).getRecipeBookComponent().isVisible()) {
+            guiGraphics.renderItem(Items.KNOWLEDGE_BOOK.getDefaultInstance(), (int) (((float) a / 2) + 95), (int) (((float) b / 2) - 21));
+        } else {
+            guiGraphics.renderItem(Items.KNOWLEDGE_BOOK.getDefaultInstance(), (int) (((float) a / 2) + 18), (int) (((float) b / 2) - 21));
+        }
     }
     #else
 	@Inject(at = @At(value = "HEAD"), method = "renderBg")
