@@ -4,7 +4,7 @@ import com.cui.CUI;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
-import net.minecraft.client.renderer.RenderPipelines;
+#if MC_VER >= V1_21_6 import net.minecraft.client.renderer.RenderPipelines; #endif
 import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;

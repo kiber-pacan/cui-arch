@@ -5,6 +5,7 @@ import com.cui.CUI;
 import net.minecraft.client.gui.components.AbstractButton;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
 
 import java.awt.*;
