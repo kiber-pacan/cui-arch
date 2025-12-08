@@ -134,12 +134,17 @@ subprojects {
 
 
     def loader = project.name
-    print(loader)
+    print("Loader:" + loader + "\n")
     apply plugin: "com.modrinth.minotaur"
+
+    def credentials = new Properties()
+    if (new File("${rootDir}/credentials.properties").exists()) {
+        credentials.load(new FileInputStream("${rootDir}/credentials.properties"))
+    }
 
 
     modrinth {
-        token = ""
+        token = credentials.getProperty("modrinthToken")
         projectId = "cui"
         versionName = archives_name + " " + mod_version
         versionNumber = mod_version
@@ -158,6 +163,8 @@ subprojects {
         }
         failSilently = true
     }
+
+
 
     publishing {
 
