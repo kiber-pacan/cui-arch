@@ -62,8 +62,7 @@ public abstract class ScreenMixin {
     #endif
 
     @Shadow public int width;
-    @Shadow
-    public int height;
+    @Shadow public int height;
 
     @Inject(at = @At(value = "INVOKE", target = #if MC_VER >= V1_21_3 #if MC_VER >= V1_21_6 "Lnet/minecraft/client/gui/screens/Screen;renderBlurredBackground(Lnet/minecraft/client/gui/GuiGraphics;)V" #else "Lnet/minecraft/client/gui/screens/Screen;renderBlurredBackground()V" #endif #else "Lnet/minecraft/client/gui/screens/Screen;renderBlurredBackground(F)V" #endif, shift = At.Shift.BEFORE), method = "renderBackground")
     private void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
