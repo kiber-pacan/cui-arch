@@ -5,7 +5,6 @@
   "minVersion": "0.8",
   "refmap": "cui.mixins.refmap.json",
   "client": [
-    "client.HUDMixin"
   ],
   "mixins": [
   ],

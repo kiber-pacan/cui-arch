@@ -19,7 +19,6 @@
     "client.RecipeBookTabsMixin",
     "client.ScreenMixin",
     "client.TextMixin",
-    "client.HUDMixin",
     "client.TitleMixin",
     "client.WorkbenchScreenMixin",
     "client.post1_21_6.AdvancementToastMixin",
