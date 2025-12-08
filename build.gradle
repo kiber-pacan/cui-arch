@@ -139,7 +139,7 @@ subprojects {
 
 
     modrinth {
-        token = "mrp_4fxY2jDYn0yMHVAHloLBhW5WWXhHE4hyEcSTdiVanHjKGeqdWTCK7PeP5xP9"
+        token = ""
         projectId = "cui"
         versionName = archives_name + " " + mod_version
         versionNumber = mod_version
