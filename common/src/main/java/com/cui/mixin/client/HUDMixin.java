@@ -4,6 +4,7 @@ package com.cui.mixin.client;
 import com.cui.CUI;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.systems.RenderSystem;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
@@ -11,7 +12,12 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
@@ -25,7 +31,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Gui.class)
 public class HUDMixin {
-
     @Unique private static  final ResourceLocation cui$detail = ResourceLocation.withDefaultNamespace("hud/heart/detail");
     @Unique private static final ResourceLocation cui$detailBlinking = ResourceLocation.withDefaultNamespace("hud/heart/detail_blinking");
     @Unique private static  final ResourceLocation cui$detailHardcoreFull = ResourceLocation.withDefaultNamespace("hud/heart/detail_hardcore_full");
@@ -48,26 +53,141 @@ public class HUDMixin {
 
     #if MC_VER >= V1_21_6
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIIIIIII)V"), method = "renderItemHotbar")
-    private static void injected(GuiGraphics instance, RenderPipeline pipeline, ResourceLocation sprite, int textureWidth, int textureHeight, int u, int v, int x, int y, int width, int height) {
+    private static void injected0(GuiGraphics instance, RenderPipeline pipeline, ResourceLocation sprite, int textureWidth, int textureHeight, int u, int v, int x, int y, int width, int height) {
         instance.blitSprite(pipeline, sprite, textureWidth, textureHeight, u, v, x, y, width, height, CUI.cuiConfig.getRGB());
     }
 
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIII)V"), method = "renderItemHotbar")
-    private static void injected(GuiGraphics instance, RenderPipeline pipeline, ResourceLocation sprite, int x, int y, int width, int height) {
-        instance.blitSprite(pipeline, sprite, x, y, width, height, CUI.cuiConfig.getRGB());
-    }
-
-    @Inject(at = @At(value = "TAIL"), method = "renderHeart")
-    private static void injected1(GuiGraphics guiGraphics, Gui.HeartType heartType, int x, int y, boolean hardcore, boolean halfHeart, boolean blinking, CallbackInfo ci) {
-        if (heartType == Gui.HeartType.NORMAL) {
-            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, cui$getDetail(hardcore, blinking, halfHeart), x, y, 9, 9);
-        }
-    }
-
-    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIII)V"), method = "renderHeart")
     private static void injected1(GuiGraphics instance, RenderPipeline pipeline, ResourceLocation sprite, int x, int y, int width, int height) {
         instance.blitSprite(pipeline, sprite, x, y, width, height, CUI.cuiConfig.getRGB());
     }
+
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIIIIIII)V"), method = "renderCrosshair")
+    private static void injected2(GuiGraphics instance, RenderPipeline pipeline, ResourceLocation sprite, int textureWidth, int textureHeight, int u, int v, int x, int y, int width, int height) {
+        instance.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, textureWidth, textureHeight, u, v, x, y, width, height, CUI.cuiConfig.getRGBA());
+    }
+
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIII)V"), method = "renderCrosshair")
+    private static void injected3(GuiGraphics instance, RenderPipeline pipeline, ResourceLocation sprite, int x, int y, int width, int height) {
+        instance.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, x, y, width, height, CUI.cuiConfig.getRGBA());
+    }
+
+
+
+    // Health
+    @Inject(at = @At(value = "HEAD"), method = "renderHeart", cancellable = true)
+    private void injected4(GuiGraphics guiGraphics, Gui.HeartType heartType, int x, int y, boolean hardcore, boolean halfHeart, boolean blinking, CallbackInfo ci) {
+        if (heartType == Gui.HeartType.NORMAL || heartType == Gui.HeartType.CONTAINER) {
+            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, heartType.getSprite(hardcore, blinking, halfHeart), x, y, 9, 9, CUI.cuiConfig.getRGB());
+            if (heartType != Gui.HeartType.CONTAINER) {
+                guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, cui$getDetail(hardcore, blinking, halfHeart), x, y, 9, 9);
+            }
+        } else {
+            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, heartType.getSprite(hardcore, blinking, halfHeart), x, y, 9, 9);
+        }
+
+        ci.cancel();
+    }
+
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIII)V"), method = "renderHeart")
+    private static void injected5(GuiGraphics instance, RenderPipeline pipeline, ResourceLocation sprite, int x, int y, int width, int height) {
+        instance.blitSprite(pipeline, sprite, x, y, width, height, CUI.cuiConfig.getRGB());
+    }
+
+    // Air
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 0), method = "renderAirBubbles")
+    private static void injected6(GuiGraphics instance, RenderPipeline pipeline, ResourceLocation sprite, int x, int y, int width, int height) {
+        instance.blitSprite(pipeline, ResourceLocation.withDefaultNamespace("hud/air_container"), x, y, width, height);
+        instance.blitSprite(pipeline, sprite, x, y, width, height, CUI.cuiConfig.getRGB());
+    }
+
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 1), method = "renderAirBubbles")
+    private static void injected7(GuiGraphics instance, RenderPipeline pipeline, ResourceLocation sprite, int x, int y, int width, int height) {
+        instance.blitSprite(pipeline, ResourceLocation.withDefaultNamespace("hud/air_bursting_container"), x, y, width, height);
+        instance.blitSprite(pipeline, sprite, x, y, width, height, CUI.cuiConfig.getRGB());
+    }
+
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 2), method = "renderAirBubbles")
+    private static void injected8(GuiGraphics instance, RenderPipeline pipeline, ResourceLocation sprite, int x, int y, int width, int height) {
+        instance.blitSprite(pipeline, ResourceLocation.withDefaultNamespace("hud/air_empty_container"), x, y, width, height, CUI.cuiConfig.getRGB());
+        instance.blitSprite(pipeline, sprite, x, y, width, height, CUI.cuiConfig.getRGB());
+    }
+
+    // Armor
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 0), method = "renderArmor")
+    private static void injected9(GuiGraphics instance, RenderPipeline pipeline, ResourceLocation sprite, int x, int y, int width, int height) {
+        instance.blitSprite(pipeline, ResourceLocation.withDefaultNamespace("hud/armor_container"), x, y, width, height, CUI.cuiConfig.getRGB());
+        instance.blitSprite(pipeline, sprite, x, y, width, height, CUI.cuiConfig.getRGB());
+    }
+
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 1), method = "renderArmor")
+    private static void injected10(GuiGraphics instance, RenderPipeline pipeline, ResourceLocation sprite, int x, int y, int width, int height) {
+        instance.blitSprite(pipeline, ResourceLocation.withDefaultNamespace("hud/armor_container_half"), x, y, width, height, CUI.cuiConfig.getRGB());
+        instance.blitSprite(pipeline, sprite, x, y, width, height, CUI.cuiConfig.getRGB());
+    }
+
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 2), method = "renderArmor")
+    private static void injected11(GuiGraphics instance, RenderPipeline pipeline, ResourceLocation sprite, int x, int y, int width, int height) {
+        instance.blitSprite(pipeline, sprite, x, y, width, height, CUI.cuiConfig.getRGB());
+    }
+
+    // Food
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 0), method = "renderFood")
+    private static void injected12(GuiGraphics instance, RenderPipeline pipeline, ResourceLocation sprite, int x, int y, int width, int height) {
+        instance.blitSprite(pipeline, sprite, x, y, width, height, CUI.cuiConfig.getRGB());
+    }
+
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 1), method = "renderFood")
+    private static void injected13(GuiGraphics instance, RenderPipeline pipeline, ResourceLocation sprite, int x, int y, int width, int height) {
+        instance.blitSprite(pipeline, sprite, x, y, width, height, CUI.cuiConfig.getRGB());
+
+        if (sprite.toString().contains("hunger")) {
+            instance.blitSprite(pipeline, ResourceLocation.withDefaultNamespace("hud/food_full_hunger_bone"), x, y, width, height);
+        } else {
+            instance.blitSprite(pipeline, ResourceLocation.withDefaultNamespace("hud/food_full_bone"), x, y, width, height);
+        }
+    }
+
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 2), method = "renderFood")
+    private static void injected14(GuiGraphics instance, RenderPipeline pipeline, ResourceLocation sprite, int x, int y, int width, int height) {
+        instance.blitSprite(pipeline, sprite, x, y, width, height, CUI.cuiConfig.getRGB());
+
+        if (sprite.toString().contains("hunger")) {
+            instance.blitSprite(pipeline, ResourceLocation.withDefaultNamespace("hud/food_half_hunger_bone"), x, y, width, height);
+        } else {
+            instance.blitSprite(pipeline, ResourceLocation.withDefaultNamespace("hud/food_half_bone"), x, y, width, height);
+        }
+    }
+
+
+    @Shadow private ItemStack lastToolHighlight = ItemStack.EMPTY;
+
+    // Selected item hotbar name
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawStringWithBackdrop(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIII)V"), method = "renderSelectedItemName")
+    private void injected15(GuiGraphics instance, Font font, Component component, int x, int y, int width, int color) {
+        MutableComponent customComponent;
+        int customColor = CUI.cuiConfig.getRGB();
+
+        if (this.lastToolHighlight.getRarity() == Rarity.COMMON) {
+            customComponent = Component.empty().append(this.lastToolHighlight.getHoverName()).withColor(customColor);
+        } else {
+            customComponent = Component.empty().append(this.lastToolHighlight.getHoverName()).withStyle(this.lastToolHighlight.getRarity().color());
+        }
+
+        if (this.lastToolHighlight.has(DataComponents.CUSTOM_NAME)) {
+            customComponent.withStyle(ChatFormatting.ITALIC);
+        }
+
+        instance.drawStringWithBackdrop(font, customComponent, x, y, width, customColor);
+    }
+
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIII)V"), method = "renderEffects")
+    private static void injected16(GuiGraphics instance, RenderPipeline pipeline, ResourceLocation sprite, int x, int y, int width, int height) {
+        instance.blitSprite(pipeline, sprite, x, y, width, height, CUI.cuiConfig.getRGB());
+
+    }
+
+
     #else
     // Hotbar
 	@Inject(at = @At(value = "HEAD"), method = #if MC_VER >= V1_21 "renderItemHotbar" #else "renderHotbar" #endif)
