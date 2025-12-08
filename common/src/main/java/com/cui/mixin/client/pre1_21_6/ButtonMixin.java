@@ -16,7 +16,11 @@ public class ButtonMixin {
     #if MC_VER >= V1_21_6
     @ModifyArg(method = "renderWidget", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/ARGB;color(FI)I"), index = 1)
     private int injected(int color) {
-        return ((AbstractButton)(Object)this).active ? CUI.mixColors(-1, CUI.cuiConfig.getRGB()) : CUI.mixColors(-6250336, CUI.cuiConfig.getRGB());
+        if (((color) & 0xFF) == ((color >> 8) & 0xFF) && ((color >> 8) & 0xFF) == ((color >> 16) & 0xFF)) {
+            return CUI.cuiConfig.getTextColor(color);
+        }
+
+        return color;
     }
 
     @ModifyArg(method = "renderWidget", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIIII)V"), index = 6)

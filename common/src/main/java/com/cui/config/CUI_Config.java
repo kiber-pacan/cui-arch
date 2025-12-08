@@ -23,6 +23,7 @@ public class CUI_Config {
     public float r;
     public float g;
     public float b;
+    public float desaturation;
     public boolean enableButton;
 
     public Color color;
@@ -48,14 +49,18 @@ public class CUI_Config {
 
             Optional<String> rgb = this.fileConfig.getOptional("color");
             Optional<String> alpha = this.fileConfig.getOptional("alpha");
-            Optional<String> button = this.fileConfig.getOptional("button");
+            Optional<String> enableButton = this.fileConfig.getOptional("button");
+            Optional<String> desaturation = this.fileConfig.getOptional("desaturation");
 
-            r = rgb.map((hex) -> Integer.parseInt(hex.substring(0, 2), 16) / 255.0f).orElse(1.0f);
-            g = rgb.map((hex) -> Integer.parseInt(hex.substring(2, 4), 16) / 255.0f).orElse(1.0f);
-            b = rgb.map((hex) -> Integer.parseInt(hex.substring(4, 6), 16) / 255.0f).orElse(1.0f);
-            a = alpha.map(Float::parseFloat).orElse(1.0f);
-            enableButton = button.map(Boolean::parseBoolean).orElse(true);
-            color = new Color(r, g, b, a);
+            this.r = rgb.map((hex) -> Integer.parseInt(hex.substring(0, 2), 16) / 255.0f).orElse(1.0f);
+            this.g = rgb.map((hex) -> Integer.parseInt(hex.substring(2, 4), 16) / 255.0f).orElse(1.0f);
+            this.b = rgb.map((hex) -> Integer.parseInt(hex.substring(4, 6), 16) / 255.0f).orElse(1.0f);
+            this.a = alpha.map(Float::parseFloat).orElse(1.0f);
+
+            this.enableButton = enableButton.map(Boolean::parseBoolean).orElse(true);
+            this.desaturation = desaturation.map(Float::parseFloat).orElse(1.5f);
+
+            this.color = new Color(r, g, b, a);
 
         } else {
             System.out.println("CUI CONFIG NOT EXISTS");
@@ -66,6 +71,7 @@ public class CUI_Config {
             this.g = (float) color.getGreen() / 255;
             this.b = (float) color.getBlue() / 255;
             this.a = (float) color.getAlpha() / 255;
+            this.desaturation = 1.5f;
             enableButton = true;
         }
     }
@@ -80,6 +86,7 @@ public class CUI_Config {
                 writer.write("# CUI config\n");
                 writer.write("color = \"" + hexColor + "\"\n");
                 writer.write("alpha = \"" + a + "\"\n");
+                writer.write("desaturation = \"" + desaturation + "\"\n");
                 writer.write("button = \"" + enableButton + "\"\n");
             }
 
@@ -107,9 +114,8 @@ public class CUI_Config {
 
     public int getTextColor(int originalColor) {
         float[] hsv = Color.RGBtoHSB((int) (CUI.cuiConfig.r * 255.0f), (int) (CUI.cuiConfig.g * 255.0f), (int) (CUI.cuiConfig.b * 255.0f), null);
-        float rawValue = ((originalColor) & 0xFF) / 255.0f;
-        float value = (rawValue <= 0.5f) ? 1 - rawValue : rawValue;
+        float avg = (((originalColor >> 0) & 0xFF) + ((originalColor >> 8) & 0xFF) + ((originalColor >> 16) & 0xFF)) / 3.0f;
 
-        return (Color.getHSBColor(hsv[0], hsv[1] / 2.5f, value).getRGB());
+        return ((Color.getHSBColor(hsv[0], hsv[1] / desaturation, avg / 255.0f).getRGB()) & 0x00FFFFFF) | (((originalColor >> 24) & 0xFF) << 24);
     }
 }

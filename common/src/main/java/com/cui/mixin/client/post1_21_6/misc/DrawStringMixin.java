@@ -16,7 +16,6 @@ public class DrawStringMixin {
     #if MC_VER >= V1_21_6
     @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/render/state/GuiRenderState;submitText(Lnet/minecraft/client/gui/render/state/GuiTextRenderState;)V"), method = "drawString(Lnet/minecraft/client/gui/Font;Lnet/minecraft/util/FormattedCharSequence;IIIZ)V")
     private GuiTextRenderState injected(GuiTextRenderState renderState) {
-        // Checking if r = g = b
         if (((renderState.color) & 0xFF) == ((renderState.color >> 8) & 0xFF) && ((renderState.color >> 8) & 0xFF) == ((renderState.color >> 16) & 0xFF)) {
             return new GuiTextRenderState(renderState.font, renderState.text, renderState.pose, renderState.x, renderState.y, CUI.cuiConfig.getTextColor(renderState.color), renderState.backgroundColor, renderState.dropShadow, renderState.scissor);
         }

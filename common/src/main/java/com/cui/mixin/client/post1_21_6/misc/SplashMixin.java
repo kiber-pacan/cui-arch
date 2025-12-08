@@ -1,6 +1,7 @@
 package com.cui.mixin.client.post1_21_6.misc;
 
 import com.cui.CUI;
+import com.cui.ColorScreen;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.SplashRenderer;
@@ -17,8 +18,7 @@ public class SplashMixin {
     #if MC_VER >= V1_21_6
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawCenteredString(Lnet/minecraft/client/gui/Font;Ljava/lang/String;III)V"), method = "render")
     private static void injected(GuiGraphics instance, Font font, String text, int x, int y, int color) {
-        Color c1 = CUI.cuiConfig.color;
-        instance.drawCenteredString(font, text, x, y, ((color >> 24) & 0xFF) << 24 | (c1.getRed() & 0xFF) << 16 | (c1.getGreen() & 0xFF) << 8 | (c1.getBlue() & 0xFF));
+        instance.drawCenteredString(font, text, x, y, CUI.cuiConfig.getTextColor(new Color(255, 255, 255, (int) ((color >> 24) & 0xFF)).getRGB()));
     }
     #endif
 }

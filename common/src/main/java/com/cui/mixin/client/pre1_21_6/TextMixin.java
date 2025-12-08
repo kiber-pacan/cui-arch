@@ -11,11 +11,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(AbstractStringWidget.class)
 public class TextMixin {
-    // Background
     @Shadow private int color;
 
     @Inject(at = @At(value = "HEAD"), method = "getColor", cancellable = true)
     private void render(CallbackInfoReturnable<Integer> cir) {
-        cir.setReturnValue(CUI.cuiConfig.getRGB());
+        cir.setReturnValue(CUI.cuiConfig.getTextColor(color));
     }
 }

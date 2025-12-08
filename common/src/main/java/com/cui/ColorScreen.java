@@ -9,6 +9,7 @@ import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.CommonComponents;
 import net.minecraft.network.chat.Component;
+import net.minecraft.util.Mth;
 
 import java.awt.*;
 
@@ -21,6 +22,8 @@ public class ColorScreen extends Screen {
     private float s; // 0..1
     private float v; // 0..1
     private float a; // 0..1
+
+    private float desaturation;
 
     private final HeaderAndFooterLayout layout = new HeaderAndFooterLayout(this, 61, 33);
 
@@ -38,6 +41,7 @@ public class ColorScreen extends Screen {
         this.s = hsv[1];
         this.v = hsv[2];
         this.a = CUI.cuiConfig.a;
+        this.desaturation = CUI.cuiConfig.desaturation;
     }
 
     @Override
@@ -114,6 +118,20 @@ public class ColorScreen extends Screen {
             }
         });
 
+        // Desaturation (1..2)
+        rowHelper.addChild(new AbstractSliderButton(0, 0, width, height, Component.literal("Text desaturation"), desaturation - 1) {
+            @Override
+            protected void updateMessage() {
+                this.setMessage(Component.literal(String.format("Text desaturation: %.2f", value + 1)));
+            }
+
+            @Override
+            protected void applyValue() {
+                desaturation = (float) (value + 1);
+                updateRGB();
+            }
+        });
+
 
         // Enable button
         rowHelper.addChild(
@@ -147,6 +165,7 @@ public class ColorScreen extends Screen {
         CUI.cuiConfig.g = ((rgb >> 8) & 0xFF) / 255f;
         CUI.cuiConfig.b = (rgb & 0xFF) / 255f;
         CUI.cuiConfig.a = a;
+        CUI.cuiConfig.desaturation = desaturation;
 
         CUI.cuiConfig.color = new Color(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, CUI.cuiConfig.a);
     }
