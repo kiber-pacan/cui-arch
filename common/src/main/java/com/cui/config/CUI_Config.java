@@ -104,4 +104,12 @@ public class CUI_Config {
     public int getRGBA() {
         return (this.color.getAlpha() << 24) | (this.color.getRed() << 16) | (this.color.getGreen() << 8) | this.color.getBlue();
     }
+
+    public int getTextColor(int originalColor) {
+        float[] hsv = Color.RGBtoHSB((int) (CUI.cuiConfig.r * 255.0f), (int) (CUI.cuiConfig.g * 255.0f), (int) (CUI.cuiConfig.b * 255.0f), null);
+        float rawValue = ((originalColor) & 0xFF) / 255.0f;
+        float value = (rawValue <= 0.5f) ? 1 - rawValue : rawValue;
+
+        return (Color.getHSBColor(hsv[0], hsv[1] / 2.5f, value).getRGB());
+    }
 }
