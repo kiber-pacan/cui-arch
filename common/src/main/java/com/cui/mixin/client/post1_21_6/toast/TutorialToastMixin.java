@@ -1,13 +1,15 @@
 package com.cui.mixin.client.post1_21_6.toast;
 
 import com.cui.CUI;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+#if MC_VER >= V1_21_6 import com.mojang.blaze3d.pipeline.RenderPipeline; #endif
+
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.toasts.TutorialToast;
 import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import net.minecraft.client.Minecraft;
 
 @Mixin(#if MC_VER >= V1_21_6 TutorialToast.class #else Minecraft.class #endif)
 public class TutorialToastMixin {

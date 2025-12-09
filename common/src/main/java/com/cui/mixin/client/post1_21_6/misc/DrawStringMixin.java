@@ -1,17 +1,21 @@
 package com.cui.mixin.client.post1_21_6.misc;
 
 import com.cui.CUI;
+import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.render.state.GuiTextRenderState;
+#if MC_VER >= V1_21_6 import net.minecraft.client.gui.render.state.GuiTextRenderState; #endif
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.network.chat.Component;
+import net.minecraft.util.FormattedCharSequence;
+import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyArg;
-
-import java.awt.*;
+import org.spongepowered.asm.mixin.injection.Redirect;
 
 // Probably retarded way of coloring white/gray text, but who cares
 
-@Mixin(#if MC_VER >= V1_21_6 GuiGraphics.class #else Minecraft.class #endif)
+@Mixin(GuiGraphics.class)
 public class DrawStringMixin {
     #if MC_VER >= V1_21_6
     @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/render/state/GuiRenderState;submitText(Lnet/minecraft/client/gui/render/state/GuiTextRenderState;)V"), method = "drawString(Lnet/minecraft/client/gui/Font;Lnet/minecraft/util/FormattedCharSequence;IIIZ)V")
@@ -21,6 +25,27 @@ public class DrawStringMixin {
         }
 
         return renderState;
+    }
+    #else
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;drawInBatch(Lnet/minecraft/util/FormattedCharSequence;FFIZLorg/joml/Matrix4f;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/client/gui/Font$DisplayMode;II)I"), method = "drawString(Lnet/minecraft/client/gui/Font;Lnet/minecraft/util/FormattedCharSequence;IIIZ)I")
+    private static int injected1(Font instance, FormattedCharSequence text, float x, float y, int color, boolean dropShadow, Matrix4f pose, MultiBufferSource bufferSource, Font.DisplayMode displayMode, int backgroundColor, int packedLightCoords) {
+        if (((color) & 0xFF) == ((color >> 8) & 0xFF) && ((color >> 8) & 0xFF) == ((color >> 16) & 0xFF)) {
+            return instance.drawInBatch(text, x, y, CUI.cuiConfig.getTextColor(color), dropShadow, pose, bufferSource, displayMode, backgroundColor, packedLightCoords);
+        }
+
+        return instance.drawInBatch(text, x, y, CUI.cuiConfig.getTextColor(color), dropShadow, pose, bufferSource, displayMode, backgroundColor, packedLightCoords);
+    }
+
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;drawInBatch(Ljava/lang/String;FFIZLorg/joml/Matrix4f;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/client/gui/Font$DisplayMode;IIZ)I"), method = "drawString(Lnet/minecraft/client/gui/Font;Ljava/lang/String;IIIZ)I")
+    private static int injected2(Font instance, String text, float x, float y, int color, boolean dropShadow, Matrix4f matrix, MultiBufferSource buffer, Font.DisplayMode displayMode, int backgroundColor, int packedLightCoords, boolean bidirectional) {
+        if (((color) & 0xFF) == ((color >> 8) & 0xFF) && ((color >> 8) & 0xFF) == ((color >> 16) & 0xFF)) {
+            return instance.drawInBatch(text, x, y, CUI.cuiConfig.getTextColor(color), dropShadow, matrix, buffer, displayMode, backgroundColor, packedLightCoords);
+
+            //return instance.drawInBatch(text, x, y, CUI.cuiConfig.getTextColor(color), dropShadow, pose, bufferSource, displayMode, backgroundColor, packedLightCoords);
+        }
+        return instance.drawInBatch(text, x, y, CUI.cuiConfig.getTextColor(color), dropShadow, matrix, buffer, displayMode, backgroundColor, packedLightCoords);
+
+        //return instance.drawInBatch(text, x, y, CUI.cuiConfig.getTextColor(color), dropShadow, pose, bufferSource, displayMode, backgroundColor, packedLightCoords);
     }
     #endif
 }

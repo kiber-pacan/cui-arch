@@ -2,10 +2,10 @@ package com.cui.mixin.client.pre1_21_6;
 
 
 import com.cui.CUI;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+#if MC_VER >= V1_21_6 import com.mojang.blaze3d.pipeline.RenderPipeline; #endif
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
+#if MC_VER >= V1_21_3 import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen; #endif
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.network.chat.Component;
@@ -13,20 +13,42 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.CraftingMenu;
 import net.minecraft.world.item.Items;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
+#if MC_VER <= V1_21_6
+import net.minecraft.client.renderer.RenderType;
+
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+import com.mojang.blaze3d.systems.RenderSystem;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import net.minecraft.client.gui.GuiGraphics;
+
+import java.awt.*;
+#endif
+
 @Mixin(InventoryScreen.class)
-public abstract class InvScreenMixin extends AbstractRecipeBookScreen<CraftingMenu> {
-    // Background
-    #if MC_VER >= V1_21_6
+public abstract class InvScreenMixin #if MC_VER >= V1_21_3 extends AbstractRecipeBookScreen<CraftingMenu> #endif {
+    #if MC_VER <= V1_21_1
+    @Final @Shadow private RecipeBookComponent recipeBookComponent;
+    #endif
+
+    #if MC_VER >= V1_21_3
     public InvScreenMixin(CraftingMenu menu, RecipeBookComponent<?> recipeBookComponent, Inventory playerInventory, Component title) {
         super(menu, recipeBookComponent, playerInventory, title);
     }
+    #endif
 
+    // Background
+    #if MC_VER >= V1_21_6
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blit(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIFFIIII)V"), method = "renderBg")
     private static void injected(GuiGraphics instance, RenderPipeline pipeline, ResourceLocation atlas, int x, int y, float u, float v, int width, int height, int textureWidth, int textureHeight) {
         instance.blit(pipeline, atlas, x, y, u, v, width, height, textureWidth, textureHeight, CUI.cuiConfig.getRGB());
@@ -59,8 +81,6 @@ public abstract class InvScreenMixin extends AbstractRecipeBookScreen<CraftingMe
         #endif
         #if MC_VER <= V1_21_1 guiGraphics.setColor(1, 1, 1, 1); #endif
 	}
-
-	#if MC_VER <= V1_21_1 @Final @Shadow private RecipeBookComponent recipeBookComponent; #endif
 
 	@Inject(at = @At(value = "TAIL"), method = "renderBg")
 	private void renderTail1(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY, CallbackInfo ci) {

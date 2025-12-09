@@ -2,27 +2,41 @@ package com.cui.neoforge.mixin.client;
 
 
 import com.cui.CUI;
+#if MC_VER >= V1_21_6
 import com.mojang.blaze3d.pipeline.RenderPipeline;
+import net.minecraft.client.renderer.RenderPipelines;
+#endif
 import net.minecraft.ChatFormatting;
+import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+#if MC_VER <= V1_21_6
+import net.minecraft.client.renderer.RenderType;
+
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+import com.mojang.blaze3d.systems.RenderSystem;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import net.minecraft.client.gui.GuiGraphics;
+
+import java.util.function.Function;
+#endif
 
 
 @Mixin(Gui.class)
@@ -68,18 +82,16 @@ public class HUDMixin {
         instance.blitSprite(RenderPipelines.GUI_TEXTURED, sprite, x, y, width, height, CUI.cuiConfig.getRGBA());
     }
 
-
-
     // Health
     @Inject(at = @At(value = "HEAD"), method = "renderHeart", cancellable = true)
     private void injected4(GuiGraphics guiGraphics, Gui.HeartType heartType, int x, int y, boolean hardcore, boolean halfHeart, boolean blinking, CallbackInfo ci) {
         if (heartType == Gui.HeartType.NORMAL || heartType == Gui.HeartType.CONTAINER) {
-            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, heartType.getSprite(hardcore, blinking, halfHeart), x, y, 9, 9, CUI.cuiConfig.getRGB());
+            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, heartType.getSprite(hardcore, halfHeart, blinking), x, y, 9, 9, CUI.cuiConfig.getRGB());
             if (heartType != Gui.HeartType.CONTAINER) {
-                guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, cui$getDetail(hardcore, blinking, halfHeart), x, y, 9, 9);
+                guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, cui$getDetail(hardcore, halfHeart, blinking), x, y, 9, 9);
             }
         } else {
-            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, heartType.getSprite(hardcore, blinking, halfHeart), x, y, 9, 9);
+            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, heartType.getSprite(hardcore, halfHeart, blinking), x, y, 9, 9);
         }
 
         ci.cancel();
@@ -138,7 +150,7 @@ public class HUDMixin {
         instance.blitSprite(pipeline, sprite, x, y, width, height, CUI.cuiConfig.getRGB());
 
         if (sprite.toString().contains("hunger")) {
-            instance.blitSprite(pipeline, ResourceLocation.withDefaultNamesRenderSystempace("hud/food_full_hunger_bone"), x, y, width, height);
+            instance.blitSprite(pipeline, ResourceLocation.withDefaultNamespace("hud/food_full_hunger_bone"), x, y, width, height);
         } else {
             instance.blitSprite(pipeline, ResourceLocation.withDefaultNamespace("hud/food_full_bone"), x, y, width, height);
         }
@@ -159,7 +171,7 @@ public class HUDMixin {
     @Shadow private ItemStack lastToolHighlight = ItemStack.EMPTY;
 
     // Selected item hotbar name
-    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawStringWithBackdrop(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIII)V"), method = "renderSelectedItemName(Lnet/minecraft/client/gui/GuiGraphics;I)V")
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawStringWithBackdrop(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIII)V"), method = "renderSelectedItemName")
     private void injected15(GuiGraphics instance, Font font, Component component, int x, int y, int width, int color) {
         MutableComponent customComponent;
         int customColor = CUI.cuiConfig.getRGB();
@@ -186,58 +198,132 @@ public class HUDMixin {
 
     #else
     // Hotbar
-	@Inject(at = @At(value = "HEAD"), method = #if MC_VER >= V1_21 "renderItemHotbar" #else "renderHotbar" #endif)
-	#if MC_VER >= V1_21 private void renderHead(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) #else private void renderHead(float tickDelta, DrawContext context, CallbackInfo ci)#endif {
+    @Inject(at = @At(value = "HEAD"), method = #if MC_VER >= V1_21 "renderItemHotbar" #else "renderHotbar" #endif)
+	#if MC_VER >= V1_21 private void renderHead(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) #else private void renderHead(float partialTick, GuiGraphics guiGraphics, CallbackInfo ci)#endif {
         #if MC_VER >= V1_21_3
         guiGraphics.flush();
         RenderSystem.setShaderColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1);
         #endif
         #if MC_VER <= V1_21_1 guiGraphics.setColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1); #endif	}
 
-	@Inject(at = @At(value = "INVOKE", target = #if MC_VER >= V1_21_6 "Lnet/minecraft/client/gui/Gui;renderSlot(Lnet/minecraft/client/gui/GuiGraphics;IILnet/minecraft/client/DeltaTracker;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/item/ItemStack;I)V" #else "Lcom/mojang/blaze3d/vertex/PoseStack;popPose()V" #endif, shift = At.Shift #if MC_VER >= V1_21_6 .BEFORE #else .AFTER #endif), method = #if MC_VER >= V1_21 "renderItemHotbar" #else "renderHotbar" #endif)
-	#if MC_VER >= V1_21 private void renderTail(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) #else private void renderTail(float tickDelta, DrawContext context, CallbackInfo ci) #endif {
+    @Inject(at = @At(value = "INVOKE", target = #if MC_VER >= V1_21_6 "Lnet/minecraft/client/gui/Gui;renderSlot(Lnet/minecraft/client/gui/GuiGraphics;IILnet/minecraft/client/DeltaTracker;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/item/ItemStack;I)V" #else "Lcom/mojang/blaze3d/vertex/PoseStack;popPose()V" #endif, shift = At.Shift #if MC_VER >= V1_21_6 .BEFORE #else .AFTER #endif), method = #if MC_VER >= V1_21 "renderItemHotbar" #else "renderHotbar" #endif)
+	#if MC_VER >= V1_21 private void renderTail(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) #else private void renderTail(float partialTick, GuiGraphics guiGraphics, CallbackInfo ci) #endif {
         #if MC_VER >= V1_21_3
         guiGraphics.flush();
         RenderSystem.setShaderColor(1, 1, 1, 1);
         #endif
         #if MC_VER <= V1_21_1 guiGraphics.setColor(1, 1, 1, 1); #endif
-	}
+    }
 
-    // Hearts
-    @Inject(at =  @At(value = "HEAD"), method = #if MC_VER >= V1_21 "renderHeart" #else "renderHotbar" #endif)
-	private void renderHead(GuiGraphics guiGraphics, Gui.HeartType heartType, int x, int y, boolean hardcore, boolean halfHeart, boolean blinking, CallbackInfo ci) {
-        if (heartType == Gui.HeartType.NORMAL) {
+    // Health
+    @Inject(at = @At(value = "HEAD"), method = "renderHeart", cancellable = true)
+    private void injected4(GuiGraphics guiGraphics, Gui.HeartType heartType, int x, int y, boolean hardcore, boolean halfHeart, boolean blinking, CallbackInfo ci) {
+        if (heartType == Gui.HeartType.NORMAL || heartType == Gui.HeartType.CONTAINER) {
             #if MC_VER >= V1_21_3
             guiGraphics.flush();
             RenderSystem.setShaderColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1);
             #endif
             #if MC_VER <= V1_21_1 guiGraphics.setColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1); #endif
-        }
-    }
 
-    @Inject(at =  @At(value = "TAIL"), method = #if MC_VER >= V1_21 "renderHeart" #else "renderHotbar" #endif)
-    private void renderTail(GuiGraphics guiGraphics, Gui.HeartType heartType, int x, int y, boolean hardcore, boolean halfHeart, boolean blinking, CallbackInfo ci) {
-        if (heartType == Gui.HeartType.NORMAL) {
+            guiGraphics.blitSprite(#if MC_VER >= V1_21_3 RenderType::guiTextured, #endif heartType.getSprite(hardcore, blinking, halfHeart), x, y, 9, 9);
+
             #if MC_VER >= V1_21_3
             guiGraphics.flush();
             RenderSystem.setShaderColor(1, 1, 1, 1);
             #endif
-            #if MC_VER < V1_21_1 guiGraphics.setColor(1, 1, 1, 1); #endif
-            #if MC_VER < V1_21_5
-            RenderSystem.enableBlend();
-            #endif
-            #if MC_VER >= V1_21_3
-            #if MC_VER >= V1_21_6
-            guiGraphics.blitSprite(RenderPipelines.GUI_TEXTURED, cui$getDetail(hardcore, blinking, halfHeart), x, y, 9, 9);
-            #else
-            guiGraphics.blitSprite(RenderType::guiTextured, cui$getDetail(hardcore, blinking, halfHeart), x, y, 9, 9);
-            #endif
-            #else
-            guiGraphics.blitSprite(cui$getDetail(hardcore, blinking, halfHeart), x, y, 9, 9);
-            #endif
-            #if MC_VER < V1_21_5
-            RenderSystem.disableBlend();
-            #endif
+            #if MC_VER <= V1_21_1 guiGraphics.setColor(1, 1, 1, 1); #endif
+            if (heartType != Gui.HeartType.CONTAINER) {
+                guiGraphics.blitSprite(#if MC_VER >= V1_21_3 RenderType::guiTextured, #endif cui$getDetail(hardcore, halfHeart, blinking), x, y, 9, 9);
+            }
+        } else {
+            guiGraphics.blitSprite(#if MC_VER >= V1_21_3 RenderType::guiTextured, #endif heartType.getSprite(hardcore, blinking, halfHeart), x, y, 9, 9);
+        }
+
+        ci.cancel();
+    }
+
+    #if MC_VER >= V1_21_3
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Ljava/util/function/Function;Lnet/minecraft/resources/ResourceLocation;IIII)V"), method = "renderHeart")
+    private static void injected5(GuiGraphics instance, Function<ResourceLocation, RenderType> renderTypeGetter, ResourceLocation sprite, int x, int y, int width, int height)
+    #else
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIII)V"), method = "renderHeart")
+    private static void injected5(GuiGraphics instance, ResourceLocation sprite, int x, int y, int width, int height)
+    #endif
+    {
+        #if MC_VER >= V1_21_3
+        instance.flush();
+        RenderSystem.setShaderColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1);
+        #endif
+        #if MC_VER <= V1_21_1 instance.setColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1); #endif
+
+        instance.blitSprite(#if MC_VER >= V1_21_3 renderTypeGetter, #endif sprite, x, y, width, height);
+
+        #if MC_VER >= V1_21_3
+        instance.flush();
+        RenderSystem.setShaderColor(1, 1, 1, 1);
+        #endif
+        #if MC_VER <= V1_21_1 instance.setColor(1, 1, 1, 1); #endif
+    }
+
+
+
+
+    #if MC_VER >= V1_21_3
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Ljava/util/function/Function;Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 1), method = "renderFood")
+    private static void injected13(GuiGraphics instance, Function<ResourceLocation, RenderType> renderTypeGetter, ResourceLocation sprite, int x, int y, int width, int height)
+    #else
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 1), method = "renderFood")
+    private static void injected13(GuiGraphics instance, ResourceLocation sprite, int x, int y, int width, int height)
+    #endif
+    {
+        #if MC_VER >= V1_21_3
+        instance.flush();
+        RenderSystem.setShaderColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1);
+        #endif
+        #if MC_VER <= V1_21_1 instance.setColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1); #endif
+
+        instance.blitSprite(#if MC_VER >= V1_21_3 renderTypeGetter, #endif sprite, x, y, width, height);
+
+        #if MC_VER >= V1_21_3
+        instance.flush();
+        RenderSystem.setShaderColor(1, 1, 1, 1);
+        #endif
+        #if MC_VER <= V1_21_1 instance.setColor(1, 1, 1, 1); #endif
+
+        if (sprite.toString().contains("hunger")) {
+            instance.blitSprite(#if MC_VER >= V1_21_3 renderTypeGetter, #endif ResourceLocation.withDefaultNamespace("hud/food_full_hunger_bone"), x, y, width, height);
+        } else {
+            instance.blitSprite(#if MC_VER >= V1_21_3 renderTypeGetter, #endif ResourceLocation.withDefaultNamespace("hud/food_full_bone"), x, y, width, height);
+        }
+    }
+
+
+    #if MC_VER >= V1_21_3
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Ljava/util/function/Function;Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 2), method = "renderFood")
+    private static void injected14(GuiGraphics instance, Function<ResourceLocation, RenderType> renderTypeGetter, ResourceLocation sprite, int x, int y, int width, int height)
+    #else
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 2), method = "renderFood")
+    private static void injected14(GuiGraphics instance, ResourceLocation sprite, int x, int y, int width, int height)
+    #endif
+    {
+        #if MC_VER >= V1_21_3
+        instance.flush();
+        RenderSystem.setShaderColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1);
+        #endif
+        #if MC_VER <= V1_21_1 instance.setColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1); #endif
+
+        instance.blitSprite(#if MC_VER >= V1_21_3 renderTypeGetter, #endif sprite, x, y, width, height);
+
+        #if MC_VER >= V1_21_3
+        instance.flush();
+        RenderSystem.setShaderColor(1, 1, 1, 1);
+        #endif
+        #if MC_VER <= V1_21_1 instance.setColor(1, 1, 1, 1); #endif
+
+        if (sprite.toString().contains("hunger")) {
+            instance.blitSprite(#if MC_VER >= V1_21_3 renderTypeGetter, #endif ResourceLocation.withDefaultNamespace("hud/food_half_hunger_bone"), x, y, width, height);
+        } else {
+            instance.blitSprite(#if MC_VER >= V1_21_3 renderTypeGetter, #endif ResourceLocation.withDefaultNamespace("hud/food_half_bone"), x, y, width, height);
         }
     }
     #endif
@@ -288,6 +374,142 @@ public class HUDMixin {
         #endif
         #endif
         #if MC_VER <= V1_21_1 guiGraphics.setColor(1, 1, 1, 1); #endif
+    }
+
+    // Air
+    #if MC_VER >= V1_21_3
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Ljava/util/function/Function;Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 0), method = "renderAirBubbles")
+    private static void injected6(GuiGraphics instance, Function<ResourceLocation, RenderType> renderTypeGetter, ResourceLocation sprite, int x, int y, int width, int height)
+    #else
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 0), method = "renderAirLevel")
+    private static void injected6(GuiGraphics instance, ResourceLocation sprite, int x, int y, int width, int height)
+    #endif
+    {
+        instance.blitSprite(#if MC_VER >= V1_21_3 renderTypeGetter, #endif ResourceLocation.withDefaultNamespace("hud/air_container"), x, y, width, height);
+
+        #if MC_VER >= V1_21_3
+        instance.flush();
+        RenderSystem.setShaderColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1);
+        #endif
+        #if MC_VER <= V1_21_1 instance.setColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1); #endif
+
+        instance.blitSprite(#if MC_VER >= V1_21_3 renderTypeGetter, #endif sprite, x, y, width, height);
+
+        #if MC_VER >= V1_21_3
+        instance.flush();
+        RenderSystem.setShaderColor(1, 1, 1, 1);
+        #endif
+        #if MC_VER <= V1_21_1 instance.setColor(1, 1, 1, 1); #endif
+    }
+
+
+    #if MC_VER >= V1_21_3
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Ljava/util/function/Function;Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 1), method = "renderAirBubbles")
+    private static void injected7(GuiGraphics instance, Function<ResourceLocation, RenderType> renderTypeGetter, ResourceLocation sprite, int x, int y, int width, int height)
+    #else
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 1), method = "renderAirLevel")
+    private static void injected7(GuiGraphics instance, ResourceLocation sprite, int x, int y, int width, int height)
+    #endif
+    {
+        instance.blitSprite(#if MC_VER >= V1_21_3 renderTypeGetter, #endif ResourceLocation.withDefaultNamespace("hud/air_bursting_container"), x, y, width, height);
+        #if MC_VER >= V1_21_3
+        instance.flush();
+        RenderSystem.setShaderColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1);
+        #endif
+        #if MC_VER <= V1_21_1 instance.setColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1); #endif
+
+        instance.blitSprite(#if MC_VER >= V1_21_3 renderTypeGetter, #endif sprite, x, y, width, height);
+
+        #if MC_VER >= V1_21_3
+        instance.flush();
+        RenderSystem.setShaderColor(1, 1, 1, 1);
+        #endif
+        #if MC_VER <= V1_21_1 instance.setColor(1, 1, 1, 1); #endif
+    }
+    #if MC_VER >= V1_21_3
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Ljava/util/function/Function;Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 2), method = "renderAirBubbles")
+    private static void injected8(GuiGraphics instance, Function<ResourceLocation, RenderType> renderTypeGetter, ResourceLocation sprite, int x, int y, int width, int height) {
+        instance.flush();
+        RenderSystem.setShaderColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1);
+
+        instance.blitSprite(renderTypeGetter, ResourceLocation.withDefaultNamespace("hud/air_empty_container"), x, y, width, height);
+        instance.blitSprite(renderTypeGetter, sprite, x, y, width, height);
+
+        instance.flush();
+        RenderSystem.setShaderColor(1, 1, 1, 1);
+    }
+    #endif
+
+    // Armor
+    #if MC_VER >= V1_21_3
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Ljava/util/function/Function;Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 0), method = "renderArmor")
+    private static void injected9(GuiGraphics instance, Function<ResourceLocation, RenderType> renderTypeGetter, ResourceLocation sprite, int x, int y, int width, int height)
+    #else
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 0), method = "renderArmor")
+    private static void injected9(GuiGraphics instance, ResourceLocation sprite, int x, int y, int width, int height)
+    #endif
+    {
+        #if MC_VER >= V1_21_3
+        instance.flush();
+        RenderSystem.setShaderColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1);
+        #endif
+        #if MC_VER <= V1_21_1 instance.setColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1); #endif
+
+        instance.blitSprite(#if MC_VER >= V1_21_3 renderTypeGetter, #endif ResourceLocation.withDefaultNamespace("hud/armor_container"), x, y, width, height);
+        instance.blitSprite(#if MC_VER >= V1_21_3 renderTypeGetter, #endif sprite, x, y, width, height);
+
+        #if MC_VER >= V1_21_3
+        instance.flush();
+        RenderSystem.setShaderColor(1, 1, 1, 1);
+        #endif
+        #if MC_VER <= V1_21_1 instance.setColor(1, 1, 1, 1); #endif
+    }
+
+    #if MC_VER >= V1_21_3
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Ljava/util/function/Function;Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 1), method = "renderArmor")
+    private static void injected10(GuiGraphics instance, Function<ResourceLocation, RenderType> renderTypeGetter, ResourceLocation sprite, int x, int y, int width, int height)
+    #else
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 1), method = "renderArmor")
+    private static void injected10(GuiGraphics instance, ResourceLocation sprite, int x, int y, int width, int height)
+    #endif
+    {
+        #if MC_VER >= V1_21_3
+        instance.flush();
+        RenderSystem.setShaderColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1);
+        #endif
+        #if MC_VER <= V1_21_1 instance.setColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1); #endif
+
+        instance.blitSprite(#if MC_VER >= V1_21_3 renderTypeGetter, #endif ResourceLocation.withDefaultNamespace("hud/armor_container_half"), x, y, width, height);
+        instance.blitSprite(#if MC_VER >= V1_21_3 renderTypeGetter, #endif sprite, x, y, width, height);
+
+        #if MC_VER >= V1_21_3
+        instance.flush();
+        RenderSystem.setShaderColor(1, 1, 1, 1);
+        #endif
+        #if MC_VER <= V1_21_1 instance.setColor(1, 1, 1, 1); #endif
+    }
+
+    #if MC_VER >= V1_21_3
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Ljava/util/function/Function;Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 2), method = "renderArmor")
+    private static void injected11(GuiGraphics instance, Function<ResourceLocation, RenderType> renderTypeGetter, ResourceLocation sprite, int x, int y, int width, int height)
+    #else
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 2), method = "renderArmor")
+    private static void injected11(GuiGraphics instance, ResourceLocation sprite, int x, int y, int width, int height)
+    #endif
+    {
+        #if MC_VER >= V1_21_3
+        instance.flush();
+        RenderSystem.setShaderColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1);
+        #endif
+        #if MC_VER <= V1_21_1 instance.setColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1); #endif
+
+        instance.blitSprite(#if MC_VER >= V1_21_3 renderTypeGetter, #endif sprite, x, y, width, height);
+
+        #if MC_VER >= V1_21_3
+        instance.flush();
+        RenderSystem.setShaderColor(1, 1, 1, 1);
+        #endif
+        #if MC_VER <= V1_21_1 instance.setColor(1, 1, 1, 1); #endif
     }
     #endif
 }

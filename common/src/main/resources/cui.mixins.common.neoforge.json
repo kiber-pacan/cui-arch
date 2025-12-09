@@ -38,6 +38,7 @@
     "client.post1_21_6.toast.SystemToastMixin",
     "client.post1_21_6.toast.TutorialToastMixin",
     "client.post1_21_6.toast.TutorialToastMixin",
+    "client.post1_21_6.screen.AnvilMixin",
     "client.pre1_21_6.BookMixin",
     "client.pre1_21_6.BookTabMixin",
     "client.pre1_21_6.ButtonMixin",
@@ -53,7 +54,6 @@
     "client.pre1_21_6.ScreenMixin",
     "client.pre1_21_6.TextMixin",
     "client.pre1_21_6.HUDMixin",
-    "client.pre1_21_6.TitleMixin",
     "client.pre1_21_6.WorkbenchScreenMixin"
   ],
   "mixins": [

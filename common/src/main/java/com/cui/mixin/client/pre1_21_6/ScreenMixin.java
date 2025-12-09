@@ -1,7 +1,7 @@
 package com.cui.mixin.client.pre1_21_6;
 
 import com.cui.CUI;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+#if MC_VER >= V1_21_6 import com.mojang.blaze3d.pipeline.RenderPipeline; #endif
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.resources.ResourceLocation;
@@ -11,6 +11,20 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+#if MC_VER <= V1_21_6
+import net.minecraft.client.renderer.RenderType;
+
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+import com.mojang.blaze3d.systems.RenderSystem;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import net.minecraft.client.gui.GuiGraphics;
+
+import java.awt.*;
+#endif
 
 import java.awt.*;
 

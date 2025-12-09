@@ -1,7 +1,8 @@
 package com.cui.mixin.client.post1_21_6.toast;
 
 import com.cui.CUI;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+#if MC_VER >= V1_21_6 import com.mojang.blaze3d.pipeline.RenderPipeline; #endif
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.toasts.AdvancementToast;
 import net.minecraft.resources.ResourceLocation;

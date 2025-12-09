@@ -1,15 +1,22 @@
 package com.cui.mixin.client.pre1_21_6;
 
 import com.cui.CUI;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
+#if MC_VER >= V1_21_6 import com.mojang.blaze3d.pipeline.RenderPipeline; #endif
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
-#if MC_VER >= V1_21_6
 import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+
+#if MC_VER <= V1_21_6
+import com.mojang.blaze3d.systems.RenderSystem;
+import org.spongepowered.asm.mixin.injection.Redirect;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import net.minecraft.client.gui.GuiGraphics;
 #endif
+
 
 @Mixin(RecipeBookComponent.class)
 public class BookMixin {

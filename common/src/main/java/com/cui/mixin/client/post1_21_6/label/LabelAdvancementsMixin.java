@@ -8,13 +8,20 @@ import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import net.minecraft.client.Minecraft;
 
-@Mixin(#if MC_VER >= V1_21_6 AdvancementsScreen.class #else Minecraft.class #endif)
+@Mixin(AdvancementsScreen.class)
 public class LabelAdvancementsMixin {
     #if MC_VER >= V1_21_6
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIIZ)V"), method = "renderWindow")
     private static void injected(GuiGraphics instance, Font font, Component text, int x, int y, int color, boolean drawShadow) {
         instance.drawString(font, text, x, y, CUI.mixColors(-1, CUI.cuiConfig.getRGB()), true);
+    }
+    #else
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIIZ)I"), method = "renderWindow")
+    private static int injected(GuiGraphics instance, Font font, Component text, int x, int y, int color, boolean drawShadow) {
+        instance.drawString(font, text, x, y, CUI.mixColors(-1, CUI.cuiConfig.getRGB()), true);
+        return x;
     }
     #endif
 }

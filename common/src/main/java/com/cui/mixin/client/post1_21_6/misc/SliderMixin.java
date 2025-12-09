@@ -10,7 +10,7 @@ import java.awt.*;
 
 // Slider widget
 
-@Mixin(#if MC_VER >= V1_21_6 AbstractSliderButton.class #else Minecraft.class #endif)
+@Mixin(AbstractSliderButton.class)
 public class SliderMixin {
     #if MC_VER >= V1_21_6
     @ModifyArg(method = "renderWidget", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/ARGB;color(FI)I"), index = 1)
@@ -19,6 +19,17 @@ public class SliderMixin {
     }
 
     @ModifyArg(method = "renderWidget", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIIII)V"), index = 6)
+    private int injected1(int c) {
+        Color c1 = CUI.cuiConfig.color;
+        return ((c >> 24) & 0xFF) << 24 | (c1.getRed() & 0xFF) << 16 | (c1.getGreen() & 0xFF) << 8 | (c1.getBlue() & 0xFF);
+    }
+    #else
+    @ModifyArg(method = "renderWidget", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;setColor(FFFF)V"), index = 0)
+    private float injected(float red, float green, float blue, float alpha) {
+        return ((AbstractSliderButton)(Object)this).active ? CUI.mixColors(-1, CUI.cuiConfig.getRGB()) : CUI.mixColors(-6250336, CUI.cuiConfig.getRGB());
+    }
+
+    @ModifyArg(method = "renderWidget", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/AbstractSliderButton;renderScrollingString(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Font;II)V"), index = 3)
     private int injected1(int c) {
         Color c1 = CUI.cuiConfig.color;
         return ((c >> 24) & 0xFF) << 24 | (c1.getRed() & 0xFF) << 16 | (c1.getGreen() & 0xFF) << 8 | (c1.getBlue() & 0xFF);

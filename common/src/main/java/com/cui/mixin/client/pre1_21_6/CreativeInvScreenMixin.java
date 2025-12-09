@@ -1,13 +1,22 @@
 package com.cui.mixin.client.pre1_21_6;
 
 import com.cui.CUI;
-import com.mojang.blaze3d.pipeline.RenderPipeline;
-import net.minecraft.client.gui.GuiGraphics;
+#if MC_VER >= V1_21_6 import com.mojang.blaze3d.pipeline.RenderPipeline; #endif
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
+import net.minecraft.client.gui.GuiGraphics;
+
+#if MC_VER <= V1_21_6
+import net.minecraft.world.item.CreativeModeTab;
+import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
+import com.mojang.blaze3d.systems.RenderSystem;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import net.minecraft.client.gui.GuiGraphics;
+#endif
 
 @Mixin(CreativeModeInventoryScreen.class)
 public class CreativeInvScreenMixin {
@@ -38,7 +47,7 @@ public class CreativeInvScreenMixin {
         guiGraphics.flush();
         RenderSystem.setShaderColor(1, 1, 1, 1);
         #endif
-        #if MC_VER < V1_21_1 guiGraphics.setColor(1, 1, 1, 1); #endif
+        #if MC_VER <= V1_21_1 guiGraphics.setColor(1, 1, 1, 1); #endif
     }
 
     @Inject(at = @At(value = "TAIL"), method = "renderTabButton")

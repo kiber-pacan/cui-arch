@@ -6,7 +6,7 @@ echo "-------------------------------"
 mkdir -p buildAllJars | true
 y=8
 
-for i in $(seq 4 $END); do
+for i in $(seq 9 $END); do
     sh gradlew build -Pindex="$y"
 
     mv ./*/build/libs/cui-*-[!c]*-*[[:digit:]].jar "buildAllJars"
