@@ -138,7 +138,7 @@ public class HUDMixin {
         instance.blitSprite(pipeline, sprite, x, y, width, height, CUI.cuiConfig.getRGB());
 
         if (sprite.toString().contains("hunger")) {
-            instance.blitSprite(pipeline, ResourceLocation.withDefaultNamespace("hud/food_full_hunger_bone"), x, y, width, height);
+            instance.blitSprite(pipeline, ResourceLocation.withDefaultNamesRenderSystempace("hud/food_full_hunger_bone"), x, y, width, height);
         } else {
             instance.blitSprite(pipeline, ResourceLocation.withDefaultNamespace("hud/food_full_bone"), x, y, width, height);
         }
