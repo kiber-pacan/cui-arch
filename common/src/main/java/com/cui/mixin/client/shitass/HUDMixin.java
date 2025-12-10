@@ -1,4 +1,4 @@
-package com.cui.neoforge.mixin.client;
+package com.cui.mixin.client.pre1_21_6;
 
 
 import com.cui.CUI;
@@ -6,19 +6,12 @@ import com.cui.CUI;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import net.minecraft.client.renderer.RenderPipelines;
 #endif
-import net.minecraft.ChatFormatting;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.network.chat.Component;
-import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.Rarity;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -27,15 +20,6 @@ import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 #if MC_VER <= V1_21_6
-import net.minecraft.client.renderer.RenderType;
-
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
-import com.mojang.blaze3d.systems.RenderSystem;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import net.minecraft.client.gui.GuiGraphics;
-
-import java.util.function.Function;
 #endif
 
 
@@ -198,7 +182,7 @@ public class HUDMixin {
 
     #else
     // Hotbar
-    @Inject(at = @At(value = "HEAD"), method = #if MC_VER >= V1_21 "renderItemHotbar" #else "renderHotbar" #endif)
+	@Inject(at = @At(value = "HEAD"), method = #if MC_VER >= V1_21 "renderItemHotbar" #else "renderHotbar" #endif)
 	#if MC_VER >= V1_21 private void renderHead(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) #else private void renderHead(float partialTick, GuiGraphics guiGraphics, CallbackInfo ci)#endif {
         #if MC_VER >= V1_21_3
         guiGraphics.flush();
@@ -206,14 +190,14 @@ public class HUDMixin {
         #endif
         #if MC_VER <= V1_21_1 guiGraphics.setColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1); #endif	}
 
-    @Inject(at = @At(value = "INVOKE", target = #if MC_VER >= V1_21_6 "Lnet/minecraft/client/gui/Gui;renderSlot(Lnet/minecraft/client/gui/GuiGraphics;IILnet/minecraft/client/DeltaTracker;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/item/ItemStack;I)V" #else "Lcom/mojang/blaze3d/vertex/PoseStack;popPose()V" #endif, shift = At.Shift #if MC_VER >= V1_21_6 .BEFORE #else .AFTER #endif), method = #if MC_VER >= V1_21 "renderItemHotbar" #else "renderHotbar" #endif)
+	@Inject(at = @At(value = "INVOKE", target = #if MC_VER >= V1_21_6 "Lnet/minecraft/client/gui/Gui;renderSlot(Lnet/minecraft/client/gui/GuiGraphics;IILnet/minecraft/client/DeltaTracker;Lnet/minecraft/world/entity/player/Player;Lnet/minecraft/world/item/ItemStack;I)V" #else "Lcom/mojang/blaze3d/vertex/PoseStack;popPose()V" #endif, shift = At.Shift #if MC_VER >= V1_21_6 .BEFORE #else .AFTER #endif), method = #if MC_VER >= V1_21 "renderItemHotbar" #else "renderHotbar" #endif)
 	#if MC_VER >= V1_21 private void renderTail(GuiGraphics guiGraphics, DeltaTracker deltaTracker, CallbackInfo ci) #else private void renderTail(float partialTick, GuiGraphics guiGraphics, CallbackInfo ci) #endif {
         #if MC_VER >= V1_21_3
         guiGraphics.flush();
         RenderSystem.setShaderColor(1, 1, 1, 1);
         #endif
         #if MC_VER <= V1_21_1 guiGraphics.setColor(1, 1, 1, 1); #endif
-    }
+	}
 
     // Health
     @Inject(at = @At(value = "HEAD"), method = "renderHeart", cancellable = true)
@@ -266,6 +250,28 @@ public class HUDMixin {
     }
 
 
+    #if MC_VER >= V1_21_3
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Ljava/util/function/Function;Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 1), method = "renderFood")
+    private static void injected13(GuiGraphics instance, Function<ResourceLocation, RenderType> renderTypeGetter, ResourceLocation sprite, int x, int y, int width, int height)
+    #else
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 0), method = "renderFood")
+    private static void injected12(GuiGraphics instance, ResourceLocation sprite, int x, int y, int width, int height)
+    #endif
+    {
+        #if MC_VER >= V1_21_3
+        instance.flush();
+        RenderSystem.setShaderColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1);
+        #endif
+        #if MC_VER <= V1_21_1 instance.setColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1); #endif
+
+        instance.blitSprite(#if MC_VER >= V1_21_3 renderTypeGetter, #endif sprite, x, y, width, height);
+
+        #if MC_VER >= V1_21_3
+        instance.flush();
+        RenderSystem.setShaderColor(1, 1, 1, 1);
+        #endif
+        #if MC_VER <= V1_21_1 instance.setColor(1, 1, 1, 1); #endif
+    }
 
 
     #if MC_VER >= V1_21_3
@@ -381,7 +387,7 @@ public class HUDMixin {
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Ljava/util/function/Function;Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 0), method = "renderAirBubbles")
     private static void injected6(GuiGraphics instance, Function<ResourceLocation, RenderType> renderTypeGetter, ResourceLocation sprite, int x, int y, int width, int height)
     #else
-    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 0), method = "renderAirLevel")
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 0), method = "renderPlayerHealth")
     private static void injected6(GuiGraphics instance, ResourceLocation sprite, int x, int y, int width, int height)
     #endif
     {
@@ -407,7 +413,7 @@ public class HUDMixin {
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Ljava/util/function/Function;Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 1), method = "renderAirBubbles")
     private static void injected7(GuiGraphics instance, Function<ResourceLocation, RenderType> renderTypeGetter, ResourceLocation sprite, int x, int y, int width, int height)
     #else
-    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 1), method = "renderAirLevel")
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 1), method = "renderPlayerHealth")
     private static void injected7(GuiGraphics instance, ResourceLocation sprite, int x, int y, int width, int height)
     #endif
     {
