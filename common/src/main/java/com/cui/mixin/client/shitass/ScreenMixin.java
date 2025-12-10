@@ -4,29 +4,16 @@ import com.cui.CUI;
 #if MC_VER >= V1_21_6 import com.mojang.blaze3d.pipeline.RenderPipeline; #endif
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
-import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 #if MC_VER <= V1_21_6
-import net.minecraft.client.renderer.RenderType;
-
-import net.minecraft.world.item.CreativeModeTab;
-import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
-import com.mojang.blaze3d.systems.RenderSystem;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import net.minecraft.client.gui.GuiGraphics;
 
 import java.awt.*;
 #endif
-
-import java.awt.*;
 
 
 @Mixin(Screen.class)
@@ -77,27 +64,22 @@ public abstract class ScreenMixin {
 
     @Shadow public int width;
     @Shadow public int height;
-
-    @Inject(at = @At(value = "INVOKE", target = #if MC_VER >= V1_21_3 #if MC_VER >= V1_21_6 "Lnet/minecraft/client/gui/screens/Screen;renderBlurredBackground(Lnet/minecraft/client/gui/GuiGraphics;)V" #else "Lnet/minecraft/client/gui/screens/Screen;renderBlurredBackground()V" #endif #else "Lnet/minecraft/client/gui/screens/Screen;renderBlurredBackground(F)V" #endif, shift = At.Shift.BEFORE), method = "renderBackground")
-    private void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
-        Color colora = new Color(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, CUI.cuiConfig.a);
-        Color colorb = new Color(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, CUI.cuiConfig.a);
-
-        colora = colora.darker().darker().darker();
-        colorb = colorb.darker().darker().darker().darker().darker().darker();
-
-        guiGraphics.fillGradient(0, 0, width, height, colorb.getRGB(), colora.getRGB());
+    @Inject(at = @At(value = "TAIL"), method = "renderBackground")
+    private void render1(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
+        float[] hsv = Color.RGBtoHSB((int) (CUI.cuiConfig.r * 255.0f), (int) (CUI.cuiConfig.g * 255.0f), (int) (CUI.cuiConfig.b * 255.0f), null);
+        guiGraphics.fillGradient(0, 0, width, height,
+                ((int)(CUI.cuiConfig.a * 255) << 24) | (Color.getHSBColor(hsv[0], hsv[1], hsv[2] / 2.7f).getRGB() & 0x00FFFFFF),
+                ((int)(CUI.cuiConfig.a * 255) << 24) | (Color.getHSBColor(hsv[0], hsv[1], hsv[2] / 5.0f).getRGB() & 0x00FFFFFF)
+        );
     }
 
     @Inject(at = @At(value = "HEAD"), cancellable = true, method = "renderTransparentBackground")
     private void render(GuiGraphics guiGraphics, CallbackInfo ci) {
-        Color colora = new Color(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, CUI.cuiConfig.a);
-        Color colorb = new Color(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, CUI.cuiConfig.a);
-
-        colora = colora.darker().darker().darker();
-        colorb = colorb.darker().darker().darker().darker().darker().darker();
-
-        guiGraphics.fillGradient(0, 0, width, height, colorb.getRGB(), colora.getRGB());
+        float[] hsv = Color.RGBtoHSB((int) (CUI.cuiConfig.r * 255.0f), (int) (CUI.cuiConfig.g * 255.0f), (int) (CUI.cuiConfig.b * 255.0f), null);
+        guiGraphics.fillGradient(0, 0, width, height,
+                ((int)(CUI.cuiConfig.a * 255) << 24) | (Color.getHSBColor(hsv[0], hsv[1], hsv[2] / 2.7f).getRGB() & 0x00FFFFFF),
+                ((int)(CUI.cuiConfig.a * 255) << 24) | (Color.getHSBColor(hsv[0], hsv[1], hsv[2] / 5.0f).getRGB() & 0x00FFFFFF)
+        );
 
         ci.cancel();
     }
