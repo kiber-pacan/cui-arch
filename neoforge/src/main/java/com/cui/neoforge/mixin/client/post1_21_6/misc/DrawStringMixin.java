@@ -1,4 +1,4 @@
-package com.cui.mixin.client.post1_21_6.misc;
+package com.cui.neoforge.mixin.client.post1_21_6.misc;
 
 import com.cui.CUI;
 import net.minecraft.client.gui.Font;
@@ -27,7 +27,7 @@ public class DrawStringMixin {
         return renderState;
     }
     #else
-    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;drawInBatch(Lnet/minecraft/util/FormattedCharSequence;FFIZLorg/joml/Matrix4f;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/client/gui/Font$DisplayMode;II)I"), method = "drawString(Lnet/minecraft/client/gui/Font;Lnet/minecraft/util/FormattedCharSequence;IIIZ)I")
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;drawInBatch(Lnet/minecraft/util/FormattedCharSequence;FFIZLorg/joml/Matrix4f;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/client/gui/Font$DisplayMode;II)I"), method = "drawString(Lnet/minecraft/client/gui/Font;Lnet/minecraft/util/FormattedCharSequence;FFIZ)I")
     private static int injected1(Font instance, FormattedCharSequence text, float x, float y, int color, boolean dropShadow, Matrix4f pose, MultiBufferSource bufferSource, Font.DisplayMode displayMode, int backgroundColor, int packedLightCoords) {
         if (((color) & 0xFF) == ((color >> 8) & 0xFF) && ((color >> 8) & 0xFF) == ((color >> 16) & 0xFF)) {
             return instance.drawInBatch(text, x, y, CUI.cuiConfig.getTextColor(color), dropShadow, pose, bufferSource, displayMode, backgroundColor, packedLightCoords);
@@ -35,17 +35,26 @@ public class DrawStringMixin {
 
         return instance.drawInBatch(text, x, y, CUI.cuiConfig.getTextColor(color), dropShadow, pose, bufferSource, displayMode, backgroundColor, packedLightCoords);
     }
-
+    #if MC_VER >= V1_21_3
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;drawInBatch(Ljava/lang/String;FFIZLorg/joml/Matrix4f;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/client/gui/Font$DisplayMode;II)I"), method = "drawString(Lnet/minecraft/client/gui/Font;Ljava/lang/String;FFIZ)I")
+    private static int injected2(Font instance, String text, float x, float y, int color, boolean dropShadow, Matrix4f pose, MultiBufferSource bufferSource, Font.DisplayMode displayMode, int backgroundColor, int packedLightCoords)
+    #else
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;drawInBatch(Ljava/lang/String;FFIZLorg/joml/Matrix4f;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/client/gui/Font$DisplayMode;IIZ)I"), method = "drawString(Lnet/minecraft/client/gui/Font;Ljava/lang/String;IIIZ)I")
-    private static int injected2(Font instance, String text, float x, float y, int color, boolean dropShadow, Matrix4f matrix, MultiBufferSource buffer, Font.DisplayMode displayMode, int backgroundColor, int packedLightCoords, boolean bidirectional) {
+    private static int injected2(Font instance, String text, float x, float y, int color, boolean dropShadow, Matrix4f matrix, MultiBufferSource buffer, Font.DisplayMode displayMode, int backgroundColor, int packedLightCoords, boolean bidirectional)
+    #endif
+    {
         if (((color) & 0xFF) == ((color >> 8) & 0xFF) && ((color >> 8) & 0xFF) == ((color >> 16) & 0xFF)) {
+            #if MC_VER >= V1_21_3
+            return instance.drawInBatch(text, x, y, CUI.cuiConfig.getTextColor(color), dropShadow, pose, bufferSource, displayMode, backgroundColor, packedLightCoords);
+            #else
             return instance.drawInBatch(text, x, y, CUI.cuiConfig.getTextColor(color), dropShadow, matrix, buffer, displayMode, backgroundColor, packedLightCoords);
-
-            //return instance.drawInBatch(text, x, y, CUI.cuiConfig.getTextColor(color), dropShadow, pose, bufferSource, displayMode, backgroundColor, packedLightCoords);
+            #endif
         }
+        #if MC_VER >= V1_21_3
+        return instance.drawInBatch(text, x, y, CUI.cuiConfig.getTextColor(color), dropShadow, pose, bufferSource, displayMode, backgroundColor, packedLightCoords);
+        #else
         return instance.drawInBatch(text, x, y, CUI.cuiConfig.getTextColor(color), dropShadow, matrix, buffer, displayMode, backgroundColor, packedLightCoords);
-
-        //return instance.drawInBatch(text, x, y, CUI.cuiConfig.getTextColor(color), dropShadow, pose, bufferSource, displayMode, backgroundColor, packedLightCoords);
+        #endif
     }
     #endif
 }
