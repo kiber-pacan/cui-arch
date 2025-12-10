@@ -3,9 +3,14 @@
   "package": "com.cui.mixin",
   "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8",
+
   "client": [
+    "client.label.LabelAdvancementsMixin",
+    "client.label.LabelContainerMixin",
+    "client.label.LabelCreativeMixin",
+    "client.label.LabelInventoryMixin",
+    "client.label.LabelMerchantMixin",
     "client.misc.EffectsMixin",
-    "client.misc.DrawStringMixin",
     "client.misc.LensMixin",
     "client.misc.LogoMixin",
     "client.misc.RecipeBookComponentMixin",
@@ -46,6 +51,7 @@
     "client.pre1_21_6.RecipeBookMixin",
     "client.pre1_21_6.RecipeBookTabsMixin",
     "client.pre1_21_6.ScreenMixin",
+    "client.pre1_21_6.TextMixin",
     "client.pre1_21_6.HUDMixin",
     "client.pre1_21_6.WorkbenchScreenMixin"
   ],

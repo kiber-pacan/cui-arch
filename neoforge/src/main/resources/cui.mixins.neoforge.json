@@ -3,13 +3,13 @@
   "package": "com.cui.neoforge.mixin",
   "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8",
+  "refmap": "cui.mixins.neoforge.refmap.json",
   "client": [
-    "client.HUDMixin",
-    "client.WorkbenchScreenMixin"
+    "client.post1_21_6.misc.DrawStringMixin"
   ],
   "mixins": [
   ],
   "injectors": {
-    "defaultRequire": 1
+    "defaultRequire": 0
   }
 }
