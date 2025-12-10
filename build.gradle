@@ -33,10 +33,6 @@ allprojects {
             url = 'https://maven.parchmentmc.org'
         }
     }
-
-    architectury {
-        compileOnly()
-    }
 }
 
 subprojects {
@@ -48,17 +44,6 @@ subprojects {
 
     apply plugin: "me.hypherionmc.cursegradle"
     apply plugin: "com.modrinth.minotaur"
-
-    if (project.path != ':common') {
-        loom {
-            mods {
-                main { // to match the default mod generated for Forge
-                    sourceSet project.sourceSets.main
-                    sourceSet project(':common').sourceSets.main
-                }
-            }
-        }
-    }
 
     base {
         archivesName = "$rootProject.archives_name-mc$project.minecraft_version-$project.name"
