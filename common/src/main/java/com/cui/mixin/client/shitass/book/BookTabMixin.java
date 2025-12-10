@@ -1,9 +1,10 @@
-package com.cui.mixin.client.pre1_21_6;
+package com.cui.mixin.client.shitass.book;
 
 #if MC_VER >= V1_21_6
 import net.minecraft.client.gui.screens.recipebook.RecipeBookTabButton;
 #endif
 
+import net.minecraft.client.Minecraft;
 import org.spongepowered.asm.mixin.Mixin;
 
 @Mixin(#if MC_VER >= V1_21_6 RecipeBookTabButton.class #else Minecraft.class #endif)

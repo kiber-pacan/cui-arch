@@ -1,4 +1,4 @@
-package com.cui.mixin.client.pre1_21_6;
+package com.cui.mixin.client.shitass.misc;
 
 
 import com.cui.CUI;

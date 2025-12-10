@@ -1,4 +1,4 @@
-package com.cui.mixin.client.pre1_21_6;
+package com.cui.mixin.client.shitass.screen;
 /*
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;

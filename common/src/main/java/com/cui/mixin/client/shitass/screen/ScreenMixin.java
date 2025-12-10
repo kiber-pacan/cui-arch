@@ -1,4 +1,4 @@
-package com.cui.mixin.client.pre1_21_6;
+package com.cui.mixin.client.shitass.screen;
 
 import com.cui.CUI;
 #if MC_VER >= V1_21_6 import com.mojang.blaze3d.pipeline.RenderPipeline; #endif
