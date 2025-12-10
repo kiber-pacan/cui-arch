@@ -1,6 +1,6 @@
 package com.cui.mixin.client.shitass.book;
 
-import com.cui.CUI;
+import com.cui.core.CUI;
 
 import net.minecraft.client.gui.components.AbstractButton;
 import org.spongepowered.asm.mixin.Mixin;

@@ -1,10 +1,6 @@
 package com.cui.mixin.client.misc;
 
-import com.cui.CUI;
-
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
 
 #if MC_VER >= V1_21_3
 import net.minecraft.client.gui.screens.inventory.EffectsInInventory;
@@ -15,13 +11,7 @@ import net.minecraft.client.gui.screens.inventory.EffectsInInventory;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 #endif
 
-import net.minecraft.client.renderer.RenderType;
-import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
-
-import java.util.function.Function;
 
 // Effects background
 

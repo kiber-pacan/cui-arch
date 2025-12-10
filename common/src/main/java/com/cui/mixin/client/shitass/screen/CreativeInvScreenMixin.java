@@ -1,6 +1,6 @@
 package com.cui.mixin.client.shitass.screen;
 
-import com.cui.CUI;
+import com.cui.core.CUI;
 #if MC_VER >= V1_21_6 import com.mojang.blaze3d.pipeline.RenderPipeline; #endif
 import net.minecraft.client.gui.screens.inventory.CreativeModeInventoryScreen;
 import org.spongepowered.asm.mixin.Mixin;

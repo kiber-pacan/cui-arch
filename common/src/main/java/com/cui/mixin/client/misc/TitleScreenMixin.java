@@ -1,7 +1,7 @@
 package com.cui.mixin.client.misc;
 
-import com.cui.CUI;
-import com.cui.ColorScreen;
+import com.cui.core.CUI;
+import com.cui.core.ColorScreen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
@@ -18,7 +18,6 @@ import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.awt.*;
-import net.minecraft.client.Minecraft;
 
 // Title screen mixin
 

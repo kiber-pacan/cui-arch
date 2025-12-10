@@ -1,13 +1,11 @@
 package com.cui.mixin.client.misc;
 
-import com.cui.CUI;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.cui.core.CUI;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractSliderButton;
 import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 #if MC_VER >= V1_21_3
@@ -15,7 +13,6 @@ import net.minecraft.client.renderer.RenderType;
 #endif
 
 import java.awt.*;
-import java.util.function.Function;
 
 // Slider widget
 

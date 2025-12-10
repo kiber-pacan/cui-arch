@@ -1,6 +1,6 @@
 package com.cui.fabric.client.config;
 
-import com.cui.ColorScreen;
+import com.cui.core.ColorScreen;
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
 import net.fabricmc.api.EnvType;
@@ -9,8 +9,6 @@ import net.fabricmc.api.Environment;
 #if MC_VER <= V1_20_4
 import me.shedaniel.autoconfig.AutoConfig;
 #endif
-
-import net.minecraft.network.chat.Component;
 
 @Environment(EnvType.CLIENT)
 public class ModMenuApiImpl implements ModMenuApi {

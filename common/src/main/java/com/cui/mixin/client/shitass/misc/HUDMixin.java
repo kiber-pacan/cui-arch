@@ -1,9 +1,10 @@
 package com.cui.mixin.client.shitass.misc;
 
 
-import com.cui.CUI;
+import com.cui.core.CUI;
 #if MC_VER >= V1_21_6
 import com.mojang.blaze3d.pipeline.RenderPipeline;
+import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.RenderPipelines;
 #endif
 import net.minecraft.client.DeltaTracker;
@@ -226,6 +227,7 @@ public class HUDMixin {
         ci.cancel();
     }
 
+
     #if MC_VER >= V1_21_3
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Ljava/util/function/Function;Lnet/minecraft/resources/ResourceLocation;IIII)V"), method = "renderHeart")
     private static void injected5(GuiGraphics instance, Function<ResourceLocation, RenderType> renderTypeGetter, ResourceLocation sprite, int x, int y, int width, int height)
@@ -252,10 +254,10 @@ public class HUDMixin {
 
     #if MC_VER >= V1_21_3
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Ljava/util/function/Function;Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 1), method = "renderFood")
-    private static void injected13(GuiGraphics instance, Function<ResourceLocation, RenderType> renderTypeGetter, ResourceLocation sprite, int x, int y, int width, int height)
+    private static void injected132(GuiGraphics instance, Function<ResourceLocation, RenderType> renderTypeGetter, ResourceLocation sprite, int x, int y, int width, int height)
     #else
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 0), method = "renderFood")
-    private static void injected12(GuiGraphics instance, ResourceLocation sprite, int x, int y, int width, int height)
+    private static void injected132(GuiGraphics instance, ResourceLocation sprite, int x, int y, int width, int height)
     #endif
     {
         #if MC_VER >= V1_21_3

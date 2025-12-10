@@ -1,13 +1,10 @@
-package com.cui;
+package com.cui.core;
 
 
-import com.cui.config.CUI_Config;
-import com.mojang.blaze3d.platform.InputConstants;
+import com.cui.core.config.CUI_Config;
 #if MC_VER >= V1_21_6 import com.mojang.blaze3d.shaders.ShaderType; #endif
 import dev.architectury.event.events.client.ClientLifecycleEvent;
-import dev.architectury.registry.client.keymappings.KeyMappingRegistry;
 import net.minecraft.client.KeyMapping;
-import net.minecraft.resources.ResourceLocation;
 
 import java.io.IOException;
 import java.util.logging.Logger;

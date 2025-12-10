@@ -1,7 +1,7 @@
 package com.cui.mixin.client.shitass.screen;
 
 
-import com.cui.CUI;
+import com.cui.core.CUI;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.DeathScreen;
 import org.spongepowered.asm.mixin.Mixin;

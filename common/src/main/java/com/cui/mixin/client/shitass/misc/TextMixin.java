@@ -1,7 +1,7 @@
 package com.cui.mixin.client.shitass.misc;
 
 
-import com.cui.CUI;
+import com.cui.core.CUI;
 import net.minecraft.client.gui.components.AbstractStringWidget;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

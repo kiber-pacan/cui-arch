@@ -1,14 +1,9 @@
 package com.cui.mixin.client.misc;
 
-import com.cui.CUI;
 #if MC_VER >= V1_21_6 import com.mojang.blaze3d.pipeline.RenderPipeline; #endif
-import net.minecraft.client.gui.GuiGraphics;
 #if MC_VER >= V1_21_4 import net.minecraft.client.gui.components.AbstractScrollArea; #endif
-import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Redirect;
-import net.minecraft.client.Minecraft;
+        import net.minecraft.client.Minecraft;
 
 // Scroller element in screens
 

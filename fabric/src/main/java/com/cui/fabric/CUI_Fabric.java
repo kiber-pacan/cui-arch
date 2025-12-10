@@ -2,9 +2,7 @@ package com.cui.fabric;
 
 import net.fabricmc.api.ModInitializer;
 
-import com.cui.CUI;
-
-import java.util.logging.Logger;
+import com.cui.core.CUI;
 
 public final class CUI_Fabric implements ModInitializer {
 

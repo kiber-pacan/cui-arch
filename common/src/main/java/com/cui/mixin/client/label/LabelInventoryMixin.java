@@ -1,6 +1,6 @@
 package com.cui.mixin.client.label;
 
-import com.cui.CUI;
+import com.cui.core.CUI;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.InventoryScreen;
@@ -8,7 +8,6 @@ import net.minecraft.network.chat.Component;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
-import net.minecraft.client.Minecraft;
 
 @Mixin(InventoryScreen.class)
 public class LabelInventoryMixin {

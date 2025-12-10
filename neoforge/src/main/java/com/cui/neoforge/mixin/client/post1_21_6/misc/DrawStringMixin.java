@@ -1,16 +1,14 @@
 package com.cui.neoforge.mixin.client.post1_21_6.misc;
 
-import com.cui.CUI;
+import com.cui.core.CUI;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 #if MC_VER >= V1_21_6 import net.minecraft.client.gui.render.state.GuiTextRenderState; #endif
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.network.chat.Component;
 import net.minecraft.util.FormattedCharSequence;
 import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 // Probably retarded way of coloring white/gray text, but who cares

@@ -1,6 +1,6 @@
 package com.cui.mixin.client.label;
 
-import com.cui.CUI;
+import com.cui.core.CUI;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;

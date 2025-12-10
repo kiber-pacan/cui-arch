@@ -1,11 +1,10 @@
 package com.cui.neoforge;
 
-import com.cui.CUI;
-import com.cui.ColorScreen;
+import com.cui.core.CUI;
+import com.cui.core.ColorScreen;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
-import net.neoforged.fml.loading.FMLLoader;
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
 
 #if MC_VER <= V1_20_4
@@ -15,7 +14,7 @@ import com.cui.neoforge.client.config.ClothConfigImpl;
 import com.cui.neoforge.client.config.CUI_ConfigNeoForge;
 #endif
 
-import static com.cui.CUI.*;
+import static com.cui.core.CUI.*;
 
 @Mod(MOD_ID)
 public final class CUI_NeoForge {

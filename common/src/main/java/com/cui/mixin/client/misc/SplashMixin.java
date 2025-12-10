@@ -1,8 +1,6 @@
 package com.cui.mixin.client.misc;
 
-import com.cui.CUI;
-import com.cui.ColorScreen;
-import com.mojang.blaze3d.systems.RenderSystem;
+import com.cui.core.CUI;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.SplashRenderer;
@@ -11,7 +9,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
 import java.awt.*;
-import net.minecraft.client.Minecraft;
 
 // Splashes next to the logo in main menu
 

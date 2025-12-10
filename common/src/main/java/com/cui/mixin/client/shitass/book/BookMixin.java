@@ -1,6 +1,6 @@
 package com.cui.mixin.client.shitass.book;
 
-import com.cui.CUI;
+import com.cui.core.CUI;
 #if MC_VER >= V1_21_6 import com.mojang.blaze3d.pipeline.RenderPipeline; #endif
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
@@ -27,8 +27,6 @@ public class BookMixin {
     @Inject(at = @At(value = "HEAD"), method = "render")
     private void renderHead(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
         #if MC_VER >= V1_21_3
-
-
         guiGraphics.flush();
         RenderSystem.setShaderColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1);
         #endif

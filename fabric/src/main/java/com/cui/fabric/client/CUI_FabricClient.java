@@ -1,6 +1,6 @@
 package com.cui.fabric.client;
 
-import com.cui.CUI;
+import com.cui.core.CUI;
 import net.fabricmc.api.ClientModInitializer;
 
 #if MC_VER <= V1_20_4
