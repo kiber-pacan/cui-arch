@@ -1,4 +1,4 @@
-package com.cui.mixin.client.post1_21_6.misc;
+package com.cui.mixin.client.misc;
 
 import com.cui.CUI;
 #if MC_VER >= V1_21_6 import com.mojang.blaze3d.pipeline.RenderPipeline; #endif
@@ -24,7 +24,9 @@ public class LogoMixin {
     #if MC_VER >= V1_21_6
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blit(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIFFIIIII)V"), method = "renderLogo(Lnet/minecraft/client/gui/GuiGraphics;IFI)V")
     private static void injected(GuiGraphics instance, RenderPipeline pipeline, ResourceLocation atlas, int x, int y, float u, float v, int width, int height, int textureWidth, int textureHeight, int color) {
-        instance.blit(pipeline, atlas, x, y, u, v, width, height, textureWidth, textureHeight, CUI.cuiConfig.getRGB());
+        int rgbWithoutAlpha = CUI.cuiConfig.getRGB() & 0x00FFFFFF;
+        int newColor = (color & 0xFF000000) | rgbWithoutAlpha;
+        instance.blit(pipeline, atlas, x, y, u, v, width, height, textureWidth, textureHeight, newColor);
     }
     #else
     #if MC_VER >= V1_21_3
