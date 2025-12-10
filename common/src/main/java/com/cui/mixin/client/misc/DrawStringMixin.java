@@ -11,6 +11,50 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
+import com.cui.core.CUI;
+#if MC_VER >= V1_21_6 import com.cui.mixin.client.shitass.book.RecipeBookMixin;
+import com.mojang.blaze3d.pipeline.RenderPipeline; #endif
+
+
+#if MC_VER >= V1_21_3 import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen; #endif
+import net.minecraft.client.gui.screens.inventory.CraftingScreen;
+#if MC_VER < V1_21_1
+#endif
+import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
+import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.inventory.CraftingMenu;
+import net.minecraft.world.item.Items;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.At;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphics;
+
+#if MC_VER <= V1_21_6
+
+import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+#endif
+
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.Font;
+import net.minecraft.client.gui.Gui;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
+import org.spongepowered.asm.mixin.injection.*;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
 // Probably retarded way of coloring white/gray text, but who cares
 
 @Mixin(GuiGraphics.class)
@@ -25,6 +69,7 @@ public class DrawStringMixin {
         return renderState;
     }
     #else
+    #if MC_VER > V1_21
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;drawInBatch(Lnet/minecraft/util/FormattedCharSequence;FFIZLorg/joml/Matrix4f;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/client/gui/Font$DisplayMode;II)I"), method = "drawString(Lnet/minecraft/client/gui/Font;Lnet/minecraft/util/FormattedCharSequence;IIIZ)I")
     private static int injected1(Font instance, FormattedCharSequence text, float x, float y, int color, boolean dropShadow, Matrix4f pose, MultiBufferSource bufferSource, Font.DisplayMode displayMode, int backgroundColor, int packedLightCoords) {
         if (((color) & 0xFF) == ((color >> 8) & 0xFF) && ((color >> 8) & 0xFF) == ((color >> 16) & 0xFF)) {
@@ -33,6 +78,10 @@ public class DrawStringMixin {
 
         return instance.drawInBatch(text, x, y, CUI.cuiConfig.getTextColor(color), dropShadow, pose, bufferSource, displayMode, backgroundColor, packedLightCoords);
     }
+    #else
+
+    #endif
+    #if MC_VER > V1_21
     #if MC_VER >= V1_21_3
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;drawInBatch(Ljava/lang/String;FFIZLorg/joml/Matrix4f;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/client/gui/Font$DisplayMode;II)I"), method = "drawString(Lnet/minecraft/client/gui/Font;Ljava/lang/String;IIIZ)I")
     private static int injected2(Font instance, String text, float x, float y, int color, boolean dropShadow, Matrix4f pose, MultiBufferSource bufferSource, Font.DisplayMode displayMode, int backgroundColor, int packedLightCoords)
@@ -54,5 +103,7 @@ public class DrawStringMixin {
         return instance.drawInBatch(text, x, y, CUI.cuiConfig.getTextColor(color), dropShadow, matrix, buffer, displayMode, backgroundColor, packedLightCoords);
         #endif
     }
+    #endif
+
     #endif
 }

@@ -1,9 +1,15 @@
 package com.cui.mixin.client.screen;
 
-#if MC_VER >= V1_21_6 import com.mojang.blaze3d.pipeline.RenderPipeline; #endif
+#if MC_VER >= V1_21_6 import com.cui.core.CUI;
+import com.mojang.blaze3d.pipeline.RenderPipeline; #endif
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.ContainerScreen;
+import net.minecraft.client.gui.screens.inventory.GrindstoneScreen;
+import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;
-        import net.minecraft.client.Minecraft;
-
+import net.minecraft.client.Minecraft;
+import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Redirect;
 @Mixin(#if MC_VER >= V1_21_6 ContainerScreen.class #else Minecraft.class #endif)
 public class ContainerMixin {
     #if MC_VER >= V1_21_6

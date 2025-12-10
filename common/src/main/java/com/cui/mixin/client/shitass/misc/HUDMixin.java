@@ -7,12 +7,19 @@ import com.mojang.blaze3d.pipeline.RenderPipeline;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.renderer.RenderPipelines;
 #endif
+import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Rarity;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -22,6 +29,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 #if MC_VER <= V1_21_6
 #endif
+
+import net.minecraft.client.gui.components.AbstractButton;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.*;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.GrindstoneScreen;
+import net.minecraft.resources.ResourceLocation;
+import org.spongepowered.asm.mixin.Mixin;
+import net.minecraft.client.Minecraft;
+import org.spongepowered.asm.mixin.injection.At;
+import com.cui.core.CUI;
+
+import java.util.function.Function;
 
 
 @Mixin(Gui.class)
@@ -157,7 +177,7 @@ public class HUDMixin {
 
     // Selected item hotbar name
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawStringWithBackdrop(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIII)V"), method = "renderSelectedItemName")
-    private void injected15(GuiGraphics instance, Font font, Component component, int x, int y, int width, int color) {
+    private void injected15(GuiGraphics instance, Font font, Component text, int x, int y, int width, int color) {
         MutableComponent customComponent;
         int customColor = CUI.cuiConfig.getRGB();
 

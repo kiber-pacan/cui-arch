@@ -1,7 +1,7 @@
 package com.cui.mixin.client.shitass.experince;
 
 #if MC_VER >= V1_21_6
-import com.cui.CUI;
+
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.contextualbar.ContextualBarRenderer;
@@ -12,6 +12,17 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+
+import net.minecraft.client.gui.components.AbstractButton;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.*;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.GrindstoneScreen;
+import net.minecraft.resources.ResourceLocation;
+import org.spongepowered.asm.mixin.Mixin;
+import net.minecraft.client.Minecraft;
+import org.spongepowered.asm.mixin.injection.At;
+import com.cui.core.CUI;
 
 
 @Mixin(#if MC_VER >= V1_21_6 ContextualBarRenderer.class #else Minecraft.class #endif)

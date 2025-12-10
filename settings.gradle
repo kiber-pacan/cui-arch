@@ -52,6 +52,7 @@ def mc_versions = [
         "1.21.8",  // 14
         "1.21.9",  // 15
         "1.21.10", // 16
+        "1.21.11", // 17
 ]
 writeBuildGradlePredefine(mc_versions, version)
 

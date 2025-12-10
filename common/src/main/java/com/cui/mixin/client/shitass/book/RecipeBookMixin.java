@@ -8,6 +8,17 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 #endif
 
+import net.minecraft.client.gui.components.AbstractButton;
+import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.injection.*;
+import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.screens.inventory.GrindstoneScreen;
+import net.minecraft.resources.ResourceLocation;
+import org.spongepowered.asm.mixin.Mixin;
+import net.minecraft.client.Minecraft;
+import org.spongepowered.asm.mixin.injection.At;
+import com.cui.core.CUI;
+
 import net.minecraft.client.Minecraft;
 import org.spongepowered.asm.mixin.Mixin;
 

@@ -3,13 +3,7 @@
   "package": "com.cui.mixin",
   "compatibilityLevel": "JAVA_21",
   "minVersion": "0.8",
-
   "client": [
-    "client.label.LabelAdvancementsMixin",
-    "client.label.LabelContainerMixin",
-    "client.label.LabelCreativeMixin",
-    "client.label.LabelInventoryMixin",
-    "client.label.LabelMerchantMixin",
     "client.misc.EffectsMixin",
     "client.misc.LensMixin",
     "client.misc.LogoMixin",
@@ -22,7 +16,6 @@
     "client.screen.BeaconMixin",
     "client.screen.BrewingMixin",
     "client.screen.CartographyMixin",
-    "client.screen.ContainerMixin",
     "client.screen.CrafterMixin",
     "client.screen.DispenserMixin",
     "client.screen.EnchantingMixin",

@@ -47,13 +47,14 @@ public class CUI_Config {
             Optional<String> desaturation = fileConfig.getOptional("desaturation");
 
             color = randomPastel();
+            boolean brokenConfig = false;
 
             try {
                 this.r = rgb.map((hex) -> Integer.parseInt(hex.substring(0, 2), 16) / 255.0f).orElse(1.0f);
             }
             catch(Exception exception) {
                 this.r = (float) color.getRed() / 255;
-                saveConfig();
+                brokenConfig = true;
                 CUI.LOGGER.info(exception.getMessage());
             }
 
@@ -62,7 +63,7 @@ public class CUI_Config {
             }
             catch(Exception exception) {
                 this.g = (float) color.getGreen() / 255;
-                saveConfig();
+                brokenConfig = true;
                 CUI.LOGGER.info(exception.getMessage());
             }
 
@@ -71,7 +72,7 @@ public class CUI_Config {
             }
             catch(Exception exception) {
                 this.b = (float) color.getBlue() / 255;
-                saveConfig();
+                brokenConfig = true;
                 CUI.LOGGER.info(exception.getMessage());
             }
 
@@ -80,7 +81,7 @@ public class CUI_Config {
             }
             catch(Exception exception) {
                 this.a = (float) color.getAlpha() / 255;
-                saveConfig();
+                brokenConfig = true;
                 CUI.LOGGER.info(exception.getMessage());
             }
 
@@ -89,19 +90,20 @@ public class CUI_Config {
             }
             catch(Exception exception) {
                 this.enableButton = true;
-                saveConfig();
+                brokenConfig = true;
                 CUI.LOGGER.info(exception.getMessage());
             }
 
             try {
-
                 this.desaturation = desaturation.map(Float::parseFloat).orElse(1.5f);
             }
             catch(Exception exception) {
                 this.desaturation = 1.5f;
-                saveConfig();
+                brokenConfig = true;
                 CUI.LOGGER.info(exception.getMessage());
             }
+
+            if (brokenConfig) saveConfig();
 
             this.color = new Color(r, g, b, a);
         } else {
