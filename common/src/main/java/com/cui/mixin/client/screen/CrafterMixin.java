@@ -3,7 +3,9 @@ package com.cui.mixin.client.screen;
 #if MC_VER >= V1_21_6 import com.cui.core.CUI;
 import com.mojang.blaze3d.pipeline.RenderPipeline; #endif
 import net.minecraft.client.gui.GuiGraphics;
+#if MC_VER >= V1_21_6
 import net.minecraft.client.gui.screens.inventory.CrafterScreen;
+#endif
 import net.minecraft.client.gui.screens.inventory.GrindstoneScreen;
 import net.minecraft.resources.ResourceLocation;
 import org.spongepowered.asm.mixin.Mixin;

@@ -16,12 +16,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.awt.*;
 #endif
 
+#if MC_VER >= V1_21
 import net.minecraft.client.DeltaTracker;
+import net.minecraft.core.component.DataComponents;
+#endif
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -84,6 +87,7 @@ public abstract class ScreenMixin {
 
     @Shadow public int width;
     @Shadow public int height;
+    #if MC_VER >= V1_21
     @Inject(at = @At(value = "TAIL"), method = "renderBackground")
     private void render1(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
         float[] hsv = Color.RGBtoHSB((int) (CUI.cuiConfig.r * 255.0f), (int) (CUI.cuiConfig.g * 255.0f), (int) (CUI.cuiConfig.b * 255.0f), null);
@@ -92,9 +96,10 @@ public abstract class ScreenMixin {
                 ((int)(CUI.cuiConfig.a * 255) << 24) | (Color.getHSBColor(hsv[0], hsv[1], hsv[2] / 5.0f).getRGB() & 0x00FFFFFF)
         );
     }
+    #endif
 
     @Inject(at = @At(value = "HEAD"), cancellable = true, method = "renderTransparentBackground")
-    private void render(GuiGraphics guiGraphics, CallbackInfo ci) {
+    private void render2(GuiGraphics guiGraphics, CallbackInfo ci) {
         float[] hsv = Color.RGBtoHSB((int) (CUI.cuiConfig.r * 255.0f), (int) (CUI.cuiConfig.g * 255.0f), (int) (CUI.cuiConfig.b * 255.0f), null);
         guiGraphics.fillGradient(0, 0, width, height,
                 ((int)(CUI.cuiConfig.a * 255) << 24) | (Color.getHSBColor(hsv[0], hsv[1], hsv[2] / 2.7f).getRGB() & 0x00FFFFFF),
@@ -103,4 +108,15 @@ public abstract class ScreenMixin {
 
         ci.cancel();
     }
+
+    #if MC_VER < V1_21
+    @Inject(at = @At(value = "TAIL"), method = "renderDirtBackground")
+    private void render3(GuiGraphics guiGraphics, CallbackInfo ci) {
+        float[] hsv = Color.RGBtoHSB((int) (CUI.cuiConfig.r * 255.0f), (int) (CUI.cuiConfig.g * 255.0f), (int) (CUI.cuiConfig.b * 255.0f), null);
+        guiGraphics.fillGradient(0, 0, width, height,
+                ((int)(CUI.cuiConfig.a * 255) << 24) | (Color.getHSBColor(hsv[0], hsv[1], hsv[2] / 2.7f).getRGB() & 0x00FFFFFF),
+                ((int)(CUI.cuiConfig.a * 255) << 24) | (Color.getHSBColor(hsv[0], hsv[1], hsv[2] / 5.0f).getRGB() & 0x00FFFFFF)
+        );
+    }
+    #endif
 }

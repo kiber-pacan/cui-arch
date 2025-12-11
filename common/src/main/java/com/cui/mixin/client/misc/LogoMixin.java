@@ -35,12 +35,15 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 #endif
 
+#if MC_VER >= V1_21_6
 import net.minecraft.client.DeltaTracker;
+import net.minecraft.core.component.DataComponents;
+#endif
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -73,14 +76,27 @@ public class LogoMixin {
         instance.blit(renderTypeGetter, atlasLocation, x, y, uOffset, vOffset, uWidth, vHeight, textureWidth, textureHeight, CUI.cuiConfig.getRGB());
     }
     #else
+    #if MC_VER >= V1_21
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIFFIIII)V"), method = "renderLogo(Lnet/minecraft/client/gui/GuiGraphics;IFI)V")
     private static void injected1(GuiGraphics instance, ResourceLocation atlasLocation, int x, int y, float uOffset, float vOffset, int width, int height, int textureWidth, int textureHeight) {
+
         #if MC_VER <= V1_21_1 instance.setColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1); #endif
 
         instance.blit(atlasLocation, x, y, uOffset, vOffset, width, height, textureWidth, textureHeight);
 
         #if MC_VER <= V1_21_1 instance.setColor(1, 1, 1, 1); #endif
     }
+    #else
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;setColor(FFFF)V"), method = "renderLogo(Lnet/minecraft/client/gui/GuiGraphics;IFI)V")
+    private static void injected1(GuiGraphics instance, float red, float green, float blue, float alpha) {
+        instance.setColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, alpha);
+    }
+
+    @Inject(at = @At(value = "TAIL"), method = "renderLogo(Lnet/minecraft/client/gui/GuiGraphics;IFI)V")
+    private static void injected1(GuiGraphics guiGraphics, int screenWidth, float transparency, int height, CallbackInfo ci) {
+        guiGraphics.setColor(1, 1, 1, 1);
+    }
+    #endif
     #endif
     #endif
 }

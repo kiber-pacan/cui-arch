@@ -5,7 +5,11 @@ import com.cui.core.ColorScreen;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.Button;
+#if MC_VER >= V1_20_4
 import net.minecraft.client.gui.components.SpriteIconButton;
+#else
+import net.minecraft.client.gui.components.ImageButton;
+#endif
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.network.chat.Component;
@@ -28,15 +32,15 @@ public abstract class TitleScreenMixin extends Screen {
     }
 
     @Unique
-    private static SpriteIconButton cui$cui(int width, Button.OnPress onPress, boolean iconOnly) {
-        return SpriteIconButton.builder(Component.translatable("options.cui"), onPress, iconOnly)
+    private static #if MC_VER >= V1_20_4 SpriteIconButton #else ImageButton #endif cui$cui(int width, Button.OnPress onPress, boolean iconOnly) {
+        return #if MC_VER >= V1_20_4 SpriteIconButton #else ImageButton #endif.builder(Component.translatable("options.cui"), onPress, iconOnly)
                 .width(width)
-                .sprite(ResourceLocation.withDefaultNamespace("cui_button"), 16, 16)
+                .sprite(#if MC_VER < V1_21 new #endif ResourceLocation #if MC_VER >= V1_21 .withDefaultNamespace #endif("cui_button"), 16, 16)
                 .build();
     }
 
     // I think it looks better when we have colorful gradient
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/TitleScreen;renderPanorama(Lnet/minecraft/client/gui/GuiGraphics;F)V", shift = At.Shift.AFTER), method = "render")
+    @Inject(at = @At(value = "INVOKE", target = #if MC_VER >= V1_21 "Lnet/minecraft/client/gui/screens/TitleScreen;renderPanorama(Lnet/minecraft/client/gui/GuiGraphics;F)V" #else "Lnet/minecraft/client/renderer/PanoramaRenderer;render(FF)V" #endif, shift = At.Shift.AFTER), method = "render")
     private void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
         float[] hsv = Color.RGBtoHSB((int) (CUI.cuiConfig.r * 255.0f), (int) (CUI.cuiConfig.g * 255.0f), (int) (CUI.cuiConfig.b * 255.0f), null);
         guiGraphics.fillGradient(0, 0, width, height,
@@ -64,13 +68,13 @@ public abstract class TitleScreenMixin extends Screen {
     }
     #else
     // CUI button init
-    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/SpriteIconButton;setPosition(II)V", ordinal = 0), method = "init")
-    private void init(SpriteIconButton instance, int x, int y) {
+    @Redirect(at = @At(value = "INVOKE", target = #if MC_VER >= V1_20_4 "Lnet/minecraft/client/gui/components/SpriteIconButton;setPosition(II)V" #else "" #endif, ordinal = 0), method = "init")
+    private void init(#if MC_VER >= V1_20_4 SpriteIconButton #else ImageButton #endif instance, int x, int y) {
         instance.setPosition(x, y);
 
         if (CUI.cuiConfig.enableButton) {
 
-            SpriteIconButton spriteIconButton = this.addRenderableWidget(
+            #if MC_VER >= V1_20_4 SpriteIconButton #else ImageButton #endif spriteIconButton = this.addRenderableWidget(
                     cui$cui(
                             20, button -> this.minecraft.setScreen(new ColorScreen(this)), true
                     )

@@ -39,13 +39,15 @@ import net.minecraft.client.gui.GuiGraphics;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 #endif
-
+#if MC_VER >= V1_21_6
 import net.minecraft.client.DeltaTracker;
+import net.minecraft.core.component.DataComponents;
+#endif
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.core.component.DataComponents;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -95,7 +97,7 @@ public class LensMixin {
             int j = (this.height - 166) / 2;
             #endif
 
-            guiGraphics.blit(#if MC_VER >= V1_21_3 RenderType::guiTextured, #endif ResourceLocation.withDefaultNamespace("textures/gui/recipe_book_lens.png"), i, j, 1.0F, 1.0F, 147, 166, 256, 256);
+            guiGraphics.blit(#if MC_VER >= V1_21_3 RenderType::guiTextured, #endif #if MC_VER < V1_21 new #endif ResourceLocation #if MC_VER >= V1_21 .withDefaultNamespace #endif("textures/gui/recipe_book_lens.png"), i, j, 1.0F, 1.0F, 147, 166, 256, 256);
         }
     }
     #endif
