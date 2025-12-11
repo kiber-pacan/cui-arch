@@ -7,6 +7,7 @@ import net.minecraft.client.gui.layouts.*;
 import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
 
 import java.awt.*;
 
@@ -133,7 +134,7 @@ public class ColorScreen extends Screen {
         // Enable button
         rowHelper.addChild(
                 Checkbox.builder(Component.literal("Enable CUI button"), this.font)
-                        .maxWidth(width)
+                        #if MC_VER >= V1_21 .maxWidth(width) #endif
                         .selected(CUI.cuiConfig.enableButton)
                         .onValueChange((cb, state) -> {
                             CUI.cuiConfig.enableButton = state;
