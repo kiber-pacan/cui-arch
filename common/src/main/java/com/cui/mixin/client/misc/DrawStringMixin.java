@@ -37,12 +37,15 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 #endif
 
+#if MC_VER >= V1_21_6
 import net.minecraft.client.DeltaTracker;
+import net.minecraft.core.component.DataComponents;
+#endif
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
-import net.minecraft.core.component.DataComponents;
+
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.resources.ResourceLocation;
@@ -69,19 +72,21 @@ public class DrawStringMixin {
         return renderState;
     }
     #else
-    #if MC_VER > V1_21
+
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;drawInBatch(Lnet/minecraft/util/FormattedCharSequence;FFIZLorg/joml/Matrix4f;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/client/gui/Font$DisplayMode;II)I"), method = "drawString(Lnet/minecraft/client/gui/Font;Lnet/minecraft/util/FormattedCharSequence;IIIZ)I")
     private static int injected1(Font instance, FormattedCharSequence text, float x, float y, int color, boolean dropShadow, Matrix4f pose, MultiBufferSource bufferSource, Font.DisplayMode displayMode, int backgroundColor, int packedLightCoords) {
         if (((color) & 0xFF) == ((color >> 8) & 0xFF) && ((color >> 8) & 0xFF) == ((color >> 16) & 0xFF)) {
             return instance.drawInBatch(text, x, y, CUI.cuiConfig.getTextColor(color), dropShadow, pose, bufferSource, displayMode, backgroundColor, packedLightCoords);
         }
 
-        return instance.drawInBatch(text, x, y, CUI.cuiConfig.getTextColor(color), dropShadow, pose, bufferSource, displayMode, backgroundColor, packedLightCoords);
+        return instance.drawInBatch(text, x, y, color, dropShadow, pose, bufferSource, displayMode, backgroundColor, packedLightCoords);
     }
-    #else
 
     #endif
-    #if MC_VER > V1_21
+
+
+    #if MC_VER < V1_21_6
+
     #if MC_VER >= V1_21_3
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;drawInBatch(Ljava/lang/String;FFIZLorg/joml/Matrix4f;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/client/gui/Font$DisplayMode;II)I"), method = "drawString(Lnet/minecraft/client/gui/Font;Ljava/lang/String;IIIZ)I")
     private static int injected2(Font instance, String text, float x, float y, int color, boolean dropShadow, Matrix4f pose, MultiBufferSource bufferSource, Font.DisplayMode displayMode, int backgroundColor, int packedLightCoords)
@@ -100,10 +105,9 @@ public class DrawStringMixin {
         #if MC_VER >= V1_21_3
         return instance.drawInBatch(text, x, y, CUI.cuiConfig.getTextColor(color), dropShadow, pose, bufferSource, displayMode, backgroundColor, packedLightCoords);
         #else
-        return instance.drawInBatch(text, x, y, CUI.cuiConfig.getTextColor(color), dropShadow, matrix, buffer, displayMode, backgroundColor, packedLightCoords);
+        return instance.drawInBatch(text, x, y, color, dropShadow, matrix, buffer, displayMode, backgroundColor, packedLightCoords);
         #endif
     }
-    #endif
 
     #endif
 }
