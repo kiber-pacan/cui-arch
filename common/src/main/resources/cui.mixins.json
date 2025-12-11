@@ -17,6 +17,9 @@
     "client.screen.BeaconMixin",
     "client.screen.BrewingMixin",
     "client.screen.CartographyMixin",
+    "client.shitass.screen.OptionsScreenMixin",
+    "client.shitass.screen.SelectionListMixin",
+
     "client.screen.ContainerMixin",
     "client.screen.CrafterMixin",
     "client.screen.DispenserMixin",
@@ -40,12 +43,14 @@
     "client.shitass.screen.DeathScreenMixin",
     "client.shitass.experince.ExperienceBarRendererMixin",
     "client.shitass.experince.ExperienceLevelRendererMixin",
+    "client.shitass.screen.world.CreateWorldTabs",
     "client.shitass.screen.FurnaceScreenMixin",
     "client.shitass.screen.InvScreenMixin",
     "client.shitass.book.RecipeBookMixin",
     "client.shitass.book.RecipeBookTabsMixin",
     "client.shitass.screen.ScreenMixin",
     "client.shitass.misc.HUDMixin",
+    "client.shitass.screen.world.CreateWorldScreenMixin",
     "client.shitass.screen.WorkbenchScreenMixin"
   ],
   "mixins": [
