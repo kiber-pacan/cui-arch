@@ -6,10 +6,6 @@ import com.terraformersmc.modmenu.api.ModMenuApi;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 
-#if MC_VER <= V1_20_4
-import me.shedaniel.autoconfig.AutoConfig;
-#endif
-
 @Environment(EnvType.CLIENT)
 public class ModMenuApiImpl implements ModMenuApi {
     @Override
