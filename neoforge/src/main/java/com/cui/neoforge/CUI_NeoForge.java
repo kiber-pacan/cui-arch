@@ -5,13 +5,10 @@ import com.cui.core.ColorScreen;
 import net.neoforged.fml.ModLoadingContext;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.fml.loading.FMLEnvironment;
+#if MC_VER >= V1_21
 import net.neoforged.neoforge.client.gui.IConfigScreenFactory;
-
-#if MC_VER <= V1_20_4
-import me.shedaniel.autoconfig.AutoConfig;
-import me.shedaniel.autoconfig.serializer.Toml4jConfigSerializer;
-import com.cui.neoforge.client.config.ClothConfigImpl;
-import com.cui.neoforge.client.config.CUI_ConfigNeoForge;
+#else
+import net.neoforged.neoforge.client.ConfigScreenHandler;
 #endif
 
 import static com.cui.core.CUI.*;
@@ -24,8 +21,14 @@ public final class CUI_NeoForge {
         CUI.initializeServer();
 
         ModLoadingContext.get().registerExtensionPoint(
+                #if MC_VER >= V1_21
                 IConfigScreenFactory.class,
                 () -> (client, parent) -> new ColorScreen(parent)
+                #else
+                ConfigScreenHandler.ConfigScreenFactory.class,
+                () -> new ConfigScreenHandler.ConfigScreenFactory(
+                (client, parent) -> new ColorScreen(parent))
+                #endif
         );
 
         if (#if MC_VER >= V1_21_9 FMLEnvironment.getDist().isClient() #else FMLEnvironment.dist.isClient() #endif) {
