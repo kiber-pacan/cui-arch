@@ -49,7 +49,7 @@
     "client.shitass.book.RecipeBookMixin",
     "client.shitass.book.RecipeBookTabsMixin",
     "client.shitass.screen.ScreenMixin",
-    "client.shitass.misc.HUDMixin",
+    "client.shitass.misc.HUDMixin1",
     "client.shitass.screen.world.CreateWorldScreenMixin",
     "client.shitass.screen.WorkbenchScreenMixin"
   ],
