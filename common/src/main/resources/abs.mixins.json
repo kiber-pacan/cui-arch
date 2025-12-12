@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "com.cui.abs.core.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "minVersion": "0.8",
+  "client": [
+    "rendering.gui.GuiGraphicsMixin"
+  ],
+  "mixins": [
+  ],
+  "injectors": {
+    "defaultRequire": 0
+  }
+}
