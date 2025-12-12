@@ -50,7 +50,7 @@ public final class CUI {
         KeyMappingRegistry.register(OPEN_CUI_CONFIG);
         */
 
-        #if MC_VER >= V1_20_4
+
         ClientLifecycleEvent.CLIENT_STARTED.register((minecraft) -> {
             try {
                  cuiConfig.loadConfig();
@@ -62,6 +62,5 @@ public final class CUI {
         ClientLifecycleEvent.CLIENT_STOPPING.register((minecraft) -> {
             cuiConfig.saveConfig();
         });
-        #endif
     }
 }

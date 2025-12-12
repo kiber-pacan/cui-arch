@@ -94,23 +94,7 @@ public class SliderMixin {
         #if MC_VER <= V1_21_1 instance.setColor(1, 1, 1, 1); #endif
     }
     #else
-    @Redirect(method = "renderWidget", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lnet/minecraft/resources/ResourceLocation;IIII)V"))
-    private void injected(GuiGraphics instance, ResourceLocation sprite, int x, int y, int width, int height) {
-        Color color = new Color(CUI.mixColors(-1, CUI.cuiConfig.getRGB()));
 
-        #if MC_VER >= V1_21_3
-        instance.flush();
-        RenderSystem.setShaderColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1);
-        #endif
-        #if MC_VER <= V1_21_1 instance.setColor(color.getRed() / 255.0f, color.getGreen() / 255.0f, color.getBlue() / 255.0f, 1); #endif
-
-        instance.blitSprite(#if MC_VER >= V1_21_3 renderTypeGetter, #endif sprite, x, y, width, height);
-
-        #if MC_VER >= V1_21_3
-        instance.flush();
-        RenderSystem.setShaderColor(1, 1, 1, 1);
-        #endif
-        #if MC_VER <= V1_21_1 instance.setColor(1, 1, 1, 1); #endif    }
     #endif
     #endif
 }

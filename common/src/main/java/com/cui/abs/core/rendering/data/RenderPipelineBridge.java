@@ -13,8 +13,9 @@ import net.minecraft.resources.ResourceLocation;
 #endif
 
 public class RenderPipelineBridge {
-    public static #if MC_VER >= V1_21_6 RenderPipeline #else Function<ResourceLocation, RenderType> #endif GUI_TEXTURED() {
-        return #if MC_VER >= V1_21_6 RenderPipelines.GUI_TEXTURED #else RenderType::guiTextured #endif;
+
+    public static #if MC_VER >= V1_21_6 RenderPipeline #elif MC_VER >= V1_21_3 Function<ResourceLocation, RenderType> #else void #endif GUI_TEXTURED() {
+        return #if MC_VER >= V1_21_6 RenderPipelines.GUI_TEXTURED #elif MC_VER >= V1_21_3 RenderType::guiTextured #endif;
     }
 
     /*

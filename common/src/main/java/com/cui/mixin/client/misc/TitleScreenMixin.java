@@ -30,7 +30,7 @@ public abstract class TitleScreenMixin extends Screen {
     protected TitleScreenMixin(Component title) {
         super(title);
     }
-
+    /*
     @Unique
     private static #if MC_VER >= V1_20_4 SpriteIconButton #else ImageButton #endif cui$cui(int width, Button.OnPress onPress, boolean iconOnly) {
         return #if MC_VER >= V1_20_4 SpriteIconButton #else ImageButton #endif.builder(Component.translatable("options.cui"), onPress, iconOnly)
@@ -48,6 +48,8 @@ public abstract class TitleScreenMixin extends Screen {
                 ((int)(CUI.cuiConfig.a * 255) << 24) | (Color.getHSBColor(hsv[0], hsv[1], hsv[2] / 5.0f).getRGB() & 0x00FFFFFF)
         );
     }
+
+
 
     #if MC_VER >= V1_21_6
 
@@ -89,4 +91,6 @@ public abstract class TitleScreenMixin extends Screen {
         RenderSystem.setShaderColor(1, 1, 1, 1);
     }
     #endif
+    
+     */
 }

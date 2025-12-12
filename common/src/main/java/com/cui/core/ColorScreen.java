@@ -1,5 +1,7 @@
 package com.cui.core;
 
+import com.cui.abs.core.data.ResourceBridge;
+import com.cui.abs.core.rendering.data.RenderPipelineBridge;
 import com.cui.abs.core.rendering.gui.GuiRenderer;
 import com.cui.abs.core.data.Pair;
 import com.cui.abs.core.data.Rectangle;
@@ -10,8 +12,10 @@ import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.client.gui.layouts.*;
 import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.screens.Screen;
+#if MC_VER >= V1_21_3
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
+#endif
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
@@ -52,8 +56,8 @@ public class ColorScreen extends Screen {
         super.render(guiGraphics, mouseX, mouseY, partialTick);
         GuiRenderer.blitSprite(
                 guiGraphics,
-                #if MC_VER >= V1_21_6 RenderPipelines.GUI_TEXTURED #else RenderType::guiTextured #endif,
-                ResourceLocation.withDefaultNamespace("test"),
+                "GUI_TEXTURED",
+                ResourceBridge.withDefaultNamespace("test"),
                 new Rectangle(20, 100, 32, 32),
                 CUI.cuiConfig.getRGB()
         );
@@ -67,8 +71,8 @@ public class ColorScreen extends Screen {
 
     @Override
     protected void init() {
-        LinearLayout linearLayout = this.layout.addToHeader(LinearLayout.vertical().spacing(8));
-        linearLayout.addChild(new StringWidget(TITLE, this.font), LayoutSettings::alignHorizontallyCenter);
+        LinearLayout linearLayout = this.layout.addToHeader(#if MC_VER >= V1_20_4 LinearLayout.vertical().spacing(8) #else new LinearLayout(308, 20, LinearLayout.Orientation.HORIZONTAL) #endif);
+        //linearLayout.addChild(new StringWidget(TITLE, this.font), LayoutSettings::alignHorizontallyCenter);
 
         net.minecraft.client.gui.layouts.GridLayout gridLayout = new GridLayout();
         gridLayout.defaultCellSetting().paddingHorizontal(4).paddingBottom(4).alignHorizontallyCenter();
@@ -149,6 +153,7 @@ public class ColorScreen extends Screen {
 
 
         // Enable button
+        /*
         rowHelper.addChild(
                 Checkbox.builder(Component.literal("Enable CUI button"), this.font)
                         #if MC_VER >= V1_21 .maxWidth(width) #endif
@@ -158,6 +163,8 @@ public class ColorScreen extends Screen {
                             CUI.cuiConfig.saveConfig();
                         })
                         .build());
+
+         */
 
         this.layout.addToContents(gridLayout);
         this.layout.addToFooter(

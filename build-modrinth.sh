@@ -4,9 +4,9 @@ echo "-------------------------------"
 echo "------------BUILDING-----------"
 echo "-------------------------------"
 mkdir -p buildAllJars | true
-y=7
+y=6
 
-for i in $(seq 10 $END); do
+for i in $(seq 1 $END); do
     sh gradlew clean -Pindex="$y"
     sh gradlew build modrinth -Pindex="$y"
     ((y=y+1))

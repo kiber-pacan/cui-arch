@@ -41,6 +41,7 @@ import java.util.function.Function;
 
 @Mixin(Gui.class)
 public class HUDMixin {
+    /*
     @Unique private static  final ResourceLocation cui$detail = #if MC_VER < V1_21 new #endif ResourceLocation #if MC_VER >= V1_21 .withDefaultNamespace #endif("hud/heart/detail");
     @Unique private static final ResourceLocation cui$detailBlinking = #if MC_VER < V1_21 new #endif ResourceLocation #if MC_VER >= V1_21 .withDefaultNamespace #endif("hud/heart/detail_blinking");
     @Unique private static  final ResourceLocation cui$detailHardcoreFull = #if MC_VER < V1_21 new #endif ResourceLocation #if MC_VER >= V1_21 .withDefaultNamespace #endif("hud/heart/detail_hardcore_full");
@@ -535,4 +536,6 @@ public class HUDMixin {
     }
     #endif
     //endregion
+
+     */
 }

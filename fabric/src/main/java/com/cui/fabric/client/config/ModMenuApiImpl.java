@@ -13,7 +13,7 @@ public class ModMenuApiImpl implements ModMenuApi {
         #if MC_VER >= V1_20_4
             return ColorScreen::new;
         #elif MC_VER < V1_20_4 && MC_VER > V1_18_2
-            return screen -> MidnightConfig.getScreen(screen, CUI.MOD_ID);
+        return ColorScreen::new;
         #elif  MC_VER <= V1_18_2
             return screen -> AutoConfig.getConfigScreen(CUI_Config.class, screen).get();
         #endif
