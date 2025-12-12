@@ -1,11 +1,17 @@
 package com.cui.core;
 
+import com.cui.abs.core.rendering.gui.GuiRenderer;
+import com.cui.abs.core.data.Pair;
+import com.cui.abs.core.data.Rectangle;
+import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.*;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.client.gui.layouts.*;
 import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.client.renderer.RenderPipelines;
+import net.minecraft.client.renderer.RenderType;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 
@@ -40,6 +46,17 @@ public class ColorScreen extends Screen {
         this.v = hsv[2];
         this.a = CUI.cuiConfig.a;
         this.desaturation = CUI.cuiConfig.desaturation;
+    }
+
+    public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick) {
+        super.render(guiGraphics, mouseX, mouseY, partialTick);
+        GuiRenderer.blitSprite(
+                guiGraphics,
+                #if MC_VER >= V1_21_6 RenderPipelines.GUI_TEXTURED #else RenderType::guiTextured #endif,
+                ResourceLocation.withDefaultNamespace("test"),
+                new Rectangle(20, 100, 32, 32),
+                CUI.cuiConfig.getRGB()
+        );
     }
 
     @Override
