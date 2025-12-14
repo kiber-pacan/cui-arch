@@ -12,14 +12,20 @@ rootProject.name = 'cui'
 // Create build.properties file for preprocessor
 def writeBuildGradlePredefine(List<String> mc_versions, int version) {
     StringBuilder sb = new StringBuilder()
-    for (int i = 0; i < mc_versions.size(); i++)
-    {
+    for (int i = 0; i < mc_versions.size(); i++) {
         String verStr = mc_versions[i].replace(".", "_")
         sb.append("V" + verStr + "=" + i.toString() + "\n")
 
         if (version == i)
             sb.append("MC_VER=" + i.toString() + "\n")
     }
+
+    sb.append("LOADER=0\n")
+
+    sb.append("COMMON=0\n")
+    sb.append("FABRIC=1\n")
+    sb.append("NEOFORGE=2\n")
+    sb.append("FORGE=3\n")
 
     new File(rootDir, "build.properties").text = sb.toString()
 }
@@ -32,7 +38,7 @@ if (hasProperty("index")) {
     version = 0
 }
 
-print("version: ${version}")
+println("version: ${version}")
 
 def mc_versions = [
         "1.16.5",  // 0
@@ -54,6 +60,7 @@ def mc_versions = [
         "1.21.10", // 16
         "1.21.11", // 17
 ]
+
 writeBuildGradlePredefine(mc_versions, version)
 
 // Loading properties

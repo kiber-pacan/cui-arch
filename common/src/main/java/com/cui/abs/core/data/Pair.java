@@ -19,4 +19,8 @@ public class Pair <T1, T2> {
     public boolean isFilled() {
         return !isEmpty();
     }
+
+    public static Pair getEmptyPair() {
+        return new Pair<>(null, null);
+    }
 }

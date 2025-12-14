@@ -1,15 +1,16 @@
 package com.cui.abs.core.rendering.gui;
 
 import com.cui.abs.core.data.Rectangle;
-import com.cui.abs.core.mixin.rendering.data.MinecraftMixin;
-import com.cui.abs.core.mixin.rendering.gui.GuiGraphicsMixin;
-import com.cui.abs.core.rendering.data.RenderPipelineBridge;
+import com.cui.abs.core.mixin.rendering.data.MinecraftInterfaceMixin;
+import com.cui.core.CUI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 #if MC_VER >= V1_20_4
 import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
 #endif
+import net.minecraft.client.renderer.texture.TextureManager;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -18,26 +19,23 @@ import org.jetbrains.annotations.Nullable;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 #endif
 
-import java.util.Map;
-import java.util.Objects;
-
 
 #if MC_VER <= V1_21_5
 import com.mojang.blaze3d.systems.RenderSystem;
-import net.minecraft.client.renderer.RenderType;
-import java.util.function.Function;
+
+import java.util.Currency;
+import java.util.logging.Logger;
 #endif
 
 public class GuiRenderer {
     //region Helper
+    public record Dimensions(int width, int height) {}
+
     #if MC_VER >= V1_21
     private static final Map<String, #if MC_VER >= V1_21_6 RenderPipeline #elif MC_VER >= V1_21_3 Function<ResourceLocation, RenderType> #else Runnable #endif > ACTIONS = Map.of(
             "GUI_TEXTURED", RenderPipelineBridge.GUI_TEXTURED()
     );
     #endif
-
-    public record Dimensions(int width, int height) {}
-
 
     #if MC_VER >= V1_20_4
     public static GuiSpriteScaling getSpriteScaling(GuiGraphics guiGraphics, ResourceLocation sprite) {
@@ -49,7 +47,6 @@ public class GuiRenderer {
         return ((GuiGraphicsMixin) guiGraphics).getGuiSprites().getSpriteScaling(textureAtlasSprite);
         #endif
     }
-
 
     // Tile
     @Nullable
@@ -67,14 +64,14 @@ public class GuiRenderer {
 
         return (spriteScaling.type() == GuiSpriteScaling.Type.TILE) ? (GuiSpriteScaling.Tile) spriteScaling : null;
     }
-    #endif
 
     /**
      * <h5> Sprite dimensions </h5>
      * Basically returns sprite image size
+     * @since 1.20.4
      */
     protected static Dimensions getSpriteContentsDimensions(GuiGraphics guiGraphics, ResourceLocation sprite) {
-        TextureAtlasSprite textureAtlasSprite = #if MC_VER >= V1_20_4 ((GuiGraphicsMixin) guiGraphics).getGuiSprites().getSprite(sprite); #else ((MinecraftMixin) Minecraft.getInstance()).getModelManager().getAtlas(sprite).getSprite(sprite); #endif
+        TextureAtlasSprite textureAtlasSprite = ((GuiGraphicsMixin) guiGraphics).getGuiSprites().getSprite(sprite);
 
         return getSpriteContentsDimensions(#if MC_VER <= V1_21_5 guiGraphics, #endif textureAtlasSprite);
     }
@@ -91,9 +88,10 @@ public class GuiRenderer {
     /**
      * <h5> Texture dimensions </h5>
      * Returns texture dimensions in atlas
+     * @since 1.20.4
      */
     protected static Dimensions getTextureDimensions(GuiGraphics guiGraphics, ResourceLocation sprite, Dimensions spriteDimensions) {
-        TextureAtlasSprite textureAtlasSprite = #if MC_VER >= V1_20_4 ((GuiGraphicsMixin) guiGraphics).getGuiSprites().getSprite(sprite); #else ((MinecraftMixin) Minecraft.getInstance()).getModelManager().getAtlas(new ResourceLocation("textures/atlas/decorated_pot.png")).getSprite(sprite); #endif
+        TextureAtlasSprite textureAtlasSprite = #if MC_VER >= V1_20_4 ((GuiGraphicsMixin) guiGraphics).getGuiSprites().getSprite(sprite); #else ((MinecraftInterfaceMixin) Minecraft.getInstance()).getModelManager().getAtlas(new ResourceLocation("textures/atlas/decorated_pot.png")).getSprite(sprite); #endif
 
         return getTextureDimensions(#if MC_VER <= V1_21_5 guiGraphics, #endif textureAtlasSprite, spriteDimensions);
     }
@@ -106,6 +104,8 @@ public class GuiRenderer {
                 (int) (((float) spriteDimensions.height / spriteContentsDimensions.height) * spriteContentsDimensions.height + 0.9f)
         );
     }
+    #endif
+    //endregion
 
 
     //region color
@@ -123,8 +123,10 @@ public class GuiRenderer {
      * Not to be used in versions after 1.21.5
      */
     public static void setShaderColor(GuiGraphics guiGraphics, float red, float green, float blue, float alpha) {
-        guiGraphics.flush();
+        RenderSystem.enableBlend();
+        RenderSystem.depthMask(false);
         RenderSystem.setShaderColor(red, green, blue, alpha);
+        guiGraphics.flush();
     }
 
     /**
@@ -136,13 +138,15 @@ public class GuiRenderer {
      * Not to be used in versions after 1.21.5
      */
     public static void setShaderColor(GuiGraphics guiGraphics, int color) {
-        guiGraphics.flush();
+        RenderSystem.enableBlend();
+        RenderSystem.depthMask(false);
         RenderSystem.setShaderColor(
                 ((color >> 16) & 0xFF) / 255.0f,
                 ((color >> 8) & 0xFF) / 255.0f,
                 ((color) & 0xFF) / 255.0f,
                 ((color >> 24) & 0xFF) / 255.0f
         );
+        guiGraphics.flush();
     }
 
     /**
@@ -154,8 +158,10 @@ public class GuiRenderer {
      * Not to be used in versions after 1.21.5
      */
     public static void setShaderAlpha(GuiGraphics guiGraphics, int alpha) {
-        guiGraphics.flush();
+        RenderSystem.enableBlend();
+        RenderSystem.depthMask(false);
         RenderSystem.setShaderColor(1, 1, 1, alpha);
+        guiGraphics.flush();
     }
 
     /**
@@ -165,8 +171,10 @@ public class GuiRenderer {
      * Not to be used in versions after 1.21.5
      */
     public static void clearShaderColor(GuiGraphics guiGraphics) {
-        guiGraphics.flush();
+        RenderSystem.disableBlend();
+        RenderSystem.depthMask(true);
         RenderSystem.setShaderColor(1, 1, 1, 1);
+        guiGraphics.flush();
     }
     #endif
     //endregion
@@ -181,6 +189,8 @@ public class GuiRenderer {
      * @param sprite sprite to render
      * @param blitRectangle Blit rectangle (x, y, width, height)
      * @param textureRectangle Texture rectangle (y, v, texture width, texture height)
+     * <p>
+     * Warning! do not call without any sizes in versions before 1.20.4
      */
     public static void blitSprite(
             GuiGraphics guiGraphics,
@@ -201,6 +211,8 @@ public class GuiRenderer {
      * @param sprite sprite to render
      * @param blitRectangle Blit rectangle (x, y, width, height)
      * @param textureRectangle Texture rectangle (y, v, texture width, texture height)
+     * <p>
+     * Warning! do not call without any sizes in versions before 1.20.4
      */
     public static void blitSprite(
             GuiGraphics guiGraphics,
@@ -252,6 +264,8 @@ public class GuiRenderer {
      * pipeline - graphics pipeline
      * @param sprite sprite to render
      * @param blitRectangle Blit rectangle (x, y, width, height)
+     * <p>
+     * Warning! do not call without any sizes in versions before 1.20.4
      */
     public static void blitSprite(
             GuiGraphics guiGraphics,
@@ -271,6 +285,8 @@ public class GuiRenderer {
      * @param sprite sprite to render
      * @param blitRectangle Blit rectangle (x, y, width, height)
      * @param color Color as integer
+     * <p>
+     * Warning! do not call without any sizes in versions before 1.20.4
      */
     public static void blitSprite(
             GuiGraphics guiGraphics,
@@ -311,6 +327,9 @@ public class GuiRenderer {
         }
     }
 
+    #if MC_VER >= V1_20_4 static boolean warned = false; #endif
+
+
     protected static void blitSprite(
             GuiGraphics guiGraphics,
             #if MC_VER >= V1_21_6 RenderPipeline pipeline, #elif MC_VER >= V1_21_3 Function<ResourceLocation, RenderType> pipeline, #endif
@@ -318,8 +337,16 @@ public class GuiRenderer {
             int x, int y,
             @Nullable Integer color
     ) {
-        Dimensions spriteDimensions = getSpriteContentsDimensions(guiGraphics, sprite);
-        blitSpriteAbstract(guiGraphics, color, () -> guiGraphics #if MC_VER >= V1_20_4 .blitSprite(#if MC_VER >= V1_21_3 pipeline, #endif sprite, x, y, spriteDimensions.width, spriteDimensions.height #if MC_VER >= V1_21_6 , (color != null) ? color : -1 #endif)); #else .blit(sprite, x, y, 0, 0, spriteDimensions.width, spriteDimensions.height, spriteDimensions.width, spriteDimensions.height)); #endif
+        #if MC_VER >= V1_20_4 Dimensions spriteDimensions = getSpriteContentsDimensions(guiGraphics, sprite); #endif
+        blitSpriteAbstract(
+                guiGraphics, color,
+                () -> guiGraphics
+                #if MC_VER >= V1_20_4
+                .blitSprite(#if MC_VER >= V1_21_3 pipeline, #endif sprite, x, y, spriteDimensions.width, spriteDimensions.height #if MC_VER >= V1_21_6 , (color != null) ? color : -1 #endif));
+                #else
+                .blit(sprite, x, y, 0, 0, 16, 16)
+        );
+        #endif
     }
 
     protected static void blitSprite(
@@ -330,11 +357,15 @@ public class GuiRenderer {
             int width, int height,
             @Nullable Integer color
     ) {
-        #if MC_VER <= V1_20_1
-        Dimensions textureDimensions = getTextureDimensions(guiGraphics, sprite, new Dimensions(width, height));
+        blitSpriteAbstract(
+                guiGraphics, color,
+                () -> guiGraphics
+                #if MC_VER >= V1_20_4
+                .blitSprite(#if MC_VER >= V1_21_3 pipeline, #endif sprite, x, y, width, height #if MC_VER >= V1_21_6 , (color != null) ? color : -1 #endif));
+                #else
+                .blit(sprite, x, y, 0, 0, width, height, width, height)
+        );
         #endif
-
-        blitSpriteAbstract(guiGraphics, color, () -> guiGraphics #if MC_VER >= V1_20_4 .blitSprite(#if MC_VER >= V1_21_3 pipeline, #endif sprite, x, y, width, height #if MC_VER >= V1_21_6 , (color != null) ? color : -1 #endif)); #else .blit(sprite, x, y, 0, 0, width, height, textureDimensions.width, textureDimensions.height)); #endif
     }
 
     protected static void blitSprite(
@@ -346,8 +377,16 @@ public class GuiRenderer {
             int width, int height,
             @Nullable Integer color
     ) {
-        Dimensions textureDimensions = getTextureDimensions(guiGraphics, sprite, new Dimensions(width, height));
-        blitSpriteAbstract(guiGraphics, color, () -> guiGraphics #if MC_VER >= V1_20_4 .blitSprite(#if MC_VER >= V1_21_3 pipeline, #endif sprite, textureDimensions.width, textureDimensions.height, u, v, x, y, width, height #if MC_VER >= V1_21_6 , (color != null) ? color : -1 #endif)); #else .blit(sprite, x, y, u, v, width, height, textureDimensions.width, textureDimensions.height)); #endif
+        #if MC_VER >= V1_20_4 Dimensions textureDimensions = getTextureDimensions(guiGraphics, sprite, new Dimensions(width, height)); #endif
+        blitSpriteAbstract(
+                guiGraphics, color,
+                () -> guiGraphics
+                #if MC_VER >= V1_20_4
+                .blitSprite(#if MC_VER >= V1_21_3 pipeline, #endif sprite, textureDimensions.width, textureDimensions.height, u, v, x, y, width, height #if MC_VER >= V1_21_6 , (color != null) ? color : -1 #endif));
+                #else
+                .blit(sprite, x, y, u, v, width, height)
+        );
+        #endif
     }
 
     protected static void blitSprite(
@@ -360,9 +399,18 @@ public class GuiRenderer {
             int width, int height,
             @Nullable Integer color
     ) {
-        blitSpriteAbstract(guiGraphics, color, () -> guiGraphics #if MC_VER >= V1_20_4 .blitSprite(#if MC_VER >= V1_21_3 pipeline, #endif sprite, textureWidth, textureHeight, u, v, x, y, width, height #if MC_VER >= V1_21_6 , (color != null) ? color : -1 #endif)); #else .blit(sprite, x, y, u, v, width, height, textureWidth, textureHeight)); #endif
+        blitSpriteAbstract(
+                guiGraphics, color,
+                () -> guiGraphics
+                #if MC_VER >= V1_20_4
+                .blitSprite(#if MC_VER >= V1_21_3 pipeline, #endif sprite, textureWidth, textureHeight, u, v, x, y, width, height #if MC_VER >= V1_21_6 , (color != null) ? color : -1 #endif));
+                #else
+                .blit(sprite, x, y, u, v, width, height, 256, 256)
+        );
+        #endif
     }
     //endregion
+
 
     //region blit
 

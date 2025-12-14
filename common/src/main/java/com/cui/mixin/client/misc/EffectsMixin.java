@@ -111,7 +111,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import java.util.function.Function;
 
 // Effects background
-
 @Mixin(#if MC_VER >= V1_21_3 EffectsInInventory.class #else Minecraft.class #endif)
 public class EffectsMixin {
     #if MC_VER >= V1_21_6
