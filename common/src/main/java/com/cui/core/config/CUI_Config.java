@@ -156,6 +156,14 @@ public class CUI_Config {
         return (this.color.getAlpha() << 24) | (this.color.getRed() << 16) | (this.color.getGreen() << 8) | this.color.getBlue();
     }
 
+    public int getRGBA(float alpha) {
+        return ((int)(alpha * 255.0f) << 24) | (this.color.getRed() << 16) | (this.color.getGreen() << 8) | this.color.getBlue();
+    }
+
+    public float[] getHSV() {
+        return Color.RGBtoHSB((int) (CUI.cuiConfig.r * 255.0f), (int) (CUI.cuiConfig.g * 255.0f), (int) (CUI.cuiConfig.b * 255.0f), null);
+    }
+
     public int getTextColor(int originalColor) {
         float[] hsv = Color.RGBtoHSB((int) (CUI.cuiConfig.r * 255.0f), (int) (CUI.cuiConfig.g * 255.0f), (int) (CUI.cuiConfig.b * 255.0f), null);
         float avg = (((originalColor) & 0xFF) + ((originalColor >> 8) & 0xFF) + ((originalColor >> 16) & 0xFF)) / 3.0f;

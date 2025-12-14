@@ -4,6 +4,7 @@ package com.cui.core;
 import com.cui.core.config.CUI_Config;
 #if MC_VER >= V1_21_6 import com.mojang.blaze3d.shaders.ShaderType; #endif
 import dev.architectury.event.events.client.ClientLifecycleEvent;
+import dev.architectury.platform.Platform;
 import net.minecraft.client.KeyMapping;
 
 import java.io.IOException;
@@ -39,17 +40,6 @@ public final class CUI {
     public static void initializeServer() {}
 
     public static void initializeClient() {
-        /*
-        OPEN_CUI_CONFIG = new KeyMapping(
-                "key.cui.open_config",
-                InputConstants.Type.KEYSYM,
-                InputConstants.KEY_V,
-                "key.categories.cui"
-        );
-
-        KeyMappingRegistry.register(OPEN_CUI_CONFIG);
-        */
-
 
         ClientLifecycleEvent.CLIENT_STARTED.register((minecraft) -> {
             try {
@@ -57,6 +47,11 @@ public final class CUI {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
+
+            #if LOADER == COMMON LOGGER.info("CUI loader mode: COMMON"); #endif
+            #if LOADER == FABRIC LOGGER.info("CUI loader mode: FABRIC"); #endif
+            #if LOADER == NEOFORGE LOGGER.info("CUI loader mode: NEOFORGE"); #endif
+            #if LOADER == FORGE LOGGER.info("CUI loader mode: FORGE"); #endif
         });
 
         ClientLifecycleEvent.CLIENT_STOPPING.register((minecraft) -> {

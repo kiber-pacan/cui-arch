@@ -22,4 +22,9 @@ dependencies {
 
 loom {
     accessWidenerPath = file("src/main/resources/cui.accesswidener")
+    mixin {
+        useLegacyMixinAp = true
+        defaultRefmapName = "cui.refmap.json"
+        add sourceSets.main, "cui.mixins.refmap.json"
+    }
 }

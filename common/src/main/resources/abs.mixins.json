@@ -1,11 +1,11 @@
 {
   "required": true,
   "package": "com.cui.abs.core.mixin",
-  "compatibilityLevel": "JAVA_21",
+  "compatibilityLevel": "JAVA_17",
   "minVersion": "0.8",
   "client": [
-    "rendering.data.MinecraftMixin",
-    "rendering.gui.GuiGraphicsMixin"
+    "rendering.data.MinecraftInterfaceMixin",
+    "rendering.gui.GuiGraphicsAccessor"
   ],
   "mixins": [
   ],

@@ -57,11 +57,13 @@ public class ColorScreen extends Screen {
         GuiRenderer.blitSprite(
                 guiGraphics,
                 "GUI_TEXTURED",
-                ResourceBridge.withDefaultNamespace("test"),
+                ResourceBridge.spriteNamespace(CUI.MOD_ID, "test"),
                 new Rectangle(20, 100, 32, 32),
                 CUI.cuiConfig.getRGB()
         );
     }
+    // minecraft/textures/gui/sprites/test.png
+    // cui/textures/gui/sprites/test.png
 
     @Override
     public void onClose() {

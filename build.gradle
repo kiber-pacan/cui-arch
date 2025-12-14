@@ -14,6 +14,7 @@ project.gradle.ext.getProperties().each { prop ->
         rootProject.ext.set(prop.key, prop.value)
 }
 
+
 architectury {
     minecraft = project.minecraft_version
 }
@@ -32,6 +33,31 @@ allprojects {
             name = 'ParchmentMC'
             url = 'https://maven.parchmentmc.org'
         }
+    }
+
+    def loaders = [
+            "common" : 0,
+            "fabric" : 1,
+            "neoforge" : 2,
+            "forge" : 3
+    ]
+
+    def taskNames = gradle.startParameter.taskNames
+    def loader = "common"
+
+    if (!taskNames.isEmpty()) {
+        def firstTask = taskNames[0]
+        def parts = firstTask.split(':')
+        if (parts.size() > 1) {
+            loader = parts[1]
+        }
+    }
+
+    println("Loader: ${loader}")
+
+    tasks.withType(JavaCompile).configureEach {
+        options.annotationProcessorGeneratedSourcesDirectory = file("$buildDir/generated/sources/annotations")
+        options.compilerArgs += ["-ALOADER=${loaders[loader]}"]
     }
 }
 
@@ -122,6 +148,8 @@ subprojects {
 
     dependencies {
         annotationProcessor("systems.manifold:manifold-preprocessor:${manifold_version}")
+        testAnnotationProcessor("systems.manifold:manifold-preprocessor:${manifold_version}")
+
         minecraft "net.minecraft:minecraft:$rootProject.minecraft_version"
 
         mappings loom.layered() {

@@ -2,12 +2,6 @@ plugins {
     id 'com.gradleup.shadow'
 }
 
-loom {
-    forge {
-        mixinConfig "cui.mixins.json"
-    }
-}
-
 architectury {
     platformSetupLoomIde()
     forge()
@@ -55,4 +49,16 @@ shadowJar {
 
 remapJar {
     inputFile.set shadowJar.archiveFile
+}
+
+loom {
+    mixin {
+        useLegacyMixinAp = true
+        defaultRefmapName = "cui.refmap.json"
+        add sourceSets.main, "cui.mixins.refmap.json"
+    }
+
+    forge {
+        mixinConfig "cui.mixins.forge.json"
+    }
 }

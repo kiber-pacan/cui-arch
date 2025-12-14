@@ -4,7 +4,7 @@ echo "-------------------------------"
 echo "------------BUILDING-----------"
 echo "-------------------------------"
 mkdir -p buildAllJars | true
-y=6
+y=5
 
 for i in $(seq 1 $END); do
     sh gradlew clean -Pindex="$y"
