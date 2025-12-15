@@ -11,6 +11,7 @@ import org.joml.Matrix4f;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.ModifyArg;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -21,11 +22,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class DrawStringMixin {
     #if LOADER != FORGE && LOADER != NEOFORGE
     #if MC_VER >= V1_21_6
-    @Inject(at = @At(value = "HEAD"), method = "drawString(Lnet/minecraft/client/gui/Font;Lnet/minecraft/util/FormattedCharSequence;IIIZ)V")
-    private void drawInBatch(Font font, FormattedCharSequence text, int x, int y, int color, boolean drawShadow, CallbackInfo ci) {
-        if (((color) & 0xFF) == ((color >> 8) & 0xFF) && ((color >> 8) & 0xFF) == ((color >> 16) & 0xFF)) color = CUI.cuiConfig.getTextColor(color);
-    }
+    @ModifyArg(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/render/state/GuiRenderState;submitText(Lnet/minecraft/client/gui/render/state/GuiTextRenderState;)V"), method = "drawString(Lnet/minecraft/client/gui/Font;Lnet/minecraft/util/FormattedCharSequence;IIIZ)V")
+    private GuiTextRenderState injected(GuiTextRenderState renderState) {
+        if (((renderState.color) & 0xFF) == ((renderState.color >> 8) & 0xFF) && ((renderState.color >> 8) & 0xFF) == ((renderState.color >> 16) & 0xFF)) {
+            return new GuiTextRenderState(renderState.font, renderState.text, renderState.pose, renderState.x, renderState.y, CUI.cuiConfig.getTextColor(renderState.color), renderState.backgroundColor, renderState.dropShadow, renderState.scissor);
+        }
 
+        return renderState;
+    }
     #else
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;drawInBatch(Lnet/minecraft/util/FormattedCharSequence;FFIZLorg/joml/Matrix4f;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/client/gui/Font$DisplayMode;II)I"), method = "drawString(Lnet/minecraft/client/gui/Font;Lnet/minecraft/util/FormattedCharSequence;IIIZ)I")
     private int drawInBatch(Font instance, FormattedCharSequence text, float x, float y, int color, boolean dropShadow, Matrix4f matrix, MultiBufferSource buffer, Font.DisplayMode displayMode, int backgroundColor, int packedLightCoords)
