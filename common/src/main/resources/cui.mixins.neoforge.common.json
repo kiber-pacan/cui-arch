@@ -20,6 +20,7 @@
     "client.misc.widgets.LogoMixin",
     "client.misc.widgets.ScrollerMixin",
     "client.misc.widgets.SliderMixin",
+    "client.misc.widgets.TooltipMixin",
     "client.screen.container.AnvilMixin",
     "client.screen.container.BeaconMixin",
     "client.screen.container.BrewingMixin",

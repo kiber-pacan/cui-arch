@@ -9,6 +9,8 @@
     "client.book.RecipeBookMixin",
     "client.book.RecipeBookTabsMixin",
     "client.experince.ExperienceBarRendererMixin",
+    "client.misc.widgets.TooltipMixin",
+
     "client.experince.ExperienceLevelRendererMixin",
     "client.misc.EffectsMixin",
     "client.misc.LensMixin",
