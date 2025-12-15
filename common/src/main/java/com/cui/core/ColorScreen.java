@@ -153,8 +153,7 @@ public class ColorScreen extends Screen {
         });
 
 
-        // Enable button
-        /*
+        #if MC_VER >= V1_21
         rowHelper.addChild(
                 Checkbox.builder(Component.literal("Enable CUI button"), this.font)
                         #if MC_VER >= V1_21 .maxWidth(width) #endif
@@ -164,8 +163,8 @@ public class ColorScreen extends Screen {
                             CUI.cuiConfig.saveConfig();
                         })
                         .build());
+        #endif
 
-         */
 
         this.layout.addToContents(gridLayout);
         this.layout.addToFooter(
