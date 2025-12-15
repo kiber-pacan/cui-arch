@@ -30,7 +30,7 @@ public abstract class TitleScreenMixin extends Screen {
     protected TitleScreenMixin(Component title) {
         super(title);
     }
-    /*
+    #if MC_VER >= V1_21
     @Unique
     private static #if MC_VER >= V1_20_4 SpriteIconButton #else ImageButton #endif cui$cui(int width, Button.OnPress onPress, boolean iconOnly) {
         return #if MC_VER >= V1_20_4 SpriteIconButton #else ImageButton #endif.builder(Component.translatable("options.cui"), onPress, iconOnly)
@@ -38,7 +38,7 @@ public abstract class TitleScreenMixin extends Screen {
                 .sprite(#if MC_VER < V1_21 new #endif ResourceLocation #if MC_VER >= V1_21 .withDefaultNamespace #endif("cui_button"), 16, 16)
                 .build();
     }
-    */
+    #endif
 
     // I think it looks better when we have colorful gradient
     @Inject(at = @At(value = "INVOKE", target = #if MC_VER >= V1_21 "Lnet/minecraft/client/gui/screens/TitleScreen;renderPanorama(Lnet/minecraft/client/gui/GuiGraphics;F)V" #else "Lnet/minecraft/client/renderer/PanoramaRenderer;render(FF)V" #endif, shift = At.Shift.AFTER), method = "render")
@@ -51,7 +51,7 @@ public abstract class TitleScreenMixin extends Screen {
     }
 
 
-    /*
+
     #if MC_VER >= V1_21_6
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/SpriteIconButton;setPosition(II)V", ordinal = 0), method = "init")
     private void init(SpriteIconButton instance, int x, int y) {
@@ -68,6 +68,7 @@ public abstract class TitleScreenMixin extends Screen {
         }
     }
     #else
+    #if MC_VER >= V1_21
     // CUI button init
     @Redirect(at = @At(value = "INVOKE", target = #if MC_VER >= V1_20_4 "Lnet/minecraft/client/gui/components/SpriteIconButton;setPosition(II)V" #else "" #endif, ordinal = 0), method = "init")
     private void init(#if MC_VER >= V1_20_4 SpriteIconButton #else ImageButton #endif instance, int x, int y) {
@@ -84,12 +85,6 @@ public abstract class TitleScreenMixin extends Screen {
         }
     }
 
-    // Degenerate logo hack
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/components/SplashRenderer;render(Lnet/minecraft/client/gui/GuiGraphics;ILnet/minecraft/client/gui/Font;I)V", shift = At.Shift.AFTER), method = "render")
-    private void render2(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
-        RenderSystem.setShaderColor(1, 1, 1, 1);
-    }
     #endif
-
-     */
+    #endif
 }
