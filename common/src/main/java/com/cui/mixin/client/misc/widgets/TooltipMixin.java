@@ -1,5 +1,7 @@
 package com.cui.mixin.client.misc.widgets;
 
+import com.cui.abs.core.data.Rectangle;
+import com.cui.abs.core.rendering.gui.GuiRenderer;
 import com.cui.core.CUI;
 #if MC_VER >= V1_21_6 import com.cui.mixin.client.book.RecipeBookMixin;
 import com.mojang.blaze3d.pipeline.RenderPipeline; #endif
@@ -56,11 +58,10 @@ import java.util.function.Function;
 
 @Mixin(TooltipRenderUtil.class)
 public class TooltipMixin {
-
     #if MC_VER >= V1_21_6
-    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 1), method = "renderTooltipBackground")
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIII)V"), method = "renderTooltipBackground")
     private static void injected(GuiGraphics instance, RenderPipeline pipeline, ResourceLocation sprite, int x, int y, int width, int height) {
-        instance.blitSprite(pipeline, sprite, x, y, width, height, CUI.cuiConfig.getRGB());
+        GuiRenderer.blitSprite(instance, "GUI_TEXTURED", sprite, new Rectangle(x, y, width, height), CUI.cuiConfig.getRGB());
     }
     #elif MC_VER >= V1_21_3
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Ljava/util/function/Function;Lnet/minecraft/resources/ResourceLocation;IIII)V"), method = "renderTooltipBackground")
