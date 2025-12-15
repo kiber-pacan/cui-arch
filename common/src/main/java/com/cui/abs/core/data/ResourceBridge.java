@@ -14,6 +14,6 @@ public class ResourceBridge {
 
     public static ResourceLocation spriteNamespace(String namespace, String location) {
         String formattedLocation = #if MC_VER <= V1_20_1 "textures/gui/sprites/" + #endif location #if MC_VER <= V1_20_1 + ".png" #endif;
-        return #if MC_VER >= V1_21 ResourceLocation.withNamespace(namespace, formattedLocation) #else new ResourceLocation(namespace, formattedLocation) #endif;
+        return #if MC_VER >= V1_21 ResourceLocation #if MC_VER >= V1_21_3 .fromNamespaceAndPath #else .fromNamespaceAndPath #endif(namespace, formattedLocation) #else new ResourceLocation(namespace, formattedLocation) #endif;
     }
 }

@@ -32,11 +32,10 @@ versionRange = "[${architectury_api_version},)"
 ordering = "AFTER"
 side = "BOTH"
 
+
+[[mixins]]
+config = "${modid}.mixins.json"
+
 [[mixins]]
 config = "${modid}.mixins.neoforge.json"
-
-[[mixins]]
-config = "${modid}.mixins.neoforge.common.json"
-
-
 

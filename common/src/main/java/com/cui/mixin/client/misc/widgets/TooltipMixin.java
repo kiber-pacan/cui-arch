@@ -1,7 +1,7 @@
 package com.cui.mixin.client.misc.widgets;
 
 import com.cui.core.CUI;
-#if MC_VER >= V1_21_6 import com.cui.mixin.client.shitass.book.RecipeBookMixin;
+#if MC_VER >= V1_21_6 import com.cui.mixin.client.book.RecipeBookMixin;
 import com.mojang.blaze3d.pipeline.RenderPipeline; #endif
 
 
@@ -64,7 +64,7 @@ public class TooltipMixin {
     }
     #elif MC_VER >= V1_21_3
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Ljava/util/function/Function;Lnet/minecraft/resources/ResourceLocation;IIII)V"), method = "renderTooltipBackground")
-    private static void injected(GuiGraphics inserver portstance, Function<ResourceLocation, RenderType> renderTypeGetter, ResourceLocation sprite, int x, int y, int width, int height) {
+    private static void injected(GuiGraphics instance, Function<ResourceLocation, RenderType> renderTypeGetter, ResourceLocation sprite, int x, int y, int width, int height) {
         instance.blitSprite(renderTypeGetter, sprite, x, y, width, height, CUI.cuiConfig.getRGB());
     }
     #elif LOADER == FORGE

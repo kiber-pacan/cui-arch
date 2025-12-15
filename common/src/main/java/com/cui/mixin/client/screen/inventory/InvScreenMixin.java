@@ -96,7 +96,7 @@ public abstract class InvScreenMixin #if MC_VER >= V1_21_3 extends AbstractRecip
 			guiGraphics.renderItem(Items.KNOWLEDGE_BOOK.getDefaultInstance(), (int) (((float) a / 2) + 18), (int) (((float) b / 2) - 21));
 		}
 
-        GuiRenderer.setShaderColor(guiGraphics, CUI.cuiConfig.getRGB());
+        GuiRenderer.clearShaderColor(guiGraphics);
 	}
     #endif
 }

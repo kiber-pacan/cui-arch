@@ -58,12 +58,13 @@ public abstract class SelectionListMixin #if MC_VER < V1_21 && MC_VER == V1_20_4
         );
     }
 
-    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;setColor(FFFF)V", ordinal = 0), method = "render")
+    #if MC_VER >= V1_20_4
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;setColor(FFFF)V", ordinal = 0), method = "renderWidget")
     private void setBackgroundColor1(GuiGraphics instance, float red, float green, float blue, float alpha) {
         GuiRenderer.setShaderColor(instance, CUI.cuiConfig.getRGB());
     }
 
-    #if MC_VER <= V1_20_1
+    #else
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;setColor(FFFF)V", ordinal = 2), method = "render")
     private void setBackgroundColor2(GuiGraphics instance, float red, float green, float blue, float alpha) {
         GuiRenderer.setShaderColor(instance, CUI.cuiConfig.getRGB());

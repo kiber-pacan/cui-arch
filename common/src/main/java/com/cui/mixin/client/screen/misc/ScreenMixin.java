@@ -48,41 +48,17 @@ public abstract class ScreenMixin {
         instance.blit(pipeline, atlas, x, y, u, v, width, height, textureWidth, textureHeight, CUI.cuiConfig.getRGB());
     }
     #else
-	@Inject(at = @At(value = "HEAD"), method = "render")
-	private void renderHead(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
-        #if MC_VER >= V1_21_3
-        guiGraphics.flush();
-        RenderSystem.setShaderColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1);
-        #endif
-        #if MC_VER <= V1_21_1 guiGraphics.setColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1); #endif
-    }
 
-	@Inject(at = @At(value = "TAIL"), method = "render")
-	private void renderTail(GuiGraphics guiGraphics, int mouseX, int mouseY, float partialTick, CallbackInfo ci) {
-        #if MC_VER >= V1_21_3
-        guiGraphics.flush();
-        RenderSystem.setShaderColor(1, 1, 1, 1);
-        #endif
-        #if MC_VER <= V1_21_1 guiGraphics.setColor(1, 1, 1, 1); #endif
-    }
 
 
 	@Inject(at = @At(value = "HEAD"), method = "renderBackground")
-	private void renderHead1(GuiGraphics guiGraphics, CallbackInfo ci) {
-        #if MC_VER >= V1_21_3
-        guiGraphics.flush();
-        RenderSystem.setShaderColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1);
-        #endif
-        #if MC_VER <= V1_21_1 guiGraphics.setColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1); #endif
+	private void renderHead1(GuiGraphics guiGraphics, #if MC_VER >= V1_20_4 int mouseX, int mouseY, float partialTick, #endif CallbackInfo ci) {
+        GuiRenderer.setShaderColor(guiGraphics, CUI.cuiConfig.getRGB());
     }
 
 	@Inject(at = @At(value = "TAIL"), method = "renderBackground")
-	private void renderTail1(GuiGraphics guiGraphics, CallbackInfo ci) {
-        #if MC_VER >= V1_21_3
-        guiGraphics.flush();
-        RenderSystem.setShaderColor(1, 1, 1, 1);
-        #endif
-        #if MC_VER <= V1_21_1 guiGraphics.setColor(1, 1, 1, 1); #endif
+	private void renderTail1(GuiGraphics guiGraphics, #if MC_VER >= V1_20_4 int mouseX, int mouseY, float partialTick, #endif CallbackInfo ci) {
+        GuiRenderer.clearShaderColor(guiGraphics);
     }
     #endif
 
