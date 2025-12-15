@@ -3,10 +3,18 @@ package com.cui.abs.core.mixin.rendering.gui;
 import net.minecraft.client.gui.GuiGraphics;
 #if MC_VER <= V1_21_5 && MC_VER >= V1_20_4 import net.minecraft.client.gui.GuiSpriteManager; #endif
 #if MC_VER >= V1_20_4
+
+import net.minecraft.client.renderer.texture.TextureAtlas;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
+#endif
+
+#if MC_VER <= V1_21_8 && MC_VER > V1_20_1
+import net.minecraft.client.gui.GuiSpriteManager;
 #endif
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
+import org.spongepowered.asm.mixin.gen.Invoker;
 
 
 #if MC_VER >= V1_21_5
@@ -20,7 +28,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface GuiGraphicsAccessor {
     #if MC_VER >= V1_20_4
 
-    #if MC_VER >= V1_21_6
+    #if MC_VER >= V1_21_9
     @Accessor("guiSprites")
     TextureAtlas getGuiSprites();
     #else
@@ -28,7 +36,7 @@ public interface GuiGraphicsAccessor {
     GuiSpriteManager getGuiSprites();
     #endif
 
-    #if MC_VER >= V1_21_6
+    #if MC_VER >= V1_21_9
     @Invoker("getSpriteScaling")
     static GuiSpriteScaling getSpriteScaling(TextureAtlasSprite sprite) {
         return null;

@@ -13,7 +13,7 @@ import com.mojang.blaze3d.pipeline.RenderPipeline;
 #endif
 
 import com.cui.core.CUI;
-#if MC_VER >= V1_21_6 import com.cui.mixin.client.shitass.book.RecipeBookMixin;
+#if MC_VER >= V1_21_6 import com.cui.mixin.client.book.RecipeBookMixin;
 import com.mojang.blaze3d.pipeline.RenderPipeline; #endif
 
 
@@ -60,7 +60,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import com.cui.core.CUI;
-#if MC_VER >= V1_21_6 import com.cui.mixin.client.shitass.book.RecipeBookMixin;
+#if MC_VER >= V1_21_6 import com.cui.mixin.client.book.RecipeBookMixin;
 import com.mojang.blaze3d.pipeline.RenderPipeline; #endif
 
 

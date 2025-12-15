@@ -15,7 +15,6 @@
     "client.misc.RecipeBookComponentMixin",
     "client.misc.SplashMixin",
     "client.misc.TextMixin",
-    "client.misc.main.DrawStringMixin",
     "client.misc.main.HUDMixin",
     "client.misc.widgets.ButtonMixin",
     "client.misc.widgets.LogoMixin",

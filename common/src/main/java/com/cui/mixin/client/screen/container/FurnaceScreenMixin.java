@@ -3,7 +3,7 @@ package com.cui.mixin.client.screen.container;
 
 import com.cui.abs.core.rendering.gui.GuiRenderer;
 import com.cui.core.CUI;
-#if MC_VER >= V1_21_6 import com.cui.mixin.client.shitass.book.RecipeBookMixin;
+#if MC_VER >= V1_21_6 import com.cui.mixin.client.book.RecipeBookMixin;
 import com.mojang.blaze3d.pipeline.RenderPipeline; #endif
 import com.cui.mixin.client.book.RecipeBookMixin;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -91,11 +91,7 @@ public abstract class FurnaceScreenMixin #if MC_VER >= V1_21_3 extends AbstractR
 
 	@Inject(at = @At(value = "TAIL"), method = "renderBg")
 	private void renderTail(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY, CallbackInfo ci) {
-        #if MC_VER >= V1_21_3
-        guiGraphics.flush();
-        RenderSystem.setShaderColor(1, 1, 1, 1);
-        #endif
-        #if MC_VER <= V1_21_1 guiGraphics.setColor(1, 1, 1, 1); #endif
+        GuiRenderer.clearShaderColor(guiGraphics);
 
 		int a = Minecraft.getInstance().getWindow().getGuiScaledWidth(), b = Minecraft.getInstance().getWindow().getGuiScaledHeight();
         if (#if MC_VER <= V1_21_1 recipeBookComponent #else ((RecipeBookMixin)(Object)this).getRecipeBookComponent() #endif .isVisible()) {
@@ -104,19 +100,15 @@ public abstract class FurnaceScreenMixin #if MC_VER >= V1_21_3 extends AbstractR
             guiGraphics.renderItem(Items.KNOWLEDGE_BOOK.getDefaultInstance(), (int) (((float) a / 2) - 66), (int) (((float) b / 2) - 48));
 		}
 
-        #if MC_VER >= V1_21_3
-        guiGraphics.flush();
-        RenderSystem.setShaderColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1);
-        #endif
-        #if MC_VER <= V1_21_1 guiGraphics.setColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1); #endif
+        GuiRenderer.setShaderColor(guiGraphics, CUI.cuiConfig.getRGB());
     }
-    #if MC_VER <= V1_20_1
+    #if MC_VER <= V1_21_5
     @Inject(at = @At(value = "HEAD"), method = "renderBg")
     private static void injected1(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY, CallbackInfo ci) {
         GuiRenderer.setShaderColor(guiGraphics, CUI.cuiConfig.getRGB());
     }
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V", shift = At.Shift.AFTER, ordinal = 0), method = "renderBg")
+    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blit(" #if MC_VER >= V1_21_3 + "Ljava/util/function/Function;" #endif + "Lnet/minecraft/resources/ResourceLocation;" #if MC_VER >= V1_21_3 + "IIFFIIII)V" #else + "IIIIII)V" #endif, shift = At.Shift.AFTER, ordinal = 0), method = "renderBg")
     private static void injected2(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY, CallbackInfo ci) {
         GuiRenderer.clearShaderColor(guiGraphics);
     }

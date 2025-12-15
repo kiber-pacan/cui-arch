@@ -13,7 +13,6 @@ import net.minecraft.client.gui.layouts.*;
 import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.screens.Screen;
 #if MC_VER >= V1_21_3
-import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.RenderType;
 #endif
 import net.minecraft.network.chat.Component;

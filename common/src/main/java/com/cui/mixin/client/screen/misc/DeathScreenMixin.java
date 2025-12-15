@@ -21,10 +21,10 @@ public class DeathScreenMixin extends Screen {
     }
 
     // Background
-	@Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;fillGradient(IIIIII)V"), method = #if MC_VER >= V1_20_4 "renderDeathBackground" #else "render" #endif)
-	private void render(GuiGraphics instance, int x1, int y1, int x2, int y2, int colorFrom, int colorTo) {
+	@Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;fillGradient(IIIIII)V"), method = #if MC_VER >= V1_21 "renderDeathBackground" #elif MC_VER >= V1_20_4 "renderBackground" #else "render" #endif)
+	private #if MC_VER >= V1_21 static  #endif void render(GuiGraphics instance, int x1, int y1, int x2, int y2, int colorFrom, int colorTo) {
         float[] hsv = Color.RGBtoHSB((int) (CUI.cuiConfig.r * 255.0f), (int) (CUI.cuiConfig.g * 255.0f), (int) (CUI.cuiConfig.b * 255.0f), null);
-        instance.fillGradient(0, 0, width, height,
+        instance.fillGradient(0, 0, #if MC_VER >= V1_21 x2, y2, #else  width, height, #endif
                 ((int)(CUI.cuiConfig.a * 255) << 24) | (Color.getHSBColor(hsv[0], hsv[1], hsv[2] / 2.7f).getRGB() & 0x00FFFFFF),
                 ((int)(CUI.cuiConfig.a * 255) << 24) | (Color.getHSBColor(hsv[0], hsv[1], hsv[2] / 5.0f).getRGB() & 0x00FFFFFF)
         );

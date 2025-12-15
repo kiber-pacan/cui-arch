@@ -2,9 +2,12 @@ package com.cui.abs.core.rendering.gui;
 
 import com.cui.abs.core.data.Rectangle;
 import com.cui.abs.core.mixin.rendering.data.MinecraftInterfaceMixin;
+import com.cui.abs.core.mixin.rendering.gui.GuiGraphicsAccessor;
+import com.cui.abs.core.rendering.data.RenderPipelineBridge;
 import com.cui.core.CUI;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
+
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 #if MC_VER >= V1_20_4
@@ -24,14 +27,24 @@ import com.mojang.blaze3d.pipeline.RenderPipeline;
 import com.mojang.blaze3d.systems.RenderSystem;
 
 import java.util.Currency;
+import java.util.Map;
+import java.util.Objects;
+import java.util.function.Function;
 import java.util.logging.Logger;
+#endif
+
+#if MC_VER >= V1_21_3
+import net.minecraft.client.renderer.RenderType;
+
+import java.util.Map;
+import java.util.Objects;
 #endif
 
 public class GuiRenderer {
     //region Helper
     public record Dimensions(int width, int height) {}
 
-    #if MC_VER >= V1_21
+    #if MC_VER >= V1_21_3
     private static final Map<String, #if MC_VER >= V1_21_6 RenderPipeline #elif MC_VER >= V1_21_3 Function<ResourceLocation, RenderType> #else Runnable #endif > ACTIONS = Map.of(
             "GUI_TEXTURED", RenderPipelineBridge.GUI_TEXTURED()
     );
@@ -39,26 +52,26 @@ public class GuiRenderer {
 
     #if MC_VER >= V1_20_4
     public static GuiSpriteScaling getSpriteScaling(GuiGraphics guiGraphics, ResourceLocation sprite) {
-        TextureAtlasSprite textureAtlasSprite = ((GuiGraphicsMixin) guiGraphics).getGuiSprites().getSprite(sprite);
+        TextureAtlasSprite textureAtlasSprite = ((GuiGraphicsAccessor) guiGraphics).getGuiSprites().getSprite(sprite);
 
-        #if MC_VER >= V1_21_6
-        return GuiGraphicsMixin.getSpriteScaling(textureAtlasSprite);
+        #if MC_VER >= V1_21_9
+        return GuiGraphicsAccessor.getSpriteScaling(textureAtlasSprite);
         #else
-        return ((GuiGraphicsMixin) guiGraphics).getGuiSprites().getSpriteScaling(textureAtlasSprite);
+        return ((GuiGraphicsAccessor) guiGraphics).getGuiSprites().getSpriteScaling(textureAtlasSprite);
         #endif
     }
 
     // Tile
     @Nullable
     public static GuiSpriteScaling.Tile getSpriteTile(GuiGraphics guiGraphics, ResourceLocation sprite) {
-        TextureAtlasSprite textureAtlasSprite = ((GuiGraphicsMixin) guiGraphics).getGuiSprites().getSprite(sprite);
+        TextureAtlasSprite textureAtlasSprite = ((GuiGraphicsAccessor) guiGraphics).getGuiSprites().getSprite(sprite);
 
-        return getSpriteTile(#if MC_VER <= V1_21_5 guiGraphics, #endif textureAtlasSprite);
+        return getSpriteTile(#if MC_VER <= V1_21_8 guiGraphics, #endif textureAtlasSprite);
     }
 
     @Nullable
-    public static GuiSpriteScaling.Tile getSpriteTile(#if MC_VER <= V1_21_5 GuiGraphics guiGraphics, #endif TextureAtlasSprite textureAtlasSprite) {
-        GuiSpriteScaling spriteScaling = #if MC_VER >= V1_21_6 GuiGraphicsMixin #else ((GuiGraphicsMixin) guiGraphics).getGuiSprites() #endif .getSpriteScaling(textureAtlasSprite);
+    public static GuiSpriteScaling.Tile getSpriteTile(#if MC_VER <= V1_21_8 GuiGraphics guiGraphics, #endif TextureAtlasSprite textureAtlasSprite) {
+        GuiSpriteScaling spriteScaling = #if MC_VER >= V1_21_9 GuiGraphicsAccessor #else ((GuiGraphicsAccessor) guiGraphics).getGuiSprites() #endif .getSpriteScaling(textureAtlasSprite);
 
         Objects.requireNonNull(spriteScaling);
 
@@ -71,13 +84,13 @@ public class GuiRenderer {
      * @since 1.20.4
      */
     protected static Dimensions getSpriteContentsDimensions(GuiGraphics guiGraphics, ResourceLocation sprite) {
-        TextureAtlasSprite textureAtlasSprite = ((GuiGraphicsMixin) guiGraphics).getGuiSprites().getSprite(sprite);
+        TextureAtlasSprite textureAtlasSprite = ((GuiGraphicsAccessor) guiGraphics).getGuiSprites().getSprite(sprite);
 
-        return getSpriteContentsDimensions(#if MC_VER <= V1_21_5 guiGraphics, #endif textureAtlasSprite);
+        return getSpriteContentsDimensions(#if MC_VER <= V1_21_8 guiGraphics, #endif textureAtlasSprite);
     }
 
-    public static Dimensions getSpriteContentsDimensions(#if MC_VER <= V1_21_5 GuiGraphics guiGraphics, #endif TextureAtlasSprite textureAtlasSprite) {
-        #if MC_VER >= V1_20_4 GuiSpriteScaling.Tile spriteTile = getSpriteTile(#if MC_VER <= V1_21_5 guiGraphics, #endif textureAtlasSprite); #endif
+    public static Dimensions getSpriteContentsDimensions(#if MC_VER <= V1_21_8 GuiGraphics guiGraphics, #endif TextureAtlasSprite textureAtlasSprite) {
+        #if MC_VER >= V1_20_4 GuiSpriteScaling.Tile spriteTile = getSpriteTile(#if MC_VER <= V1_21_8 guiGraphics, #endif textureAtlasSprite); #endif
 
         return new Dimensions(
                 #if MC_VER >= V1_20_4 (spriteTile != null) ? spriteTile.width() : #endif textureAtlasSprite.contents().width(),
@@ -91,13 +104,13 @@ public class GuiRenderer {
      * @since 1.20.4
      */
     protected static Dimensions getTextureDimensions(GuiGraphics guiGraphics, ResourceLocation sprite, Dimensions spriteDimensions) {
-        TextureAtlasSprite textureAtlasSprite = #if MC_VER >= V1_20_4 ((GuiGraphicsMixin) guiGraphics).getGuiSprites().getSprite(sprite); #else ((MinecraftInterfaceMixin) Minecraft.getInstance()).getModelManager().getAtlas(new ResourceLocation("textures/atlas/decorated_pot.png")).getSprite(sprite); #endif
+        TextureAtlasSprite textureAtlasSprite = #if MC_VER >= V1_20_4 ((GuiGraphicsAccessor) guiGraphics).getGuiSprites().getSprite(sprite); #else ((MinecraftInterfaceMixin) Minecraft.getInstance()).getModelManager().getAtlas(new ResourceLocation("textures/atlas/decorated_pot.png")).getSprite(sprite); #endif
 
-        return getTextureDimensions(#if MC_VER <= V1_21_5 guiGraphics, #endif textureAtlasSprite, spriteDimensions);
+        return getTextureDimensions(#if MC_VER <= V1_21_8 guiGraphics, #endif textureAtlasSprite, spriteDimensions);
     }
 
-    public static Dimensions getTextureDimensions(#if MC_VER <= V1_21_5 GuiGraphics guiGraphics, #endif TextureAtlasSprite textureAtlasSprite, Dimensions spriteDimensions) {
-        Dimensions spriteContentsDimensions = getSpriteContentsDimensions(#if MC_VER <= V1_21_5 guiGraphics, #endif textureAtlasSprite);
+    public static Dimensions getTextureDimensions(#if MC_VER <= V1_21_8 GuiGraphics guiGraphics, #endif TextureAtlasSprite textureAtlasSprite, Dimensions spriteDimensions) {
+        Dimensions spriteContentsDimensions = getSpriteContentsDimensions(#if MC_VER <= V1_21_8 guiGraphics, #endif textureAtlasSprite);
 
         return new Dimensions(
                 (int) (((float) spriteDimensions.width / spriteContentsDimensions.width) * spriteContentsDimensions.width + 0.9f),
@@ -123,8 +136,10 @@ public class GuiRenderer {
      * Not to be used in versions after 1.21.5
      */
     public static void setShaderColor(GuiGraphics guiGraphics, float red, float green, float blue, float alpha) {
+        #if MC_VER < V1_21_5
         RenderSystem.enableBlend();
         RenderSystem.depthMask(false);
+        #endif
         RenderSystem.setShaderColor(red, green, blue, alpha);
         guiGraphics.flush();
     }
@@ -138,15 +153,17 @@ public class GuiRenderer {
      * Not to be used in versions after 1.21.5
      */
     public static void setShaderColor(GuiGraphics guiGraphics, int color) {
+        #if MC_VER < V1_21_5
         RenderSystem.enableBlend();
         RenderSystem.depthMask(false);
+        #endif
+        guiGraphics.flush();
         RenderSystem.setShaderColor(
                 ((color >> 16) & 0xFF) / 255.0f,
                 ((color >> 8) & 0xFF) / 255.0f,
                 ((color) & 0xFF) / 255.0f,
                 ((color >> 24) & 0xFF) / 255.0f
         );
-        guiGraphics.flush();
     }
 
     /**
@@ -158,10 +175,12 @@ public class GuiRenderer {
      * Not to be used in versions after 1.21.5
      */
     public static void setShaderAlpha(GuiGraphics guiGraphics, int alpha) {
+        #if MC_VER < V1_21_5
         RenderSystem.enableBlend();
         RenderSystem.depthMask(false);
-        RenderSystem.setShaderColor(1, 1, 1, alpha);
+        #endif
         guiGraphics.flush();
+        RenderSystem.setShaderColor(1, 1, 1, alpha);
     }
 
     /**
@@ -171,10 +190,12 @@ public class GuiRenderer {
      * Not to be used in versions after 1.21.5
      */
     public static void clearShaderColor(GuiGraphics guiGraphics) {
-        RenderSystem.disableBlend();
-        RenderSystem.depthMask(true);
-        RenderSystem.setShaderColor(1, 1, 1, 1);
+        #if MC_VER < V1_21_5
+        RenderSystem.enableBlend();
+        RenderSystem.depthMask(false);
+        #endif
         guiGraphics.flush();
+        RenderSystem.setShaderColor(1, 1, 1, 1);
     }
     #endif
     //endregion
@@ -233,7 +254,7 @@ public class GuiRenderer {
             int textureWidth = textureRectangle.dimensions.first;
             int textureHeight = textureRectangle.dimensions.second;
 
-            blitSprite(guiGraphics, #if MC_VER >= V1_21 ACTIONS.get(pipeline), #endif sprite, u, v, textureWidth, textureHeight, x, y, color);
+            blitSprite(guiGraphics, #if MC_VER >= V1_21_3 ACTIONS.get(pipeline), #endif sprite, u, v, textureWidth, textureHeight, x, y, color);
         }
 
         int width = blitRectangle.dimensions.first;
@@ -247,9 +268,9 @@ public class GuiRenderer {
                 int textureWidth = textureRectangle.dimensions.first;
                 int textureHeight = textureRectangle.dimensions.second;
 
-                blitSprite(guiGraphics, #if MC_VER >= V1_21 ACTIONS.get(pipeline), #endif sprite, u, v, textureWidth, textureHeight, x, y, width, height, color);
+                blitSprite(guiGraphics, #if MC_VER >= V1_21_3 ACTIONS.get(pipeline), #endif sprite, u, v, textureWidth, textureHeight, x, y, width, height, color);
             } else {
-                blitSprite(guiGraphics, #if MC_VER >= V1_21 ACTIONS.get(pipeline), #endif sprite, u, v, x, y, width, height, color);
+                blitSprite(guiGraphics, #if MC_VER >= V1_21_3 ACTIONS.get(pipeline), #endif sprite, u, v, x, y, width, height, color);
             }
         } else {
             throw new RuntimeException("textureRectangle UV is empty");
@@ -304,9 +325,9 @@ public class GuiRenderer {
             int width = blitRectangle.dimensions.first;
             int height = blitRectangle.dimensions.second;
 
-            blitSprite(guiGraphics, #if MC_VER >= V1_21 ACTIONS.get(pipeline), #endif sprite, x, y, width, height, color);
+            blitSprite(guiGraphics, #if MC_VER >= V1_21_3 ACTIONS.get(pipeline), #endif sprite, x, y, width, height, color);
         } else {
-            blitSprite(guiGraphics, #if MC_VER >= V1_21 ACTIONS.get(pipeline), #endif sprite, x, y, color);
+            blitSprite(guiGraphics, #if MC_VER >= V1_21_3 ACTIONS.get(pipeline), #endif sprite, x, y, color);
         }
     }
     //endregion
@@ -340,12 +361,10 @@ public class GuiRenderer {
         #if MC_VER >= V1_20_4 Dimensions spriteDimensions = getSpriteContentsDimensions(guiGraphics, sprite); #endif
         blitSpriteAbstract(
                 guiGraphics, color,
-                () -> guiGraphics
                 #if MC_VER >= V1_20_4
-                .blitSprite(#if MC_VER >= V1_21_3 pipeline, #endif sprite, x, y, spriteDimensions.width, spriteDimensions.height #if MC_VER >= V1_21_6 , (color != null) ? color : -1 #endif));
+                () -> guiGraphics.blitSprite(#if MC_VER >= V1_21_3 pipeline, #endif sprite, x, y, spriteDimensions.width, spriteDimensions.height #if MC_VER >= V1_21_6 , (color != null) ? color : -1 #endif));
                 #else
-                .blit(sprite, x, y, 0, 0, 16, 16)
-        );
+                () -> guiGraphics.blit(sprite, x, y, 0, 0, 16, 16));
         #endif
     }
 
@@ -359,11 +378,10 @@ public class GuiRenderer {
     ) {
         blitSpriteAbstract(
                 guiGraphics, color,
-                () -> guiGraphics
                 #if MC_VER >= V1_20_4
-                .blitSprite(#if MC_VER >= V1_21_3 pipeline, #endif sprite, x, y, width, height #if MC_VER >= V1_21_6 , (color != null) ? color : -1 #endif));
+                () -> guiGraphics.blitSprite(#if MC_VER >= V1_21_3 pipeline, #endif sprite, x, y, width, height #if MC_VER >= V1_21_6 , (color != null) ? color : -1 #endif));
                 #else
-                .blit(sprite, x, y, 0, 0, width, height, width, height)
+                () -> guiGraphics.blit(sprite, x, y, 0, 0, width, height, width, height)
         );
         #endif
     }
@@ -380,11 +398,10 @@ public class GuiRenderer {
         #if MC_VER >= V1_20_4 Dimensions textureDimensions = getTextureDimensions(guiGraphics, sprite, new Dimensions(width, height)); #endif
         blitSpriteAbstract(
                 guiGraphics, color,
-                () -> guiGraphics
                 #if MC_VER >= V1_20_4
-                .blitSprite(#if MC_VER >= V1_21_3 pipeline, #endif sprite, textureDimensions.width, textureDimensions.height, u, v, x, y, width, height #if MC_VER >= V1_21_6 , (color != null) ? color : -1 #endif));
+                () -> guiGraphics.blitSprite(#if MC_VER >= V1_21_3 pipeline, #endif sprite, textureDimensions.width, textureDimensions.height, u, v, x, y, width, height #if MC_VER >= V1_21_6 , (color != null) ? color : -1 #endif));
                 #else
-                .blit(sprite, x, y, u, v, width, height)
+                () -> guiGraphics.blit(sprite, x, y, u, v, width, height)
         );
         #endif
     }
@@ -401,11 +418,10 @@ public class GuiRenderer {
     ) {
         blitSpriteAbstract(
                 guiGraphics, color,
-                () -> guiGraphics
                 #if MC_VER >= V1_20_4
-                .blitSprite(#if MC_VER >= V1_21_3 pipeline, #endif sprite, textureWidth, textureHeight, u, v, x, y, width, height #if MC_VER >= V1_21_6 , (color != null) ? color : -1 #endif));
+                () -> guiGraphics.blitSprite(#if MC_VER >= V1_21_3 pipeline, #endif sprite, textureWidth, textureHeight, u, v, x, y, width, height #if MC_VER >= V1_21_6 , (color != null) ? color : -1 #endif));
                 #else
-                .blit(sprite, x, y, u, v, width, height, 256, 256)
+                () -> guiGraphics.blit(sprite, x, y, u, v, width, height, 256, 256)
         );
         #endif
     }
