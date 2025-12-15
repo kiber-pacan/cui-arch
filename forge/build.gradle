@@ -52,13 +52,8 @@ remapJar {
 }
 
 loom {
-    mixin {
-        useLegacyMixinAp = true
-        defaultRefmapName = "cui.refmap.json"
-        add sourceSets.main, "cui.mixins.refmap.json"
-    }
-
     forge {
-        mixinConfig "cui.mixins.forge.json"
+        mixinConfigs("cui.mixins.json", "cui.mixins.forge.json")
     }
 }
+

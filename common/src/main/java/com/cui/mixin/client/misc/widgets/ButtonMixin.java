@@ -43,9 +43,13 @@ public class ButtonMixin {
     }
 
     #else
-    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;setColor(FFFF)V", ordinal = 0), method = "renderWidget")
-    private void renderHead(GuiGraphics instance, float red, float green, float blue, float alpha) {
+    @Redirect(at = @At(value = "INVOKE", target = #if MC_VER >= V1_21_3 "Lnet/minecraft/util/ARGB;white(F)I" #else "Lnet/minecraft/client/gui/GuiGraphics;setColor(FFFF)V" #endif, ordinal = 0), method = "renderWidget")
+    private #if MC_VER >= V1_21_3 int #else void #endif renderHead(#if MC_VER <= V1_21_1 GuiGraphics instance, float red, float green, float blue, #endif float alpha) {
+        #if MC_VER >= V1_21_3
+        return CUI.cuiConfig.getRGB();
+        #else
         GuiRenderer.setShaderColor(instance, CUI.cuiConfig.getRGBA(alpha));
+        #endif
     }
     #endif
 }
