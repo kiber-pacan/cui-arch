@@ -1,5 +1,7 @@
 package com.cui.mixin.client.misc.widgets;
 
+import com.cui.abs.core.data.Rectangle;
+import com.cui.abs.core.data.ResourceBridge;
 import com.cui.abs.core.rendering.gui.GuiRenderer;
 import com.cui.core.CUI;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -69,32 +71,17 @@ import java.util.function.Function;
 
 @Mixin(AbstractSliderButton.class)
 public class SliderMixin {
-    #if MC_VER >= V1_21_6
-    @Redirect(method = "renderWidget", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIIII)V"))
-    private void injected(GuiGraphics instance, RenderPipeline pipeline, ResourceLocation sprite, int x, int y, int width, int height, int color) {
-        instance.blitSprite(pipeline, sprite, x, y, width, height, ((AbstractSliderButton)(Object)this).active ? CUI.mixColors(-1, CUI.cuiConfig.getRGB()) : CUI.mixColors(-6250336, CUI.cuiConfig.getRGB()));
+    #if MC_VER >= V1_21_3
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(" #if MC_VER >= V1_21_6 + "Lcom/mojang/blaze3d/pipeline/RenderPipeline;" #elif MC_VER >= V1_21_3 + "Ljava/util/function/Function;" #endif + "Lnet/minecraft/resources/ResourceLocation;IIIII)V", ordinal = 0), method = "renderWidget")
+    private void blitBackground(GuiGraphics instance, #if MC_VER >= V1_21_6 RenderPipeline #elif MC_VER >= V1_21_3 Function<ResourceLocation, RenderType> #endif pipeline, ResourceLocation sprite, int x, int y, int width, int height, int color) {
+        GuiRenderer.blitSprite(instance, "GUI_TEXTURED", sprite, new Rectangle(x, y, width, height), CUI.cuiConfig.getRGB());
     }
-    #elif MC_VER >= V1_21_3
-    @Redirect(method = "renderWidget", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Ljava/util/function/Function;Lnet/minecraft/resources/ResourceLocation;IIIII)V"))
-    private void injected(GuiGraphics instance, Function<ResourceLocation, RenderType> renderTypeGetter, ResourceLocation sprite, int x, int y, int width, int height, int blitOffset) {
-        Color color = new Color(CUI.mixColors(-1, CUI.cuiConfig.getRGB()));
 
-        #if MC_VER >= V1_21_3
-        instance.flush();
-        RenderSystem.setShaderColor(CUI.cuiConfig.r, CUI.cuiConfig.g, CUI.cuiConfig.b, 1);
-        #endif
-        #if MC_VER <= V1_21_1 instance.setColor(color.getRed() / 255.0f, color.getGreen() / 255.0f, color.getBlue() / 255.0f, 1); #endif
-
-        instance.blitSprite(#if MC_VER >= V1_21_3 renderTypeGetter, #endif sprite, x, y, width, height, blitOffset);
-
-        #if MC_VER >= V1_21_3
-        instance.flush();
-        RenderSystem.setShaderColor(1, 1, 1, 1);
-        #endif
-        #if MC_VER <= V1_21_1 instance.setColor(1, 1, 1, 1); #endif
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(" #if MC_VER >= V1_21_6 + "Lcom/mojang/blaze3d/pipeline/RenderPipeline;" #elif MC_VER >= V1_21_3 + "Ljava/util/function/Function;" #endif + "Lnet/minecraft/resources/ResourceLocation;IIIII)V", ordinal = 1), method = "renderWidget")
+    private void blitHandle(GuiGraphics instance, #if MC_VER >= V1_21_6 RenderPipeline #elif MC_VER >= V1_21_3 Function<ResourceLocation, RenderType> #endif pipeline, ResourceLocation sprite, int x, int y, int width, int height, int color) {
+        GuiRenderer.blitSprite(instance, "GUI_TEXTURED", sprite, new Rectangle(x, y, width, height), CUI.cuiConfig.getTextColor(-1));
     }
     #else
-
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;setColor(FFFF)V", ordinal = 0), method = "renderWidget")
     private void renderHead(GuiGraphics instance, float red, float green, float blue, float alpha) {
         GuiRenderer.setShaderColor(instance, CUI.cuiConfig.getRGBA(alpha));
