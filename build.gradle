@@ -30,14 +30,19 @@ allprojects {
 
     repositories {
         maven {
-            name = 'ParchmentMC'
             url = 'https://maven.parchmentmc.org'
         }
+
         maven {
-            url "https://cursemaven.com"
+            url "https://maven.shedaniel.me/"
+        }
+
+        maven {
+            url = 'https://maven.architectury.dev/'
         }
     }
 
+    // Setting manifold LOADER as compiler parameter
     def loaders = [
             "common" : 0,
             "fabric" : 1,
@@ -56,8 +61,6 @@ allprojects {
         }
     }
 
-    println("Loader: ${loader}")
-
     tasks.withType(JavaCompile).configureEach {
         options.annotationProcessorGeneratedSourcesDirectory = file("$buildDir/generated/sources/annotations")
         options.compilerArgs += ["-ALOADER=${loaders[loader]}"]
@@ -66,9 +69,6 @@ allprojects {
 
 subprojects {
     apply plugin: 'dev.architectury.loom'
-    apply plugin: 'architectury-plugin'
-
-    apply plugin: 'maven-publish'
     apply plugin: "systems.manifold.manifold-gradle-plugin"
 
     apply plugin: "de.maxhenkel.cursegradle"
@@ -78,15 +78,6 @@ subprojects {
         archivesName = "$rootProject.archives_name-mc$project.minecraft_version-$project.name"
     }
 
-    repositories {
-        maven {
-            name = 'ParchmentMC'
-            url = 'https://maven.parchmentmc.org'
-        }
-
-        maven { url "https://maven.shedaniel.me/" }
-        maven { url = 'https://maven.architectury.dev/' }
-    }
 
     configurations {
         testImplementation.extendsFrom annotationProcessor
@@ -96,7 +87,7 @@ subprojects {
         silentMojangMappingsLicense()
     }
 
-    /java {
+    java {
         withSourcesJar()
 
         toolchain {
@@ -108,8 +99,9 @@ subprojects {
                 vendor = JvmVendorSpec.ADOPTIUM
             }
         }
-    }/
+    }
 
+    // Parameters of mod
     processResources {
         def replaceProperties = [
                 version : project.mod_version,
@@ -150,11 +142,13 @@ subprojects {
     }
 
     dependencies {
+        // Manifold preprocessor
         annotationProcessor("systems.manifold:manifold-preprocessor:${manifold_version}")
         testAnnotationProcessor("systems.manifold:manifold-preprocessor:${manifold_version}")
 
         minecraft "net.minecraft:minecraft:$rootProject.minecraft_version"
 
+        // Parchment mappings
         mappings loom.layered() {
             officialMojangMappings()
 
@@ -164,9 +158,8 @@ subprojects {
 
 
     def loader = project.name
-    print("Loader:" + loader + "\n")
-    apply plugin: "com.modrinth.minotaur"
 
+    // Reading tokens
     def credentials = new Properties()
     if (new File("${rootDir}/credentials.properties").exists()) {
         credentials.load(new FileInputStream("${rootDir}/credentials.properties"))
