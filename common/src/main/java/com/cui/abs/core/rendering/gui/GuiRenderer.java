@@ -140,8 +140,14 @@ public class GuiRenderer {
         RenderSystem.enableBlend();
         RenderSystem.depthMask(false);
         #endif
+
         RenderSystem.setShaderColor(red, green, blue, alpha);
         guiGraphics.flush();
+
+        #if MC_VER < V1_21_5
+        RenderSystem.disableBlend();
+        RenderSystem.depthMask(true);
+        #endif
     }
 
     /**
@@ -157,6 +163,7 @@ public class GuiRenderer {
         RenderSystem.enableBlend();
         RenderSystem.depthMask(false);
         #endif
+
         guiGraphics.flush();
         RenderSystem.setShaderColor(
                 ((color >> 16) & 0xFF) / 255.0f,
@@ -164,6 +171,11 @@ public class GuiRenderer {
                 ((color) & 0xFF) / 255.0f,
                 ((color >> 24) & 0xFF) / 255.0f
         );
+
+        #if MC_VER < V1_21_5
+        RenderSystem.disableBlend();
+        RenderSystem.depthMask(true);
+        #endif
     }
 
     /**
@@ -179,8 +191,14 @@ public class GuiRenderer {
         RenderSystem.enableBlend();
         RenderSystem.depthMask(false);
         #endif
+
         guiGraphics.flush();
         RenderSystem.setShaderColor(1, 1, 1, alpha);
+
+        #if MC_VER < V1_21_5
+        RenderSystem.disableBlend();
+        RenderSystem.depthMask(true);
+        #endif
     }
 
     /**
@@ -194,8 +212,14 @@ public class GuiRenderer {
         RenderSystem.enableBlend();
         RenderSystem.depthMask(false);
         #endif
+
         guiGraphics.flush();
         RenderSystem.setShaderColor(1, 1, 1, 1);
+
+        #if MC_VER < V1_21_5
+        RenderSystem.disableBlend();
+        RenderSystem.depthMask(true);
+        #endif
     }
     #endif
     //endregion
@@ -335,17 +359,19 @@ public class GuiRenderer {
 
     //region blitSprite
     private static void blitSpriteAbstract(GuiGraphics guiGraphics, @Nullable Integer color, Runnable action) {
+        #if MC_VER <= V1_21_5
         if (color != null) {
-        #if MC_VER <= V1_21_5
             setShaderColor(guiGraphics, color);
-        #endif
+
             action.run();
-        #if MC_VER <= V1_21_5
+
             clearShaderColor(guiGraphics);
-        #endif
         } else {
             action.run();
         }
+        #else
+        action.run();
+        #endif
     }
 
     #if MC_VER >= V1_20_4 static boolean warned = false; #endif
