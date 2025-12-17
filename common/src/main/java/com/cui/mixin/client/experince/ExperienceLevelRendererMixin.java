@@ -1,6 +1,8 @@
 package com.cui.mixin.client.experince;
 
 #if MC_VER >= V1_21_6
+import com.cui.abs.core.data.Rectangle;
+import com.cui.abs.core.rendering.gui.GuiRenderer;
 import com.mojang.blaze3d.pipeline.RenderPipeline;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.contextualbar.ExperienceBarRenderer;
@@ -29,12 +31,12 @@ public class ExperienceLevelRendererMixin {
     // XP text
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIII)V"), method = "renderBackground")
     private static void injected(GuiGraphics instance, RenderPipeline pipeline, ResourceLocation sprite, int x, int y, int width, int height) {
-        instance.blitSprite(pipeline, sprite, x, y, width, height, CUI.cuiConfig.getRGB());
+        GuiRenderer.blitSprite(instance, "GUI_TEXTURED", sprite, new Rectangle(x, y, width, height), CUI.cuiConfig.getRGB());
     }
 
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIIIIIII)V"), method = "renderBackground")
     private static void injected(GuiGraphics instance, RenderPipeline pipeline, ResourceLocation sprite, int textureWidth, int textureHeight, int u, int v, int x, int y, int width, int height) {
-        instance.blitSprite(pipeline, sprite, textureWidth, textureHeight, u, v, x, y, width, height, CUI.cuiConfig.getRGB());
+        GuiRenderer.blitSprite(instance, "GUI_TEXTURED", sprite, new Rectangle(x, y, width, height), new Rectangle( u, v, textureWidth, textureHeight), CUI.cuiConfig.getRGB());
     }
     #endif
 }

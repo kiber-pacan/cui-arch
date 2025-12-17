@@ -27,8 +27,7 @@ public class AnvilMixin {
         GuiRenderer.setShaderColor(guiGraphics, CUI.cuiConfig.getRGB());
     }
 
-
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blit" #if MC_VER >= V1_20_4 + "Sprite" #endif + "(" #if MC_VER >= V1_21_3 + "Ljava/util/function/Function;" #endif + "Lnet/minecraft/resources/ResourceLocation;IIII" #if MC_VER <= V1_20_1 + "II" #endif + ")V", shift = At.Shift.AFTER, ordinal = 0), method = "renderBg")
+    @Inject(at = @At(value = "TAIL"), method = "renderBg")
     private static void injected2(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY, CallbackInfo ci) {
         GuiRenderer.clearShaderColor(guiGraphics);
     }

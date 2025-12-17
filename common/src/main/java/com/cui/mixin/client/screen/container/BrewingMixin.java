@@ -27,7 +27,7 @@ public class BrewingMixin {
         GuiRenderer.setShaderColor(guiGraphics, CUI.cuiConfig.getRGB());
     }
 
-    @Inject(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blit(" #if MC_VER >= V1_21_3 + "Ljava/util/function/Function;" #endif + "Lnet/minecraft/resources/ResourceLocation;" #if MC_VER >= V1_21_3 + "IIFFIIII)V" #else + "IIIIII)V" #endif, shift = At.Shift.AFTER, ordinal = 0), method = "renderBg")
+    @Inject(at = @At(value = "TAIL"), method = "renderBg")
     private static void injected2(GuiGraphics guiGraphics, float partialTick, int mouseX, int mouseY, CallbackInfo ci) {
         GuiRenderer.clearShaderColor(guiGraphics);
     }

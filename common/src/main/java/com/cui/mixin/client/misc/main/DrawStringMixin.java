@@ -27,13 +27,11 @@ public class DrawStringMixin {
         if (((renderState.color) & 0xFF) == ((renderState.color >> 8) & 0xFF) && ((renderState.color >> 8) & 0xFF) == ((renderState.color >> 16) & 0xFF)) {
             return new GuiTextRenderState(renderState.font, renderState.text, renderState.pose, renderState.x, renderState.y, CUI.cuiConfig.getTextColor(renderState.color), renderState.backgroundColor, renderState.dropShadow, renderState.scissor);
         }
-
         return renderState;
     }
     #else
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Font;drawInBatch(Lnet/minecraft/util/FormattedCharSequence;FFIZLorg/joml/Matrix4f;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/client/gui/Font$DisplayMode;II)I"), method = "drawString(Lnet/minecraft/client/gui/Font;Lnet/minecraft/util/FormattedCharSequence;IIIZ)I")
-    private int drawInBatch(Font instance, FormattedCharSequence text, float x, float y, int color, boolean dropShadow, Matrix4f matrix, MultiBufferSource buffer, Font.DisplayMode displayMode, int backgroundColor, int packedLightCoords)
-    {
+    private int drawInBatch(Font instance, FormattedCharSequence text, float x, float y, int color, boolean dropShadow, Matrix4f matrix, MultiBufferSource buffer, Font.DisplayMode displayMode, int backgroundColor, int packedLightCoords) {
         if (((color) & 0xFF) == ((color >> 8) & 0xFF) && ((color >> 8) & 0xFF) == ((color >> 16) & 0xFF)) {
             return instance.drawInBatch(text, x, y, CUI.cuiConfig.getTextColor(color), dropShadow, matrix, buffer, displayMode, backgroundColor, packedLightCoords);
         }
@@ -41,8 +39,7 @@ public class DrawStringMixin {
     }
 
     @Redirect(at = @At(value = "INVOKE", target = #if MC_VER >= V1_21_3 "Lnet/minecraft/client/gui/Font;drawInBatch(Ljava/lang/String;FFIZLorg/joml/Matrix4f;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/client/gui/Font$DisplayMode;II)I" #else "Lnet/minecraft/client/gui/Font;drawInBatch(Ljava/lang/String;FFIZLorg/joml/Matrix4f;Lnet/minecraft/client/renderer/MultiBufferSource;Lnet/minecraft/client/gui/Font$DisplayMode;IIZ)I" #endif), method = "drawString(Lnet/minecraft/client/gui/Font;Ljava/lang/String;IIIZ)I")
-    private int drawInBatch1(Font instance, String text, float x, float y, int color, boolean dropShadow, Matrix4f matrix, MultiBufferSource buffer, Font.DisplayMode displayMode, int backgroundColor, int packedLightCoords #if MC_VER < V1_21_3 , boolean bidirectional #endif)
-    {
+    private int drawInBatch1(Font instance, String text, float x, float y, int color, boolean dropShadow, Matrix4f matrix, MultiBufferSource buffer, Font.DisplayMode displayMode, int backgroundColor, int packedLightCoords #if MC_VER < V1_21_3 , boolean bidirectional #endif) {
         if (((color) & 0xFF) == ((color >> 8) & 0xFF) && ((color >> 8) & 0xFF) == ((color >> 16) & 0xFF)) {
             return instance.drawInBatch(text, x, y, CUI.cuiConfig.getTextColor(color), dropShadow, matrix, buffer, displayMode, backgroundColor, packedLightCoords);
         }
