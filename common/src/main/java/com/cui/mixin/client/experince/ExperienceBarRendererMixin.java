@@ -29,12 +29,9 @@ import com.cui.core.CUI;
 public interface ExperienceBarRendererMixin {
     #if MC_VER >= V1_21_6
     // XP bar
-    @Inject(at = @At(value = "TAIL"), method = "renderExperienceLevel")
-    private static void injected1(GuiGraphics guiGraphics, Font font, int level, CallbackInfo ci) {
-        Component component1 = Component.translatable("gui.experience.level", level);
-        int i1 = (guiGraphics.guiWidth() - font.width(component1)) / 2;
-        int j1 = guiGraphics.guiHeight() - 24 - 9 - 2;
-        guiGraphics.drawString(font, component1, i1, j1, CUI.cuiConfig.getRGB(), false);
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;drawString(Lnet/minecraft/client/gui/Font;Lnet/minecraft/network/chat/Component;IIIZ)V", ordinal = 4), method = "renderExperienceLevel")
+    private static void injected1(GuiGraphics instance, Font font, Component text, int x, int y, int color, boolean drawShadow) {
+        instance.drawString(font, text, x, y, CUI.cuiConfig.getRGB(), drawShadow);
     }
     #endif
 }
