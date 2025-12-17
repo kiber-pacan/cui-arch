@@ -9,7 +9,9 @@ y=5
 for i in $(seq 12 $END); do
     sh gradlew :fabric:build -Pindex="$y"
 
-    if [ "$y" -gt 5 ]; then
+    if [ "$y" -eq 6 ]; then
+        echo "Skipping neoforge for version 6"
+    elif [ "$y" -gt 5 ]; then
         sh gradlew :neoforge:build -Pindex="$y"
     else
         sh gradlew :forge:build -Pindex="$y"
