@@ -1,6 +1,5 @@
 package com.cui.abs.core.data;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.jetbrains.annotations.Nullable;
 
 public class Pair <T1, T2> {
@@ -20,7 +19,7 @@ public class Pair <T1, T2> {
         return !isEmpty();
     }
 
-    public static Pair getEmptyPair() {
+    public static Pair nullPair() {
         return new Pair<>(null, null);
     }
 }
