@@ -170,4 +170,32 @@ public class CUI_Config {
 
         return ((Color.getHSBColor(hsv[0], hsv[1] / desaturation, avg / 255.0f).getRGB()) & 0x00FFFFFF) | (((originalColor >> 24) & 0xFF) << 24);
     }
+
+    public int getTextColor(int originalColor, float alpha) {
+        float[] hsv = Color.RGBtoHSB((int) (CUI.cuiConfig.r * 255.0f), (int) (CUI.cuiConfig.g * 255.0f), (int) (CUI.cuiConfig.b * 255.0f), null);
+        float avg = (((originalColor) & 0xFF) + ((originalColor >> 8) & 0xFF) + ((originalColor >> 16) & 0xFF)) / 3.0f;
+
+        int a = (int)(alpha * 255.0f) & 0xFF;
+
+        return (Color.getHSBColor(hsv[0], hsv[1] / desaturation, avg / 255.0f).getRGB() & 0x00FFFFFF) | (a << 24);
+    }
+
+    public boolean isDark() {
+        return (r + g + b <= 1.5f);
+    }
+
+    public int getRGBfromValue(float value) {
+        float [] hsv = getHSV();
+        Color color = Color.getHSBColor(hsv[0], hsv[1], value);
+
+        return color.getRGB();
+    }
+
+    public float getValue() {
+        return (r + g + b) / 3.0f;
+    }
+
+    public int getThemeColor() {
+        return (isDark()) ? getRGBfromValue(1 - getValue()) : getRGBfromValue(getValue());
+    }
 }
