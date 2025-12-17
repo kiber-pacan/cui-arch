@@ -71,17 +71,17 @@ public class TooltipMixin {
     #elif LOADER == FORGE
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;fill(IIIIII)V"), method = "renderHorizontalLine")
     private static void renderHorizontalLine1(GuiGraphics instance, int minX, int minY, int maxX, int maxY, int z, int color) {
-        instance.fill(minX, minY, maxX, maxY, z, CUI.cuiConfig.getRGB());
+        instance.fill(minX, minY, maxX, maxY, z, CUI.cuiConfig.getThemeColor());
     }
 
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;fill(IIIIII)V"), method = "renderVerticalLine")
     private static void renderHorizontalLine2(GuiGraphics instance, int minX, int minY, int maxX, int maxY, int z, int color) {
-        instance.fill(minX, minY, maxX, maxY, z, CUI.cuiConfig.getRGB());
+        instance.fill(minX, minY, maxX, maxY, z, CUI.cuiConfig.getThemeColor());
     }
 
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;fillGradient(IIIIIII)V"), method = "renderVerticalLineGradient")
     private static void renderVerticalLine(GuiGraphics instance, int x1, int y1, int x2, int y2, int z, int colorFrom, int colorTo) {
-        instance.fillGradient(x1, y1, x2, y2, z, CUI.cuiConfig.getRGB(), CUI.cuiConfig.getRGB());
+        instance.fillGradient(x1, y1, x2, y2, z, CUI.cuiConfig.getRGB(), CUI.cuiConfig.getThemeColor());
     }
 
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;fillGradient(IIIIIII)V"), method = "renderRectangle(Lnet/minecraft/client/gui/GuiGraphics;IIIIIII)V")
@@ -112,12 +112,12 @@ public class TooltipMixin {
 
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/inventory/tooltip/TooltipRenderUtil;renderHorizontalLine(Lnet/minecraft/client/gui/GuiGraphics;IIIII)V"), method = "renderTooltipBackground")
     private static void injected1(GuiGraphics guiGraphics, int x, int y, int length, int z, int color) {
-        renderHorizontalLine(guiGraphics, x, y, length, z, CUI.cuiConfig.getRGB());
+        renderHorizontalLine(guiGraphics, x, y, length, z, CUI.cuiConfig.getThemeColor());
     }
 
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/inventory/tooltip/TooltipRenderUtil;renderVerticalLine(Lnet/minecraft/client/gui/GuiGraphics;IIIII)V"), method = "renderTooltipBackground")
     private static void injected2(GuiGraphics guiGraphics, int x, int y, int length, int z, int color) {
-        renderVerticalLine(guiGraphics, x, y, length, z, CUI.cuiConfig.getRGB());
+        renderVerticalLine(guiGraphics, x, y, length, z, CUI.cuiConfig.getThemeColor());
     }
 
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/inventory/tooltip/TooltipRenderUtil;renderRectangle(Lnet/minecraft/client/gui/GuiGraphics;IIIIII)V"), method = "renderTooltipBackground")
@@ -127,7 +127,7 @@ public class TooltipMixin {
 
     @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screens/inventory/tooltip/TooltipRenderUtil;renderFrameGradient(Lnet/minecraft/client/gui/GuiGraphics;IIIIIII)V"), method = "renderTooltipBackground")
     private static void injected4(GuiGraphics guiGraphics, int x, int y, int width, int height, int z, int topColor, int bottomColor) {
-        renderFrameGradient(guiGraphics, x, y, width, height, z, CUI.cuiConfig.getRGB(), CUI.cuiConfig.getRGB());
+        renderFrameGradient(guiGraphics, x, y, width, height, z, CUI.cuiConfig.getThemeColor(), CUI.cuiConfig.getThemeColor());
     }
     #endif
 }
