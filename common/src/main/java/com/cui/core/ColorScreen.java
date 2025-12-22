@@ -12,11 +12,17 @@ import net.minecraft.client.gui.components.Checkbox;
 import net.minecraft.client.gui.layouts.*;
 import net.minecraft.client.gui.layouts.GridLayout;
 import net.minecraft.client.gui.screens.Screen;
+#if MC_VER >= V1_21_11
+import net.minecraft.resources.Identifier;
+
+#else
+import net.minecraft.resources.ResourceLocation;
 #if MC_VER >= V1_21_3
 import net.minecraft.client.renderer.RenderType;
 #endif
+#endif
+
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
 
 import java.awt.*;
 
@@ -61,8 +67,17 @@ public class ColorScreen extends Screen {
                 CUI.cuiConfig.getRGB()
         );
     }
-    // minecraft/textures/gui/sprites/test.png
-    // cui/textures/gui/sprites/test.png
+
+    #if MC_VER < V1_20_4
+    @Override
+    public void renderBackground(GuiGraphics guiGraphics) {
+        float[] hsv = Color.RGBtoHSB((int) (CUI.cuiConfig.r * 255.0f), (int) (CUI.cuiConfig.g * 255.0f), (int) (CUI.cuiConfig.b * 255.0f), null);
+        guiGraphics.fillGradient(0, 0, width, height,
+                ((int)(CUI.cuiConfig.a * 255) << 24) | (Color.getHSBColor(hsv[0], hsv[1], hsv[2] / 2.7f).getRGB() & 0x00FFFFFF),
+                ((int)(CUI.cuiConfig.a * 255) << 24) | (Color.getHSBColor(hsv[0], hsv[1], hsv[2] / 5.0f).getRGB() & 0x00FFFFFF)
+        );
+    }
+    #endif
 
     @Override
     public void onClose() {
