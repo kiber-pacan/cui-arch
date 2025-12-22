@@ -13,7 +13,14 @@ import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.TitleScreen;
 import net.minecraft.network.chat.Component;
+#if MC_VER >= V1_21_11
+import net.minecraft.resources.Identifier;
+#else
 import net.minecraft.resources.ResourceLocation;
+#if MC_VER >= V1_21_3
+import net.minecraft.client.renderer.RenderType;
+#endif
+#endif
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -35,7 +42,7 @@ public abstract class TitleScreenMixin extends Screen {
     private static #if MC_VER >= V1_20_4 SpriteIconButton #else ImageButton #endif cui$cui(int width, Button.OnPress onPress, boolean iconOnly) {
         return #if MC_VER >= V1_20_4 SpriteIconButton #else ImageButton #endif.builder(Component.translatable("options.cui"), onPress, iconOnly)
                 .width(width)
-                .sprite(#if MC_VER < V1_21 new #endif ResourceLocation #if MC_VER >= V1_21 .withDefaultNamespace #endif("cui_button"), 16, 16)
+                .sprite(#if MC_VER < V1_21 new #endif #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif #if MC_VER >= V1_21 .withDefaultNamespace #endif("cui_button"), 16, 16)
                 .build();
     }
     #endif

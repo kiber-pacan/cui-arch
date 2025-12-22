@@ -14,7 +14,11 @@ import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.metadata.gui.GuiSpriteScaling;
 #endif
 import net.minecraft.client.renderer.texture.TextureManager;
+#if MC_VER >= V1_21_11
+import net.minecraft.resources.Identifier;
+#else
 import net.minecraft.resources.ResourceLocation;
+#endif
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -34,7 +38,10 @@ import java.util.logging.Logger;
 #endif
 
 #if MC_VER >= V1_21_3
+
+#if MC_VER <= V1_21_10
 import net.minecraft.client.renderer.RenderType;
+#endif
 
 import java.util.Map;
 import java.util.Objects;
@@ -51,7 +58,7 @@ public class GuiRenderer {
     #endif
 
     #if MC_VER >= V1_20_4
-    public static GuiSpriteScaling getSpriteScaling(GuiGraphics guiGraphics, ResourceLocation sprite) {
+    public static GuiSpriteScaling getSpriteScaling(GuiGraphics guiGraphics, #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif sprite) {
         TextureAtlasSprite textureAtlasSprite = ((GuiGraphicsAccessor) guiGraphics).getGuiSprites().getSprite(sprite);
 
         #if MC_VER >= V1_21_9
@@ -63,7 +70,7 @@ public class GuiRenderer {
 
     // Tile
     @Nullable
-    public static GuiSpriteScaling.Tile getSpriteTile(GuiGraphics guiGraphics, ResourceLocation sprite) {
+    public static GuiSpriteScaling.Tile getSpriteTile(GuiGraphics guiGraphics, #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif sprite) {
         TextureAtlasSprite textureAtlasSprite = ((GuiGraphicsAccessor) guiGraphics).getGuiSprites().getSprite(sprite);
 
         return getSpriteTile(#if MC_VER <= V1_21_8 guiGraphics, #endif textureAtlasSprite);
@@ -83,7 +90,7 @@ public class GuiRenderer {
      * Basically returns sprite image size
      * @since 1.20.4
      */
-    protected static Dimensions getSpriteContentsDimensions(GuiGraphics guiGraphics, ResourceLocation sprite) {
+    protected static Dimensions getSpriteContentsDimensions(GuiGraphics guiGraphics, #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif sprite) {
         TextureAtlasSprite textureAtlasSprite = ((GuiGraphicsAccessor) guiGraphics).getGuiSprites().getSprite(sprite);
 
         return getSpriteContentsDimensions(#if MC_VER <= V1_21_8 guiGraphics, #endif textureAtlasSprite);
@@ -103,7 +110,7 @@ public class GuiRenderer {
      * Returns texture dimensions in atlas
      * @since 1.20.4
      */
-    protected static Dimensions getTextureDimensions(GuiGraphics guiGraphics, ResourceLocation sprite, Dimensions spriteDimensions) {
+    protected static Dimensions getTextureDimensions(GuiGraphics guiGraphics, #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif sprite, Dimensions spriteDimensions) {
         TextureAtlasSprite textureAtlasSprite = #if MC_VER >= V1_20_4 ((GuiGraphicsAccessor) guiGraphics).getGuiSprites().getSprite(sprite); #else ((MinecraftInterfaceMixin) Minecraft.getInstance()).getModelManager().getAtlas(new ResourceLocation("textures/atlas/decorated_pot.png")).getSprite(sprite); #endif
 
         return getTextureDimensions(#if MC_VER <= V1_21_8 guiGraphics, #endif textureAtlasSprite, spriteDimensions);
@@ -240,7 +247,7 @@ public class GuiRenderer {
     public static void blitSprite(
             GuiGraphics guiGraphics,
             String pipeline,
-            ResourceLocation sprite,
+            #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif sprite,
             @NotNull Rectangle blitRectangle,
             @NotNull Rectangle textureRectangle
     ) {
@@ -262,7 +269,7 @@ public class GuiRenderer {
     public static void blitSprite(
             GuiGraphics guiGraphics,
             String pipeline,
-            ResourceLocation sprite,
+            #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif sprite,
             @NotNull Rectangle blitRectangle,
             @NotNull Rectangle textureRectangle,
             @Nullable Integer color
@@ -315,7 +322,7 @@ public class GuiRenderer {
     public static void blitSprite(
             GuiGraphics guiGraphics,
             String pipeline,
-            ResourceLocation sprite,
+            #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif sprite,
             @NotNull Rectangle blitRectangle
     ) {
         blitSprite(guiGraphics, pipeline, sprite, blitRectangle, (Integer) null);
@@ -336,7 +343,7 @@ public class GuiRenderer {
     public static void blitSprite(
             GuiGraphics guiGraphics,
             String pipeline,
-            ResourceLocation sprite,
+            #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif sprite,
             @NotNull Rectangle blitRectangle,
             @Nullable Integer color
     ) {
@@ -380,7 +387,7 @@ public class GuiRenderer {
     protected static void blitSprite(
             GuiGraphics guiGraphics,
             #if MC_VER >= V1_21_6 RenderPipeline pipeline, #elif MC_VER >= V1_21_3 Function<ResourceLocation, RenderType> pipeline, #endif
-            ResourceLocation sprite,
+            #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif sprite,
             int x, int y,
             @Nullable Integer color
     ) {
@@ -397,7 +404,7 @@ public class GuiRenderer {
     protected static void blitSprite(
             GuiGraphics guiGraphics,
             #if MC_VER >= V1_21_6 RenderPipeline pipeline, #elif MC_VER >= V1_21_3 Function<ResourceLocation, RenderType> pipeline, #endif
-            ResourceLocation sprite,
+            #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif sprite,
             int x, int y,
             int width, int height,
             @Nullable Integer color
@@ -415,7 +422,7 @@ public class GuiRenderer {
     protected static void blitSprite(
             GuiGraphics guiGraphics,
             #if MC_VER >= V1_21_6 RenderPipeline pipeline, #elif MC_VER >= V1_21_3 Function<ResourceLocation, RenderType> pipeline, #endif
-            ResourceLocation sprite,
+            #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif sprite,
             int u, int v,
             int x, int y,
             int width, int height,
@@ -435,7 +442,7 @@ public class GuiRenderer {
     protected static void blitSprite(
             GuiGraphics guiGraphics,
             #if MC_VER >= V1_21_6 RenderPipeline pipeline, #elif MC_VER >= V1_21_3 Function<ResourceLocation, RenderType> pipeline, #endif
-            ResourceLocation sprite,
+            #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif sprite,
             int u, int v,
             int textureWidth, int textureHeight,
             int x, int y,

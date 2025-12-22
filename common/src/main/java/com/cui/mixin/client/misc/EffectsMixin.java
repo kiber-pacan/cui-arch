@@ -1,5 +1,6 @@
 package com.cui.mixin.client.misc;
 
+import com.cui.abs.core.data.data.GuiGraphicsMethods;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.Minecraft;
 
@@ -14,15 +15,19 @@ import com.mojang.blaze3d.pipeline.RenderPipeline;
 
 import com.cui.core.CUI;
 #if MC_VER >= V1_21_6 import com.cui.mixin.client.book.RecipeBookMixin;
-import com.mojang.blaze3d.pipeline.RenderPipeline; #endif
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+#endif
 
 
-#if MC_VER >= V1_21_3 import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen; #endif
+#if MC_VER >= V1_21_3 import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
+#endif
 import net.minecraft.client.gui.screens.inventory.CraftingScreen;
 #if MC_VER < V1_21_1
 #endif
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
+#if MC_VER <= V1_21_10
 import net.minecraft.client.renderer.RenderType;
+#else
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.CraftingMenu;
 import net.minecraft.world.item.Items;
@@ -50,7 +55,11 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+#if MC_VER >= V1_21_11
+import net.minecraft.resources.Identifier;
+#else
 import net.minecraft.resources.ResourceLocation;
+#endif
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import org.spongepowered.asm.mixin.Final;
@@ -60,13 +69,16 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import com.cui.core.CUI;
-#if MC_VER >= V1_21_6 import com.cui.mixin.client.book.RecipeBookMixin;
-import com.mojang.blaze3d.pipeline.RenderPipeline; #endif
+#if MC_VER >= V1_21_6
+import com.cui.mixin.client.book.RecipeBookMixin;
+import com.mojang.blaze3d.pipeline.RenderPipeline;
+#endif
 
 
-#if MC_VER >= V1_21_3 import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen; #endif
+#if MC_VER >= V1_21_3
+import net.minecraft.client.gui.screens.inventory.AbstractRecipeBookScreen;
+#endif
 import net.minecraft.client.gui.screens.inventory.CraftingScreen;
-#if MC_VER < V1_21_1
 #endif
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.world.entity.player.Inventory;
@@ -96,7 +108,11 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+#if MC_VER >= V1_21_11
+import net.minecraft.resources.Identifier;
+#else
 import net.minecraft.resources.ResourceLocation;
+#endif
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import org.spongepowered.asm.mixin.Final;
@@ -114,8 +130,8 @@ import java.util.function.Function;
 @Mixin(#if MC_VER >= V1_21_3 EffectsInInventory.class #else Minecraft.class #endif)
 public class EffectsMixin {
     #if MC_VER >= V1_21_6
-    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIII)V"), method = "renderBackgrounds")
-    private void injected(GuiGraphics instance, RenderPipeline pipeline, ResourceLocation sprite, int x, int y, int width, int height) {
+    @Redirect(at = @At(value = "INVOKE", target = GuiGraphicsMethods.blitSprite1Rec), method = #if MC_VER >= V1_21_11 "renderBackground" #else "renderBackgrounds" #endif)
+    private void injected(GuiGraphics instance, RenderPipeline pipeline, #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif sprite, int x, int y, int width, int height) {
         instance.blitSprite(pipeline, sprite, x, y, width, height, CUI.cuiConfig.getRGB());
     }
     #else

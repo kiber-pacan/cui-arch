@@ -2,19 +2,26 @@ package com.cui.mixin.client.misc.widgets;
 
 import com.cui.abs.core.data.Rectangle;
 import com.cui.abs.core.data.ResourceBridge;
+import com.cui.abs.core.data.data.GuiGraphicsMethods;
 import com.cui.abs.core.rendering.gui.GuiRenderer;
 import com.cui.core.CUI;
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractSliderButton;
+
+#if MC_VER >= V1_21_11
+import net.minecraft.resources.Identifier;
+#else
 import net.minecraft.resources.ResourceLocation;
+#if MC_VER >= V1_21_3
+import net.minecraft.client.renderer.RenderType;
+#endif
+#endif
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
 
-#if MC_VER >= V1_21_3
-import net.minecraft.client.renderer.RenderType;
-#endif
 import com.cui.core.CUI;
 #if MC_VER >= V1_21_6 import com.cui.mixin.client.book.RecipeBookMixin;
 import com.mojang.blaze3d.pipeline.RenderPipeline; #endif
@@ -53,7 +60,6 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import org.spongepowered.asm.mixin.Final;
@@ -72,13 +78,13 @@ import java.util.function.Function;
 @Mixin(AbstractSliderButton.class)
 public class SliderMixin {
     #if MC_VER >= V1_21_3
-    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(" #if MC_VER >= V1_21_6 + "Lcom/mojang/blaze3d/pipeline/RenderPipeline;" #elif MC_VER >= V1_21_3 + "Ljava/util/function/Function;" #endif + "Lnet/minecraft/resources/ResourceLocation;IIIII)V", ordinal = 0), method = "renderWidget")
-    private void blitBackground(GuiGraphics instance, #if MC_VER >= V1_21_6 RenderPipeline #elif MC_VER >= V1_21_3 Function<ResourceLocation, RenderType> #endif pipeline, ResourceLocation sprite, int x, int y, int width, int height, int color) {
+    @Redirect(at = @At(value = "INVOKE", target = GuiGraphicsMethods.blitSprite1RecColor, ordinal = 0), method = "renderWidget")
+    private void blitBackground(GuiGraphics instance, #if MC_VER >= V1_21_6 RenderPipeline #elif MC_VER >= V1_21_3 Function<ResourceLocation, RenderType> #endif pipeline, #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif sprite, int x, int y, int width, int height, int color) {
         GuiRenderer.blitSprite(instance, "GUI_TEXTURED", sprite, new Rectangle(x, y, width, height), CUI.cuiConfig.getRGB());
     }
 
-    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(" #if MC_VER >= V1_21_6 + "Lcom/mojang/blaze3d/pipeline/RenderPipeline;" #elif MC_VER >= V1_21_3 + "Ljava/util/function/Function;" #endif + "Lnet/minecraft/resources/ResourceLocation;IIIII)V", ordinal = 1), method = "renderWidget")
-    private void blitHandle(GuiGraphics instance, #if MC_VER >= V1_21_6 RenderPipeline #elif MC_VER >= V1_21_3 Function<ResourceLocation, RenderType> #endif pipeline, ResourceLocation sprite, int x, int y, int width, int height, int color) {
+    @Redirect(at = @At(value = "INVOKE", target = GuiGraphicsMethods.blitSprite1RecColor, ordinal = 1), method = "renderWidget")
+    private void blitHandle(GuiGraphics instance, #if MC_VER >= V1_21_6 RenderPipeline #elif MC_VER >= V1_21_3 Function<ResourceLocation, RenderType> #endif pipeline, #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif sprite, int x, int y, int width, int height, int color) {
         GuiRenderer.blitSprite(instance, "GUI_TEXTURED", sprite, new Rectangle(x, y, width, height), CUI.cuiConfig.getTextColor(-1));
     }
     #else

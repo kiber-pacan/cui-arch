@@ -2,13 +2,20 @@ package com.cui.mixin.client.misc.widgets;
 
 import com.cui.abs.core.data.Rectangle;
 import com.cui.abs.core.data.ResourceBridge;
+import com.cui.abs.core.data.data.GuiGraphicsMethods;
 import com.cui.abs.core.rendering.gui.GuiRenderer;
 import com.cui.core.CUI;
 #if MC_VER >= V1_21_6 import com.mojang.blaze3d.pipeline.RenderPipeline; #endif
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.LogoRenderer;
-import net.minecraft.client.renderer.RenderType;
+#if MC_VER >= V1_21_11
+import net.minecraft.resources.Identifier;
+#else
 import net.minecraft.resources.ResourceLocation;
+#if MC_VER >= V1_21_3
+import net.minecraft.client.renderer.RenderType;
+#endif
+#endif
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Redirect;
@@ -49,7 +56,7 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
+
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import org.spongepowered.asm.mixin.Final;
@@ -67,13 +74,13 @@ import java.util.logging.Logger;
 @Mixin(LogoRenderer.class)
 public class LogoMixin {
     #if MC_VER >= V1_21_3
-    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blit(" #if MC_VER >= V1_21_6 + "Lcom/mojang/blaze3d/pipeline/RenderPipeline;" #elif MC_VER >= V1_21_3 + "Ljava/util/function/Function;" #endif + "Lnet/minecraft/resources/ResourceLocation;IIFFIIIII)V", ordinal = 0), method = "renderLogo(Lnet/minecraft/client/gui/GuiGraphics;IFI)V")
-    private static void renderLogo(GuiGraphics instance, #if MC_VER >= V1_21_6 RenderPipeline #elif MC_VER >= V1_21_3 Function<ResourceLocation, RenderType> #endif pipeline, ResourceLocation atlas, int x, int y, float u, float v, int width, int height, int textureWidth, int textureHeight, int color) {
+    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blit(Ljava/util/function/Function;Lnet/minecraft/resources/ResourceLocation;IIFFIIIII)V", ordinal = 0), method = "renderLogo(Lnet/minecraft/client/gui/GuiGraphics;IFI)V")
+    private static void renderLogo(GuiGraphics instance, #if MC_VER >= V1_21_6 RenderPipeline #elif MC_VER >= V1_21_3 Function<ResourceLocation, RenderType> #endif pipeline, #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif atlas, int x, int y, float u, float v, int width, int height, int textureWidth, int textureHeight, int color) {
         GuiRenderer.blitSprite(instance, "GUI_TEXTURED", ResourceBridge.spriteDefaultNamespace("title/minecraft"), new Rectangle(x, y, width, height), new Rectangle((int) u, (int) v, textureWidth, textureHeight), CUI.cuiConfig.getTextColor(color));
     }
 
-    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blit(" #if MC_VER >= V1_21_6 + "Lcom/mojang/blaze3d/pipeline/RenderPipeline;" #elif MC_VER >= V1_21_3 + "Ljava/util/function/Function;" #endif + "Lnet/minecraft/resources/ResourceLocation;IIFFIIIII)V", ordinal = 1), method = "renderLogo(Lnet/minecraft/client/gui/GuiGraphics;IFI)V")
-    private static void renderEdition(GuiGraphics instance, #if MC_VER >= V1_21_6 RenderPipeline #elif MC_VER >= V1_21_3 Function<ResourceLocation, RenderType> #endif pipeline, ResourceLocation atlas, int x, int y, float u, float v, int width, int height, int textureWidth, int textureHeight, int color) {
+    @Redirect(at = @At(value = "INVOKE", target = GuiGraphicsMethods.blit91, ordinal = 1), method = "renderLogo(Lnet/minecraft/client/gui/GuiGraphics;IFI)V")
+    private static void renderEdition(GuiGraphics instance, #if MC_VER >= V1_21_6 RenderPipeline #elif MC_VER >= V1_21_3 Function<ResourceLocation, RenderType> #endif pipeline, #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif atlas, int x, int y, float u, float v, int width, int height, int textureWidth, int textureHeight, int color) {
         GuiRenderer.blitSprite(instance, "GUI_TEXTURED", ResourceBridge.spriteDefaultNamespace("title/edition"), new Rectangle(x, y, width, height), new Rectangle((int) u, (int) v, textureWidth, textureHeight), CUI.cuiConfig.getTextColor(color));
     }
     #else

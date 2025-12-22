@@ -16,7 +16,14 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.*;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.GrindstoneScreen;
+#if MC_VER >= V1_21_11
+import net.minecraft.resources.Identifier;
+#else
 import net.minecraft.resources.ResourceLocation;
+#if MC_VER >= V1_21_3
+import net.minecraft.client.renderer.RenderType;
+#endif
+#endif
 import org.spongepowered.asm.mixin.Mixin;
 import net.minecraft.client.Minecraft;
 import org.spongepowered.asm.mixin.injection.At;

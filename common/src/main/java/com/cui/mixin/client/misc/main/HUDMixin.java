@@ -3,6 +3,7 @@ package com.cui.mixin.client.misc.main;
 
 import com.cui.abs.core.data.Pair;
 import com.cui.abs.core.data.ResourceBridge;
+import com.cui.abs.core.data.data.GuiGraphicsMethods;
 import com.cui.abs.core.rendering.data.RenderPipelineBridge;
 import com.cui.abs.core.rendering.gui.GuiRenderer;
 import com.cui.abs.core.data.Rectangle;
@@ -25,7 +26,11 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+#if MC_VER >= V1_21_11
+import net.minecraft.resources.Identifier;
+#else
 import net.minecraft.resources.ResourceLocation;
+#endif
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -49,12 +54,12 @@ import org.spongepowered.asm.mixin.injection.At;
 @Debug(export = true)
 @Mixin(Gui.class)
 public class HUDMixin {
-    @Unique private static final ResourceLocation cui$detail = ResourceBridge.spriteNamespace(CUI.MOD_ID, "hud/heart/detail");
-    @Unique private static final ResourceLocation cui$detailBlinking = ResourceBridge.spriteNamespace(CUI.MOD_ID, "hud/heart/detail_blinking");
-    @Unique private static final ResourceLocation cui$detailHardcoreFull = ResourceBridge.spriteNamespace(CUI.MOD_ID, "hud/heart/detail_hardcore_full");
-    @Unique private static final ResourceLocation cui$detailHardcoreFullBlinking = ResourceBridge.spriteNamespace(CUI.MOD_ID, "hud/heart/detail_hardcore_full_blinking");
-    @Unique private static final ResourceLocation cui$detailHardcoreHalf = ResourceBridge.spriteNamespace(CUI.MOD_ID, "hud/heart/detail_hardcore_half");
-    @Unique private static final ResourceLocation cui$detailHardcoreHalfBlinking = ResourceBridge.spriteNamespace(CUI.MOD_ID, "hud/heart/detail_hardcore_half_blinking");
+    @Unique private static final #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif cui$detail = ResourceBridge.spriteNamespace(CUI.MOD_ID, "hud/heart/detail");
+    @Unique private static final #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif cui$detailBlinking = ResourceBridge.spriteNamespace(CUI.MOD_ID, "hud/heart/detail_blinking");
+    @Unique private static final #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif cui$detailHardcoreFull = ResourceBridge.spriteNamespace(CUI.MOD_ID, "hud/heart/detail_hardcore_full");
+    @Unique private static final #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif cui$detailHardcoreFullBlinking = ResourceBridge.spriteNamespace(CUI.MOD_ID, "hud/heart/detail_hardcore_full_blinking");
+    @Unique private static final #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif cui$detailHardcoreHalf = ResourceBridge.spriteNamespace(CUI.MOD_ID, "hud/heart/detail_hardcore_half");
+    @Unique private static final #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif cui$detailHardcoreHalfBlinking = ResourceBridge.spriteNamespace(CUI.MOD_ID, "hud/heart/detail_hardcore_half_blinking");
 
     @Shadow @Final private Minecraft minecraft;
 
@@ -63,7 +68,7 @@ public class HUDMixin {
     }
 
     @Unique
-    private static ResourceLocation cui$getDetail(boolean hardcore, boolean halfHeart, boolean blinking) {
+    private static #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif cui$getDetail(boolean hardcore, boolean halfHeart, boolean blinking) {
         if (!hardcore) {
             return (blinking) ? cui$detailBlinking : cui$detail ;
         } else {
@@ -105,10 +110,10 @@ public class HUDMixin {
     /**
      * <h5> Hotbar coloring <h5/>
      * */
-    @Redirect(at = @At(value = "INVOKE", target = #if MC_VER >= V1_20_4 "Lnet/minecraft/client/gui/GuiGraphics;blitSprite("#if MC_VER >= V1_21_6 + "Lcom/mojang/blaze3d/pipeline/RenderPipeline;" #elif MC_VER >= V1_21_3 + "Ljava/util/function/Function;" #endif + "Lnet/minecraft/resources/ResourceLocation;IIIIIIII)V" #else "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V" #endif), method = #if MC_VER >= V1_21 "renderItemHotbar" #else "renderHotbar" #endif)
+    @Redirect(at = @At(value = "INVOKE", target = GuiGraphicsMethods.blitSprite2Rec), method = #if MC_VER >= V1_21 "renderItemHotbar" #else "renderHotbar" #endif)
     private void renderHotbar1(
             GuiGraphics instance,
-            #if MC_VER >= V1_21_6 RenderPipeline pipeline, #elif MC_VER >= V1_21_3 Function<ResourceLocation, RenderType> pipeline, #endif ResourceLocation sprite,
+            #if MC_VER >= V1_21_6 RenderPipeline pipeline, #elif MC_VER >= V1_21_3 Function<ResourceLocation, RenderType> pipeline, #endif #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif sprite,
             #if MC_VER >= V1_20_4
             int textureWidth, int textureHeight, int u, int v, int x, int y, int width, int height
             #else
@@ -119,11 +124,11 @@ public class HUDMixin {
     }
 
     #if MC_VER > V1_20_1
-    @Redirect(at = @At(value = "INVOKE", target = #if MC_VER >= V1_20_4 "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(" #if MC_VER >= V1_21_6 + "Lcom/mojang/blaze3d/pipeline/RenderPipeline;" #elif MC_VER >= V1_21_3 + "Ljava/util/function/Function;" #endif + "Lnet/minecraft/resources/ResourceLocation;IIII)V" #else "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V" #endif), method = #if MC_VER >= V1_21 "renderItemHotbar" #else "renderHotbar" #endif)
+    @Redirect(at = @At(value = "INVOKE", target = GuiGraphicsMethods.blitSprite1Rec), method = #if MC_VER >= V1_21 "renderItemHotbar" #else "renderHotbar" #endif)
     private void renderHotbar2(
             GuiGraphics instance,
             #if MC_VER >= V1_21_6 RenderPipeline pipeline, #elif MC_VER >= V1_21_3 Function<ResourceLocation, RenderType> pipeline, #endif
-            ResourceLocation sprite,
+            #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif sprite,
             #if MC_VER >= V1_20_4
             int x, int y, int width, int height
             #else
@@ -134,15 +139,14 @@ public class HUDMixin {
     }
     #endif
 
-
     /**
      * <h5> Crosshair coloring <h5/>
      * */
-    @Redirect(at = @At(value = "INVOKE", target = #if MC_VER >= V1_20_4 "Lnet/minecraft/client/gui/GuiGraphics;blitSprite("#if MC_VER >= V1_21_6 + "Lcom/mojang/blaze3d/pipeline/RenderPipeline;" #elif MC_VER >= V1_21_3 + "Ljava/util/function/Function;" #endif + "Lnet/minecraft/resources/ResourceLocation;IIIIIIII)V" #else "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V" #endif), method = "renderCrosshair")
+    @Redirect(at = @At(value = "INVOKE", target = #if MC_VER >= V1_20_4 GuiGraphicsMethods.blitSprite2Rec #else "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V" #endif), method = "renderCrosshair")
     private void injected2(
             GuiGraphics instance,
             #if MC_VER >= V1_21_6 RenderPipeline pipeline, #elif MC_VER >= V1_21_3 Function<ResourceLocation, RenderType> pipeline, #endif
-            ResourceLocation sprite,
+            #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif sprite,
             #if MC_VER >= V1_20_4
             int textureWidth, int textureHeight, int u, int v, int x, int y, int width, int height
             #else
@@ -153,11 +157,11 @@ public class HUDMixin {
     }
 
     #if MC_VER > V1_20_1
-    @Redirect(at = @At(value = "INVOKE", target = #if MC_VER >= V1_20_4 "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(" #if MC_VER >= V1_21_6 + "Lcom/mojang/blaze3d/pipeline/RenderPipeline;" #elif MC_VER >= V1_21_3 + "Ljava/util/function/Function;" #endif + "Lnet/minecraft/resources/ResourceLocation;IIII)V" #else "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V" #endif), method = "renderCrosshair")
+    @Redirect(at = @At(value = "INVOKE", target = GuiGraphicsMethods.blitSprite1Rec), method = "renderCrosshair")
     private void injected3(
             GuiGraphics instance,
             #if MC_VER >= V1_21_6 RenderPipeline pipeline, #elif MC_VER >= V1_21_3 Function<ResourceLocation, RenderType> pipeline, #endif
-            ResourceLocation sprite,
+            #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif sprite,
             #if MC_VER >= V1_20_4 int x, int y, int width, int height
             #else
             int x, int y, int u, int v, int textureWidth, int textureHeight
@@ -171,7 +175,7 @@ public class HUDMixin {
      * <h5> Hearts coloring <h5/>
      * */
 
-    #if MC_VER <= V1_20_1 @Shadow  #if LOADER != FORGE @Final #endif private static ResourceLocation GUI_ICONS_LOCATION = new ResourceLocation("textures/gui/icons.png"); #endif
+    #if MC_VER <= V1_20_1 @Shadow  #if LOADER != FORGE @Final #endif private static #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif GUI_ICONS_LOCATION = new ResourceLocation("textures/gui/icons.png"); #endif
 
     @Inject(at = @At(value = "HEAD"), method = "renderHeart", cancellable = true)
     private void injected4(
@@ -213,8 +217,8 @@ public class HUDMixin {
     }
 
     #if MC_VER >= V1_20_4
-    @Redirect(at = @At(value = "INVOKE", target = #if MC_VER >= V1_20_4 "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(" #if MC_VER >= V1_21_6 + "Lcom/mojang/blaze3d/pipeline/RenderPipeline;" #elif MC_VER >= V1_21_3 + "Ljava/util/function/Function;" #endif + "Lnet/minecraft/resources/ResourceLocation;IIII)V" #else "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V" #endif), method = "renderHeart")
-    private void injected5(GuiGraphics instance, #if MC_VER >= V1_21_6 RenderPipeline pipeline, #elif MC_VER >= V1_21_3 Function<ResourceLocation, RenderType> pipeline, #endif ResourceLocation sprite, #if MC_VER >= V1_20_4 int x, int y, int width, int height #else int x, int y, int uOffset, int vOffset, int uWidth, int vHeight #endif) {
+    @Redirect(at = @At(value = "INVOKE", target = GuiGraphicsMethods.blitSprite1Rec), method = "renderHeart")
+    private void injected5(GuiGraphics instance, #if MC_VER >= V1_21_6 RenderPipeline pipeline, #elif MC_VER >= V1_21_3 Function<ResourceLocation, RenderType> pipeline, #endif #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif sprite, #if MC_VER >= V1_20_4 int x, int y, int width, int height #else int x, int y, int uOffset, int vOffset, int uWidth, int vHeight #endif) {
         GuiRenderer.blitSprite(instance, "GUI_TEXTURED", sprite, new Rectangle(x, y, width, height), CUI.cuiConfig.getRGB());
     }
     #endif
@@ -224,11 +228,11 @@ public class HUDMixin {
      * <h5> Air bubbles coloring <h5/>
      * */
     #if LOADER != NEOFORGE
-    @Redirect(at = @At(value = "INVOKE", target = #if MC_VER >= V1_20_4 "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(" #if MC_VER >= V1_21_6 + "Lcom/mojang/blaze3d/pipeline/RenderPipeline;" #elif MC_VER >= V1_21_3 + "Ljava/util/function/Function;" #endif + "Lnet/minecraft/resources/ResourceLocation;IIII)V" #else "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V" #endif, ordinal = #if MC_VER >= V1_21 0 #else 6 #endif), method = #if MC_VER >= V1_21_3 "renderAirBubbles" #else "renderPlayerHealth" #endif)
+    @Redirect(at = @At(value = "INVOKE", target = GuiGraphicsMethods.blitSprite1Rec, ordinal = #if MC_VER >= V1_21 0 #else 6 #endif), method = #if MC_VER >= V1_21_3 "renderAirBubbles" #else "renderPlayerHealth" #endif)
     private void injected6(
             GuiGraphics instance,
             #if MC_VER >= V1_21_6 RenderPipeline pipeline, #elif MC_VER >= V1_21_3 Function<ResourceLocation, RenderType> pipeline, #endif
-            ResourceLocation sprite,
+            #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif sprite,
             #if MC_VER >= V1_20_4
             int x, int y, int width, int height
             #else
@@ -239,11 +243,11 @@ public class HUDMixin {
         GuiRenderer.blitSprite(instance, "GUI_TEXTURED", ResourceBridge.spriteNamespace(CUI.MOD_ID, "hud/air"), new Rectangle(x, y, #if MC_VER >= V1_20_4 width, height #else textureWidth, textureHeight #endif), CUI.cuiConfig.getRGB());
     }
 
-    @Redirect(at = @At(value = "INVOKE", target = #if MC_VER >= V1_20_4 "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(" #if MC_VER >= V1_21_6 + "Lcom/mojang/blaze3d/pipeline/RenderPipeline;" #elif MC_VER >= V1_21_3 + "Ljava/util/function/Function;" #endif + "Lnet/minecraft/resources/ResourceLocation;IIII)V" #else "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V" #endif, ordinal = #if MC_VER >= V1_21 1 #else 7 #endif), method = #if MC_VER >= V1_21_3 "renderAirBubbles" #else "renderPlayerHealth" #endif)
+    @Redirect(at = @At(value = "INVOKE", target = GuiGraphicsMethods.blitSprite1Rec, ordinal = #if MC_VER >= V1_21 1 #else 7 #endif), method = #if MC_VER >= V1_21_3 "renderAirBubbles" #else "renderPlayerHealth" #endif)
     private void injected7(
             GuiGraphics instance,
             #if MC_VER >= V1_21_6 RenderPipeline pipeline, #elif MC_VER >= V1_21_3 Function<ResourceLocation, RenderType> pipeline, #endif
-            ResourceLocation sprite,
+            #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif sprite,
             #if MC_VER >= V1_20_4
             int x, int y, int width, int height
             #else
@@ -256,11 +260,11 @@ public class HUDMixin {
     #endif
 
     #if MC_VER >= V1_21_3
-    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(" #if MC_VER >= V1_21_6 + "Lcom/mojang/blaze3d/pipeline/RenderPipeline;" #elif MC_VER >= V1_21_3 + "Ljava/util/function/Function;" #endif + "Lnet/minecraft/resources/ResourceLocation;IIII)V", ordinal = 2), method = #if MC_VER >= V1_21_3 "renderAirBubbles" #else "renderPlayerHealth" #endif)
+    @Redirect(at = @At(value = "INVOKE", target = GuiGraphicsMethods.blitSprite1Rec, ordinal = 2), method = #if MC_VER >= V1_21_3 "renderAirBubbles" #else "renderPlayerHealth" #endif)
     private void injected8(
             GuiGraphics instance,
             #if MC_VER >= V1_21_6 RenderPipeline pipeline, #elif MC_VER >= V1_21_3 Function<ResourceLocation, RenderType> pipeline, #endif
-            ResourceLocation sprite, int x, int y, int width, int height
+            #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif sprite, int x, int y, int width, int height
     ) {
         GuiRenderer.blitSprite(instance, "GUI_TEXTURED", ResourceBridge.spriteNamespace(CUI.MOD_ID, "hud/air_empty_container"), new Rectangle(x, y, width, height), CUI.cuiConfig.getRGB());
         GuiRenderer.blitSprite(instance, "GUI_TEXTURED", sprite, new Rectangle(x, y, width, height), CUI.cuiConfig.getRGB());
@@ -270,11 +274,11 @@ public class HUDMixin {
     /**
      * <h5> Armor coloring <h5/>
      * */
-    @Redirect(at = @At(value = "INVOKE", target = #if MC_VER >= V1_20_4 "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(" #if MC_VER >= V1_21_6 + "Lcom/mojang/blaze3d/pipeline/RenderPipeline;" #elif MC_VER >= V1_21_3 + "Ljava/util/function/Function;" #endif + "Lnet/minecraft/resources/ResourceLocation;IIII)V" #else "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V" #endif, ordinal = 0), method = #if MC_VER >= V1_21 "renderArmor" #else "renderPlayerHealth" #endif)
+    @Redirect(at = @At(value = "INVOKE", target = GuiGraphicsMethods.blitSprite1Rec, ordinal = 0), method = #if MC_VER >= V1_21 "renderArmor" #else "renderPlayerHealth" #endif)
     private #if MC_VER >= V1_20_4 static #endif void renderArmor1(
             GuiGraphics instance,
             #if MC_VER >= V1_21_6 RenderPipeline pipeline, #elif MC_VER >= V1_21_3 Function<ResourceLocation, RenderType> pipeline, #endif
-            ResourceLocation sprite,
+            #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif sprite,
             #if MC_VER >= V1_20_4
             int x, int y, int width, int height
             #else
@@ -285,11 +289,11 @@ public class HUDMixin {
         GuiRenderer.blitSprite(instance, "GUI_TEXTURED", ResourceBridge.spriteNamespace(CUI.MOD_ID, "hud/armor_full"), new Rectangle(x, y, #if MC_VER >= V1_20_4 width, height #else textureWidth, textureHeight #endif), CUI.cuiConfig.getRGB());
     }
 
-    @Redirect(at = @At(value = "INVOKE", target = #if MC_VER >= V1_20_4 "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(" #if MC_VER >= V1_21_6 + "Lcom/mojang/blaze3d/pipeline/RenderPipeline;" #elif MC_VER >= V1_21_3 + "Ljava/util/function/Function;" #endif + "Lnet/minecraft/resources/ResourceLocation;IIII)V" #else "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V" #endif, ordinal = 1), method = #if MC_VER >= V1_21 "renderArmor" #else "renderPlayerHealth" #endif)
+    @Redirect(at = @At(value = "INVOKE", target = GuiGraphicsMethods.blitSprite1Rec, ordinal = 1), method = #if MC_VER >= V1_21 "renderArmor" #else "renderPlayerHealth" #endif)
     private #if MC_VER >= V1_20_4 static #endif void renderArmor2(
             GuiGraphics instance,
             #if MC_VER >= V1_21_6 RenderPipeline pipeline, #elif MC_VER >= V1_21_3 Function<ResourceLocation, RenderType> pipeline, #endif
-            ResourceLocation sprite,
+            #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif sprite,
             #if MC_VER >= V1_20_4
             int x, int y, int width, int height
             #else
@@ -300,11 +304,11 @@ public class HUDMixin {
         GuiRenderer.blitSprite(instance, "GUI_TEXTURED", ResourceBridge.spriteNamespace(CUI.MOD_ID, "hud/armor_half"), new Rectangle(x, y, #if MC_VER >= V1_20_4 width, height #else textureWidth, textureHeight #endif), CUI.cuiConfig.getRGB());
     }
 
-    @Redirect(at = @At(value = "INVOKE", target = #if MC_VER >= V1_20_4 "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(" #if MC_VER >= V1_21_6 + "Lcom/mojang/blaze3d/pipeline/RenderPipeline;" #elif MC_VER >= V1_21_3 + "Ljava/util/function/Function;" #endif + "Lnet/minecraft/resources/ResourceLocation;IIII)V" #else "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V" #endif, ordinal = 2), method = #if MC_VER >= V1_21 "renderArmor" #else "renderPlayerHealth" #endif)
+    @Redirect(at = @At(value = "INVOKE", target = GuiGraphicsMethods.blitSprite1Rec, ordinal = 2), method = #if MC_VER >= V1_21 "renderArmor" #else "renderPlayerHealth" #endif)
     private #if MC_VER >= V1_20_4 static #endif void renderArmor3(
             GuiGraphics instance,
             #if MC_VER >= V1_21_6 RenderPipeline pipeline, #elif MC_VER >= V1_21_3 Function<ResourceLocation, RenderType> pipeline, #endif
-            ResourceLocation sprite,
+            #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif sprite,
             #if MC_VER >= V1_20_4
             int x, int y, int width, int height
             #else
@@ -317,11 +321,11 @@ public class HUDMixin {
     /**
      * <h5> Food coloring <h5/>
      * */
-    @Redirect(at = @At(value = "INVOKE", target = #if MC_VER >= V1_20_4 "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(" #if MC_VER >= V1_21_6 + "Lcom/mojang/blaze3d/pipeline/RenderPipeline;" #elif MC_VER >= V1_21_3 + "Ljava/util/function/Function;" #endif + "Lnet/minecraft/resources/ResourceLocation;IIII)V" #else "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V" #endif, ordinal = #if MC_VER >= V1_21 0 #else 3 #endif), method = #if MC_VER >= V1_21 "renderFood" #else "renderPlayerHealth" #endif)
+    @Redirect(at = @At(value = "INVOKE", target = GuiGraphicsMethods.blitSprite1Rec, ordinal = #if MC_VER >= V1_21 0 #else 3 #endif), method = #if MC_VER >= V1_21 "renderFood" #else "renderPlayerHealth" #endif)
     private  void renderFood1(
             GuiGraphics instance,
             #if MC_VER >= V1_21_6 RenderPipeline pipeline, #elif MC_VER >= V1_21_3 Function<ResourceLocation, RenderType> pipeline, #endif
-            ResourceLocation sprite,
+            #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif sprite,
             #if MC_VER >= V1_20_4
             int x, int y, int width, int height
             #else
@@ -332,11 +336,11 @@ public class HUDMixin {
         GuiRenderer.blitSprite(instance, "GUI_TEXTURED", ResourceBridge.spriteNamespace(CUI.MOD_ID, "hud/food_empty" + hunger), new Rectangle(x, y, #if MC_VER >= V1_20_4 width, height #else textureWidth, textureHeight #endif), CUI.cuiConfig.getRGB());
     }
 
-    @Redirect(at = @At(value = "INVOKE", target = #if MC_VER >= V1_20_4 "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(" #if MC_VER >= V1_21_6 + "Lcom/mojang/blaze3d/pipeline/RenderPipeline;" #elif MC_VER >= V1_21_3 + "Ljava/util/function/Function;" #endif + "Lnet/minecraft/resources/ResourceLocation;IIII)V" #else "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V" #endif, ordinal = #if MC_VER >= V1_21 1 #else 4 #endif), method = #if MC_VER >= V1_21 "renderFood" #else "renderPlayerHealth" #endif)
+    @Redirect(at = @At(value = "INVOKE", target = GuiGraphicsMethods.blitSprite1Rec, ordinal = #if MC_VER >= V1_21 1 #else 4 #endif), method = #if MC_VER >= V1_21 "renderFood" #else "renderPlayerHealth" #endif)
     private void renderFood2(
             GuiGraphics instance,
             #if MC_VER >= V1_21_6 RenderPipeline pipeline, #elif MC_VER >= V1_21_3 Function<ResourceLocation, RenderType> pipeline, #endif
-            ResourceLocation sprite,
+            #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif sprite,
             #if MC_VER >= V1_20_4
             int x, int y, int width, int height
             #else
@@ -349,11 +353,11 @@ public class HUDMixin {
 
     }
 
-    @Redirect(at = @At(value = "INVOKE", target = #if MC_VER >= V1_20_4 "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(" #if MC_VER >= V1_21_6 + "Lcom/mojang/blaze3d/pipeline/RenderPipeline;" #elif MC_VER >= V1_21_3 + "Ljava/util/function/Function;" #endif + "Lnet/minecraft/resources/ResourceLocation;IIII)V" #else "Lnet/minecraft/client/gui/GuiGraphics;blit(Lnet/minecraft/resources/ResourceLocation;IIIIII)V" #endif, ordinal = #if MC_VER >= V1_21 2 #else 5 #endif), method = #if MC_VER >= V1_21 "renderFood" #else "renderPlayerHealth" #endif)
+    @Redirect(at = @At(value = "INVOKE", target = GuiGraphicsMethods.blitSprite1Rec, ordinal = #if MC_VER >= V1_21 2 #else 5 #endif), method = #if MC_VER >= V1_21 "renderFood" #else "renderPlayerHealth" #endif)
     private void renderFood3(
             GuiGraphics instance,
             #if MC_VER >= V1_21_6 RenderPipeline pipeline, #elif MC_VER >= V1_21_3 Function<ResourceLocation, RenderType> pipeline, #endif
-            ResourceLocation sprite,
+            #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif sprite,
             #if MC_VER >= V1_20_4
             int x, int y, int width, int height
              #else

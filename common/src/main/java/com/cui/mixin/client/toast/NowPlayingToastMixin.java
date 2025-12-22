@@ -1,5 +1,6 @@
 package com.cui.mixin.client.toast;
 
+import com.cui.abs.core.data.data.GuiGraphicsMethods;
 import com.cui.core.CUI;
 #if MC_VER >= V1_21_6 import com.cui.mixin.client.book.RecipeBookMixin;
 import net.minecraft.client.gui.components.toasts.NowPlayingToast;
@@ -39,7 +40,14 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+#if MC_VER >= V1_21_11
+import net.minecraft.resources.Identifier;
+#else
 import net.minecraft.resources.ResourceLocation;
+#if MC_VER >= V1_21_3
+import net.minecraft.client.renderer.RenderType;
+#endif
+#endif
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import org.spongepowered.asm.mixin.Final;
@@ -85,7 +93,6 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import org.spongepowered.asm.mixin.Final;
@@ -100,8 +107,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(#if MC_VER >= V1_21_6 NowPlayingToast.class #else Minecraft.class #endif)
 public class NowPlayingToastMixin {
     #if MC_VER >= V1_21_6
-    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIII)V"), method = "renderToast")
-    private static void injected(GuiGraphics instance, RenderPipeline pipeline, ResourceLocation sprite, int x, int y, int width, int height) {
+    @Redirect(at = @At(value = "INVOKE", target = GuiGraphicsMethods.blitSprite1Rec), method = "renderToast")
+    private static void injected(GuiGraphics instance, RenderPipeline pipeline, #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif sprite, int x, int y, int width, int height) {
         instance.blitSprite(pipeline, sprite, x, y, width, height, CUI.cuiConfig.getRGB());
     }
     #endif

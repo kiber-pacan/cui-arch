@@ -1,6 +1,7 @@
 package com.cui.mixin.client.misc.widgets;
 
 import com.cui.abs.core.data.Rectangle;
+import com.cui.abs.core.data.data.GuiGraphicsMethods;
 import com.cui.abs.core.rendering.gui.GuiRenderer;
 import com.cui.core.CUI;
 #if MC_VER >= V1_21_6 import com.cui.mixin.client.book.RecipeBookMixin;
@@ -13,7 +14,16 @@ import net.minecraft.client.gui.screens.inventory.CraftingScreen;
 #endif
 import net.minecraft.client.gui.screens.inventory.tooltip.TooltipRenderUtil;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
+
+#if MC_VER >= V1_21_11
+import net.minecraft.resources.Identifier;
+#else
+import net.minecraft.resources.ResourceLocation;
+#if MC_VER >= V1_21_3
 import net.minecraft.client.renderer.RenderType;
+#endif
+#endif
+
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.CraftingMenu;
 import net.minecraft.world.item.Items;
@@ -41,7 +51,6 @@ import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import org.spongepowered.asm.mixin.Final;
@@ -59,8 +68,8 @@ import java.util.function.Function;
 @Mixin(TooltipRenderUtil.class)
 public class TooltipMixin {
     #if MC_VER >= V1_21_6
-    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIII)V"), method = "renderTooltipBackground")
-    private static void injected(GuiGraphics instance, RenderPipeline pipeline, ResourceLocation sprite, int x, int y, int width, int height) {
+    @Redirect(at = @At(value = "INVOKE", target = GuiGraphicsMethods.blitSprite1Rec), method = "renderTooltipBackground")
+    private static void injected(GuiGraphics instance, RenderPipeline pipeline, #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif sprite, int x, int y, int width, int height) {
         GuiRenderer.blitSprite(instance, "GUI_TEXTURED", sprite, new Rectangle(x, y, width, height), CUI.cuiConfig.getRGB());
     }
     #elif MC_VER >= V1_21_3

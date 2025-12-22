@@ -1,6 +1,7 @@
 package com.cui.mixin.client.screen.inventory;
 
 
+import com.cui.abs.core.data.data.GuiGraphicsMethods;
 import com.cui.abs.core.rendering.gui.GuiRenderer;
 import com.cui.core.CUI;
 #if MC_VER >= V1_21_6
@@ -36,7 +37,14 @@ import net.minecraft.client.gui.GuiGraphics;
 
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
+#if MC_VER >= V1_21_11
+import net.minecraft.resources.Identifier;
+#else
 import net.minecraft.resources.ResourceLocation;
+#if MC_VER >= V1_21_3
+import net.minecraft.client.renderer.RenderType;
+#endif
+#endif
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Rarity;
 import org.spongepowered.asm.mixin.Final;
@@ -62,8 +70,8 @@ public abstract class InvScreenMixin #if MC_VER >= V1_21_3 extends AbstractRecip
 
     // Background
     #if MC_VER >= V1_21_6
-    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blit(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIFFIIII)V"), method = "renderBg")
-    private static void injected(GuiGraphics instance, RenderPipeline pipeline, ResourceLocation atlas, int x, int y, float u, float v, int width, int height, int textureWidth, int textureHeight) {
+    @Redirect(at = @At(value = "INVOKE", target = GuiGraphicsMethods.blit8), method = "renderBg")
+    private static void injected(GuiGraphics instance, RenderPipeline pipeline, #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif atlas, int x, int y, float u, float v, int width, int height, int textureWidth, int textureHeight) {
         instance.blit(pipeline, atlas, x, y, u, v, width, height, textureWidth, textureHeight, CUI.cuiConfig.getRGB());
     }
 

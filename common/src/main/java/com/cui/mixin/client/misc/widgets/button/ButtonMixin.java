@@ -1,5 +1,6 @@
 package com.cui.mixin.client.misc.widgets.button;
 
+import com.cui.abs.core.data.data.GuiGraphicsMethods;
 import com.cui.abs.core.rendering.gui.GuiRenderer;
 import com.cui.core.CUI;
 
@@ -11,11 +12,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import net.minecraft.client.gui.GuiGraphics;
 #endif
 import net.minecraft.client.gui.components.AbstractButton;
+import net.minecraft.client.gui.components.Button;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.*;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.GrindstoneScreen;
+#if MC_VER >= V1_21_11
+import net.minecraft.resources.Identifier;
+#else
 import net.minecraft.resources.ResourceLocation;
+#if MC_VER >= V1_21_3
+import net.minecraft.client.renderer.RenderType;
+#endif
+#endif
 import org.spongepowered.asm.mixin.Mixin;
 import net.minecraft.client.Minecraft;
 import org.spongepowered.asm.mixin.injection.At;
@@ -27,7 +36,7 @@ import java.awt.*;
 @Mixin(AbstractButton.class)
 public class ButtonMixin {
     #if MC_VER >= V1_21_6
-    @ModifyArg(method = "renderWidget", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIIII)V"), index = 6)
+    @ModifyArg(method = #if MC_VER >= V1_21_11 "renderDefaultSprite" #else "renderWidget" #endif, at = @At(value = "INVOKE", target = GuiGraphicsMethods.blitSprite1RecColor), index = 6)
     private int injected1(int color) {
         return CUI.cuiConfig.getRGBA(((color >>> 24) & 0xFF) / 255.0f);
     }

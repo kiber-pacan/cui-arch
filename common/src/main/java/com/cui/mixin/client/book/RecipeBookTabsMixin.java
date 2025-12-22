@@ -1,6 +1,7 @@
 package com.cui.mixin.client.book;
 
 import com.cui.abs.core.data.Rectangle;
+import com.cui.abs.core.data.data.GuiGraphicsMethods;
 import com.cui.abs.core.rendering.gui.GuiRenderer;
 import com.cui.core.CUI;
 #if MC_VER >= V1_21_6 import com.mojang.blaze3d.pipeline.RenderPipeline; #endif
@@ -20,7 +21,14 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.*;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.inventory.GrindstoneScreen;
+#if MC_VER >= V1_21_11
+import net.minecraft.resources.Identifier;
+#else
 import net.minecraft.resources.ResourceLocation;
+#if MC_VER >= V1_21_3
+import net.minecraft.client.renderer.RenderType;
+#endif
+#endif
 import org.spongepowered.asm.mixin.Mixin;
 import net.minecraft.client.Minecraft;
 import org.spongepowered.asm.mixin.injection.At;
@@ -29,8 +37,8 @@ import com.cui.core.CUI;
 @Mixin(RecipeBookTabButton.class)
 public class RecipeBookTabsMixin {
     #if MC_VER >= V1_21_6
-    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blitSprite(Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/ResourceLocation;IIII)V"), method = "renderWidget")
-    private static void blitRecipeBookTabs(GuiGraphics instance, RenderPipeline pipeline, ResourceLocation sprite, int x, int y, int width, int height) {
+    @Redirect(at = @At(value = "INVOKE", target = GuiGraphicsMethods.blitSprite2Rec), method = "renderWidget")
+    private static void blitRecipeBookTabs(GuiGraphics instance, RenderPipeline pipeline, #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif sprite, int x, int y, int width, int height) {
         GuiRenderer.blitSprite(instance, "GUI_TEXTURED", sprite, new Rectangle(x, y, width, height), CUI.cuiConfig.getRGB());
     }
     #else
