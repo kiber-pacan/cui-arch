@@ -175,9 +175,11 @@ public class CUI_Config {
         float[] hsv = Color.RGBtoHSB((int) (CUI.cuiConfig.r * 255.0f), (int) (CUI.cuiConfig.g * 255.0f), (int) (CUI.cuiConfig.b * 255.0f), null);
         float avg = (((originalColor) & 0xFF) + ((originalColor >> 8) & 0xFF) + ((originalColor >> 16) & 0xFF)) / 3.0f;
 
-        int a = (int)(alpha * 255.0f) & 0xFF;
+        int a = Math.max(0, Math.min(255, (int) (alpha * 255.0f)));
 
-        return (Color.getHSBColor(hsv[0], hsv[1] / desaturation, avg / 255.0f).getRGB() & 0x00FFFFFF) | (a << 24);
+        int rgb = Color.HSBtoRGB(hsv[0], hsv[1] / desaturation, avg / 255.0f);
+
+        return (rgb & 0x00FFFFFF) | (a << 24);
     }
 
     public boolean isDark() {
