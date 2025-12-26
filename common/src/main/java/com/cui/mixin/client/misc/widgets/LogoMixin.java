@@ -74,7 +74,7 @@ import java.util.logging.Logger;
 @Mixin(LogoRenderer.class)
 public class LogoMixin {
     #if MC_VER >= V1_21_3
-    @Redirect(at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/GuiGraphics;blit(Ljava/util/function/Function;Lnet/minecraft/resources/ResourceLocation;IIFFIIIII)V", ordinal = 0), method = "renderLogo(Lnet/minecraft/client/gui/GuiGraphics;IFI)V")
+    @Redirect(at = @At(value = "INVOKE", target = GuiGraphicsMethods.blit91, ordinal = 0), method = "renderLogo(Lnet/minecraft/client/gui/GuiGraphics;IFI)V")
     private static void renderLogo(GuiGraphics instance, #if MC_VER >= V1_21_6 RenderPipeline #elif MC_VER >= V1_21_3 Function<ResourceLocation, RenderType> #endif pipeline, #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif atlas, int x, int y, float u, float v, int width, int height, int textureWidth, int textureHeight, int color) {
         GuiRenderer.blitSprite(instance, "GUI_TEXTURED", ResourceBridge.spriteDefaultNamespace("title/minecraft"), new Rectangle(x, y, width, height), new Rectangle((int) u, (int) v, textureWidth, textureHeight), CUI.cuiConfig.getTextColor(color));
     }

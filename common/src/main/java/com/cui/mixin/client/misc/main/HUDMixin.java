@@ -110,20 +110,20 @@ public class HUDMixin {
     /**
      * <h5> Hotbar coloring <h5/>
      * */
-    @Redirect(at = @At(value = "INVOKE", target = GuiGraphicsMethods.blitSprite2Rec), method = #if MC_VER >= V1_21 "renderItemHotbar" #else "renderHotbar" #endif)
+    @Redirect(at = @At(value = "INVOKE", target = #if MC_VER >= V1_21_6 GuiGraphicsMethods.blitSprite2Rec #else GuiGraphicsMethods.blitSprite1Rec #endif), method = #if MC_VER >= V1_21 "renderItemHotbar" #else "renderHotbar" #endif)
     private void renderHotbar1(
             GuiGraphics instance,
             #if MC_VER >= V1_21_6 RenderPipeline pipeline, #elif MC_VER >= V1_21_3 Function<ResourceLocation, RenderType> pipeline, #endif #if MC_VER >= V1_21_11 Identifier #else ResourceLocation #endif sprite,
             #if MC_VER >= V1_20_4
-            int textureWidth, int textureHeight, int u, int v, int x, int y, int width, int height
+            #if MC_VER >= V1_21_6 int textureWidth, int textureHeight, int u, int v, #endif int x, int y, int width, int height
             #else
             int x, int y, int u, int v, int textureWidth, int textureHeight
             #endif
     ) {
-        GuiRenderer.blitSprite(instance, "GUI_TEXTURED", sprite, new Rectangle(x, y, #if MC_VER >= V1_20_4 width, height #else textureWidth, textureHeight #endif), new Rectangle(u, v, textureWidth, textureHeight), CUI.cuiConfig.getRGB());
+        GuiRenderer.blitSprite(instance, "GUI_TEXTURED", sprite, new Rectangle(x, y, #if MC_VER >= V1_20_4 width, height #else textureWidth, textureHeight #endif) #if MC_VER >= V1_21_6, new Rectangle(u, v, textureWidth, textureHeight) #endif , CUI.cuiConfig.getRGB());
     }
 
-    #if MC_VER > V1_20_1
+    #if MC_VER > V1_21_6
     @Redirect(at = @At(value = "INVOKE", target = GuiGraphicsMethods.blitSprite1Rec), method = #if MC_VER >= V1_21 "renderItemHotbar" #else "renderHotbar" #endif)
     private void renderHotbar2(
             GuiGraphics instance,
