@@ -196,7 +196,9 @@ subprojects {
             id = "1057076"
 
             releaseType = "release"
-            addGameVersion rootProject.minecraft_version
+
+            addGameVersion(rootProject.minecraft_version)
+            addGameVersion((loader == "neoforge") ? "NeoForge" : loader.capitalize()) // Fuck me...
 
             mainArtifact(remapJar) {
                 displayName = archives_name + " " + mod_version
